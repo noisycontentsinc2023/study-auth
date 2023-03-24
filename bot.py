@@ -18,11 +18,6 @@ intents=discord.Intents.all()
 prefix = '!'
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
-import discord
-from discord.ext import commands
-
-bot = commands.Bot(command_prefix='!')
-
 @bot.command(name='고정')
 async def pin(ctx, message_id: int):
     try:
