@@ -28,7 +28,7 @@ async def sticky(ctx, *, message):
     sticky_messages[ctx.channel.id] = message
     await ctx.send(f'Sticky message set in this channel!')
 
-@bot.command(name=제해제')
+@bot.command(name='해제')
 async def unsticky(ctx):
     global sticky_messages
     if ctx.channel.id in sticky_messages:
