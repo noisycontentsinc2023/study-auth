@@ -1,9 +1,11 @@
 import discord
-import json
-from discord.ext import tasks, commands
-from discord.utils import get
-from dotenv import load_dotenv
+import bs4
 import asyncio
 import os
-import googletrans 
+import urllib
 from discord import Embed
+from discord.ext import tasks, commands
+from discord.utils import get
+from urllib.request import Request
+
+
