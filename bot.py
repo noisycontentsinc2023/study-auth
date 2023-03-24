@@ -24,19 +24,18 @@ sticky_channel = None
 
 @bot.command(name='고정')
 async def sticky(ctx, *, message):
-    global sticky_message
-    global sticky_channel
-    sticky_message = message
-    sticky_channel = ctx.channel
+    global sticky_messages
+    sticky_messages[ctx.channel.id] = message
     await ctx.send(f'Sticky message set in this channel!')
 
 @bot.command(name='해제')
 async def unsticky(ctx):
-    global sticky_message
-    global sticky_channel
-    sticky_message = None
-    sticky_channel = None
-    await ctx.send('Sticky message removed.')
+    global sticky_messages
+    if ctx.channel.id in sticky_messages:
+        del sticky_messages[ctx.channel.id]
+        await ctx.send('Sticky message removed.')
+    else:
+        await ctx.send('No sticky message found in this channel.')
 
 @bot.event
 async def on_message(message):
@@ -45,10 +44,9 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
-    global sticky_message
-    global sticky_channel
-    if sticky_message and sticky_channel and message.channel == sticky_channel:
-        await message.channel.send(sticky_message)
+    global sticky_messages
+    if message.channel.id in sticky_messages:
+        await message.channel.send(sticky_messages[message.channel.id])
     
 #Run the bot
 bot.run(TOKEN)
