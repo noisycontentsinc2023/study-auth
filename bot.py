@@ -22,17 +22,13 @@ bot = commands.Bot(command_prefix=prefix, intents=intents)
 stichy_message = None
 sticky_channel = None
 
-@bot.event
-async def on_ready():
-    print(f'{bot.user} has connected to Discord!')
-
-@bot.command(name='fixed')
+@bot.command(name='고정')
 async def sticky(ctx, *, message):
     global sticky_messages
     sticky_messages[ctx.channel.id] = message
     await ctx.send(f'Sticky message set in this channel!')
 
-@bot.command(name='disable')
+@bot.command(name=제해제')
 async def unsticky(ctx):
     global sticky_messages
     if ctx.channel.id in sticky_messages:
