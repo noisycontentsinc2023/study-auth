@@ -28,8 +28,8 @@ async def search_image(ctx, *args):
     print(Text.strip()) # command entered
 
     headers = {
-        'X-Naver-Client-Id': NAVER_CLIENT_ID,
-        'X-Naver-Client-Secret': NAVER_CLIENT_SECRET
+        'X-Naver-Client-Id': iuWr9aAAyKxNnRsRSQIt,
+        'X-Naver-Client-Secret': bkfPugeyIa
     }
     params = {
         'query': Text,
