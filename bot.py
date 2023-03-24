@@ -14,33 +14,41 @@ PREFIX = os.environ['PREFIX']
 
 intents = discord.Intents.default()
 intents.members = True
+intents.messages = True
 intents=discord.Intents.all()
 prefix = '!'
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
+stichy_message = None
+sticky_channel = None
+
 @bot.command(name='고정')
-async def pin(ctx, message_id: str):
-    try:
-        channel = ctx.channel
-        message = await channel.fetch_message(int(message_id))
-        await message.pin()
-        await ctx.send(f"Message {message_id} pinned to the bottom of the channel.")
-    except ValueError:
-        await ctx.send(f"Invalid input: {message_id} is not a valid integer.")
-    except discord.NotFound:
-        await ctx.send(f"Message {message_id} not found.")
+async def sticky(ctx, *, message):
+    global sticky_message
+    global sticky_channel
+    sticky_message = message
+    sticky_channel = ctx.channel
+    await ctx.send(f'Sticky message set in this channel!')
 
 @bot.command(name='해제')
-async def unpin(ctx, message_id: str):
-    try:
-        channel = ctx.channel
-        message = await channel.fetch_message(int(message_id))
-        await message.unpin()
-        await ctx.send(f"Message {message_id} unpinned.")
-    except ValueError:
-        await ctx.send(f"Invalid input: {message_id} is not a valid integer.")
-    except discord.NotFound:
-        await ctx.send(f"Message {message_id} not found.")
+async def unsticky(ctx):
+    global sticky_message
+    global sticky_channel
+    sticky_message = None
+    sticky_channel = None
+    await ctx.send('Sticky message removed.')
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+
+    await bot.process_commands(message)
+
+    global sticky_message
+    global sticky_channel
+    if sticky_message and sticky_channel and message.channel == sticky_channel:
+        await message.channel.send(sticky_message)
     
 #Run the bot
 bot.run(TOKEN)
