@@ -8,4 +8,9 @@ from discord.ext import tasks, commands
 from discord.utils import get
 from urllib.request import Request
 
+naver_client_id = 'iuWr9aAAyKxNnRsRSQIt'
+naver_client_secret = 'bkfPugeyIa'
 
+
+TOKEN = os.environ['TOKEN']
+PREFIX = os.environ['PREFIX']
