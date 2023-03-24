@@ -9,9 +9,6 @@ from discord.ext import tasks, commands
 from discord.utils import get
 from urllib.request import Request
 
-naver_client_id = 'iuWr9aAAyKxNnRsRSQIt'
-naver_client_secret = 'bkfPugeyIa'
-
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
 
@@ -21,32 +18,30 @@ intents=discord.Intents.all()
 prefix = '!'
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
-@bot.command(name='이미지')
-async def search_image(ctx, *args):
+import discord
+from discord.ext import commands
 
-    Text = " ".join(args)
-    print(Text.strip()) # command entered
+bot = commands.Bot(command_prefix='!')
 
-    headers = {
-        'X-Naver-Client-Id': iuWr9aAAyKxNnRsRSQIt,
-        'X-Naver-Client-Secret': bkfPugeyIa
-    }
-    params = {
-        'query': Text,
-        'display': 40,
-        'sort': 'sim'
-    }
-    response = requests.get('https://openapi.naver.com/v1/search/image', headers=headers, params=params)
-    json_data = response.json()
-    items = json_data['items']
-    imgsrc = items[random.randint(0, len(items)-1)]['link']
-    print(imgsrc)
+@bot.command(name='고정')
+async def pin(ctx, message_id: int):
+    try:
+        channel = ctx.channel
+        message = await channel.fetch_message(message_id)
+        await message.pin()
+        await ctx.send(f"Message {message_id} pinned to the bottom of the channel.")
+    except discord.NotFound:
+        await ctx.send("Message not found.")
 
-    embed = discord.Embed(
-        color=discord.Colour.green()
-    )
-    embed.set_image(url=imgsrc) # Set the image by specifying the link to the image.
-    await ctx.send(embed=embed) # Send message.
+@bot.command(name='해제')
+async def unpin(ctx, message_id: int):
+    try:
+        channel = ctx.channel
+        message = await channel.fetch_message(message_id)
+        await message.unpin()
+        await ctx.send(f"Message {message_id} unpinned.")
+    except discord.NotFound:
+        await ctx.send("Message not found.")
     
 #Run the bot
 bot.run(TOKEN)
