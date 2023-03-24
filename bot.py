@@ -22,6 +22,8 @@ bot = commands.Bot(command_prefix=prefix, intents=intents)
 stichy_message = None
 sticky_channel = None
 
+sticky_messages = {}
+
 @bot.command(name='고정')
 async def sticky(ctx, *, message):
     global sticky_messages
