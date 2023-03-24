@@ -3,7 +3,7 @@ import bs4
 import asyncio
 import os
 import urllib
-import requsests
+import requests
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.utils import get
