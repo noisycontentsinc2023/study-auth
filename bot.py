@@ -47,3 +47,6 @@ async def search_image(ctx, *args):
     )
     embed.set_image(url=imgsrc) # Set the image by specifying the link to the image.
     await ctx.send(embed=embed) # Send message.
+    
+#Run the bot
+bot.run(TOKEN)
