@@ -19,6 +19,7 @@ intents.typing = False
 intents.presences = False
 
 bot = commands.Bot(command_prefix='!', intents=intents)
+openai.api_key = "OPENAI"
 
 async def process_gpt_request(prompt):
     response = openai.Completion.create(
