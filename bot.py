@@ -15,8 +15,10 @@ PREFIX = os.environ['PREFIX']
 OPENAI = os.environ['OPENAI']
 
 intents = discord.Intents.default()
+intents.message = True
 intents.typing = False
 intents.presences = False
+
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 openai.api_key = "OPENAI"
