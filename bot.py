@@ -35,7 +35,7 @@ def is_topic_allowed(question):
     allowed_topics = ["language", "korean", "chinese", "japanese", "spanish", "german", "french"]
     return any(topic in question for topic in allowed_topics)
 
-@bot.command()
+@bot.command(name='gpt')
 async def gpt(ctx, *, question):
     question = question.strip().lower()
 
