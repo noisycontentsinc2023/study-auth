@@ -26,9 +26,9 @@ openai.api_key = OPENAI
 
 async def generate_response(prompt):
     response = openai.Completion.create(
-        engine="gpt-3.5-turbo",
+        engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=300,
+        max_tokens=500,
         n=1,
         stop=None,
         temperature=1,
@@ -42,7 +42,7 @@ async def gpt(ctx, *, message):
     prompt = f"{ctx.author.name}: {message}"
     response = await generate_response(prompt)
 
-    embed = discord.Embed(title="GPT-3 Response", description=response, color=discord.Color.blue())
+    embed = discord.Embed(title="답변", description=response, color=discord.Color.blue())
     await ctx.send(embed=embed)
 
 #Run the bot
