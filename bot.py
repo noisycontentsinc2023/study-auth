@@ -36,6 +36,7 @@ async def generate_response(prompt):
     return message, tokens_used
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+openai.api_key = OPENAI
 
 @bot.command(name="gpt")
 async def gpt(ctx, *, message):
