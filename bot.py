@@ -12,7 +12,6 @@ from urllib.request import Request
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
-OPENAI = os.environ['OPENAI']
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -21,7 +20,7 @@ intents.presences = False
 
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = "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"
+openai.api_key = "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"
 
 async def generate_response(prompt):
     response = openai.Completion.create(
