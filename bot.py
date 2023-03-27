@@ -31,7 +31,7 @@ async def generate_response(prompt):
         max_tokens=500,
         n=1,
         stop=None,
-        temperature=1,
+        temperature=0.8,
     )
 
     message = response.choices[0].text.strip()
