@@ -4,6 +4,7 @@ import asyncio
 import os
 import urllib
 import requests
+import openai
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.utils import get
