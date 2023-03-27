@@ -20,7 +20,7 @@ intents.presences = False
 
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = "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"
+openai.api_key = "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"
 
 async def generate_response(prompt):
     response = openai.Completion.create(
