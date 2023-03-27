@@ -35,7 +35,7 @@ async def generate_response(prompt):
     tokens_used = response.choices[0].get("usage", {}).get("total_tokens", 0)
     return message, tokens_used
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 @bot.command(name="gpt")
 async def gpt(ctx, *, message):
