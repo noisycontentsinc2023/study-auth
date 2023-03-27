@@ -21,28 +21,29 @@ intents.typing = False
 intents.presences = False
 
 
+bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+openai.api_key = OPENAI
+
 async def generate_response(prompt):
     response = openai.Completion.create(
         engine="text-davinci-002",
         prompt=prompt,
-        max_tokens=150,
+        max_tokens=200,
         n=1,
         stop=None,
-        temperature=0.5,
+        temperature=1,
     )
 
     message = response.choices[0].text.strip()
-    tokens_used = response.choices[0].get("usage", {}).get("total_tokens", 0)
-    return message, tokens_used
-
-bot = commands.Bot(command_prefix=PREFIX, intents=intents)
-openai.api_key = OPENAI
+    return message
 
 @bot.command(name="gpt")
 async def gpt(ctx, *, message):
     prompt = f"{ctx.author.name}: {message}"
-    response, tokens_used = await generate_response(prompt)
-    await ctx.send(f"Response: {response}\nTokens used: {tokens_used}")
+    response = await generate_response(prompt)
+
+    embed = discord.Embed(title="GPT-3 Response", description=response, color=discord.Color.blue())
+    await ctx.send(embed=embed)
 
 #Run the bot
 bot.run(TOKEN)
