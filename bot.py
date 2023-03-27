@@ -26,7 +26,7 @@ openai.api_key = OPENAI
 
 async def generate_response(prompt):
     response = openai.Completion.create(
-        engine="text-davinci-003",
+        engine="gpt-3.5-turbo",
         prompt=prompt,
         max_tokens=500,
         n=1,
