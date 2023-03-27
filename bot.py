@@ -16,7 +16,7 @@ OPENAI = os.environ['OPENAI']
 
 intents = discord.Intents.default()
 intents.message_content = True
-intents.member = True
+intents.members = True
 intents.typing = False
 intents.presences = False
 
