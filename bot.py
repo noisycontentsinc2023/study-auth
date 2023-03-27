@@ -20,8 +20,6 @@ intents.typing = False
 intents.presences = False
 
 
-bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = OPENAI
 async def generate_response(prompt):
     response = openai.Completion.create(
         engine="text-davinci-002",
@@ -33,8 +31,10 @@ async def generate_response(prompt):
     )
 
     message = response.choices[0].text.strip()
-    tokens_used = response.choices[0].usage["total_tokens"]
+    tokens_used = response.choices[0].get("usage", {}).get("total_tokens", 0)
     return message, tokens_used
+
+bot = commands.Bot(command_prefix='!')
 
 @bot.command(name="gpt")
 async def gpt(ctx, *, message):
