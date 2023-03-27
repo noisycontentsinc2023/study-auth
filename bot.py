@@ -15,7 +15,7 @@ PREFIX = os.environ['PREFIX']
 OPENAI = os.environ['OPENAI']
 
 intents = discord.Intents.default()
-intents.message = True
+intents.message_content = True
 intents.typing = False
 intents.presences = False
 
