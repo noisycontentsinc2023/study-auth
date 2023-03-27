@@ -11,44 +11,39 @@ from urllib.request import Request
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
+OPENAI = os.environ['OPENAI']
 
 intents = discord.Intents.default()
-intents.members = True
-intents.messages = True
-intents=discord.Intents.all()
-prefix = '!'
-bot = commands.Bot(command_prefix=prefix, intents=intents)
+intents.typing = False
+intents.presences = False
 
-stichy_message = None
-sticky_channel = None
+bot = commands.Bot(command_prefix='!', intents=intents)
 
-sticky_messages = {}
+async def process_gpt_request(prompt):
+    response = openai.Completion.create(
+        engine="text-davinci-002",
+        prompt=prompt,
+        temperature=0.7,
+        max_tokens=100,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+    )
+    return response.choices[0].text.strip()
 
-@bot.command(name='고정')
-async def sticky(ctx, *, message):
-    global sticky_messages
-    sticky_messages[ctx.channel.id] = message
-    await ctx.send(f'Sticky message set in this channel!')
+def is_topic_allowed(question):
+    allowed_topics = ["language", "korean", "chinese", "japanese", "spanish", "german", "french"]
+    return any(topic in question for topic in allowed_topics)
 
-@bot.command(name='해제')
-async def unsticky(ctx):
-    global sticky_messages
-    if ctx.channel.id in sticky_messages:
-        del sticky_messages[ctx.channel.id]
-        await ctx.send('Sticky message removed.')
+@bot.command()
+async def gpt(ctx, *, question):
+    question = question.strip().lower()
+
+    if is_topic_allowed(question):
+        response = await process_gpt_request(question)
+        await ctx.send(response)
     else:
-        await ctx.send('No sticky message found in this channel.')
-
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-
-    await bot.process_commands(message)
-
-    global sticky_messages
-    if message.channel.id in sticky_messages:
-        await message.channel.send(sticky_messages[message.channel.id])
+        await ctx.send("I can only answer language-related questions or questions related to Korean, Chinese, Japanese, Spanish, German, or French. Please try asking a question related to one of these topics.")
     
 #Run the bot
 bot.run(TOKEN)
