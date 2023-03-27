@@ -12,7 +12,7 @@ from urllib.request import Request
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
-OPENAI_API = os.environ['OPENAI_API']
+OPENAI = os.environ['OPENAI']
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -21,7 +21,7 @@ intents.presences = False
 
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = "OPENAI_API"
+openai.api_key = "OPENAI"
 async def generate_response(prompt):
     response = openai.Completion.create(
         engine="text-davinci-002",
