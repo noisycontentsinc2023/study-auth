@@ -20,8 +20,7 @@ intents.presences = False
 
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = "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"
-
+openai.api_key = "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"
 async def generate_response(prompt):
     response = openai.Completion.create(
         engine="text-davinci-002",
