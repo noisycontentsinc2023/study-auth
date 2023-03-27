@@ -21,7 +21,7 @@ intents.presences = False
 
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-openai.api_key = OPENAI
+openai.api_key = 'OPENAI'
 
 async def generate_response(prompt):
     response = openai.Completion.create(
