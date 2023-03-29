@@ -5,6 +5,7 @@ import os
 import urllib
 import requests
 import openai
+import datetime
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.utils import get
@@ -48,19 +49,26 @@ async def gpt(ctx, *, message):
 #------------------------------------------------#
 
 todos = {}
+completed_dates = {}
 
 @bot.command(name='할일')
 async def todo(ctx, *, options=None):
     if options is None:
         if ctx.author.id in todos:
             todo_list = "\n".join([f"[{'x' if checked else ' '}] {option}" for option, checked in todos[ctx.author.id]])
-            await ctx.send(f"**Your TODO list:**\n{todo_list}")
+            creation_time = creation_times.get(ctx.author.id, None)
+            if creation_time is not None:
+                creation_time_str = creation_time.strftime("%Y-%m-%d %H:%M:%S")
+                await ctx.send(f"**Your TODO list (created at {creation_time_str}):**\n{todo_list}")
+            else:
+                await ctx.send(f"**Your TODO list:**\n{todo_list}")
         else:
             await ctx.send("You don't have any TODO list.")
     else:
         options = options.split(",")
         todos[ctx.author.id] = [(option.strip(), False) for option in options]
-        await ctx.send("TODO list created.")
+        creation_times[ctx.author.id] = datetime.datetime.now()
+        await ctx.send("TODO 리스트가 작성됐어요")
 
 @bot.command(name='취소')
 async def cancel(ctx):
