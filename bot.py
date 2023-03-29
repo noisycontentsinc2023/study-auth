@@ -110,13 +110,14 @@ async def check(ctx, option_num: int):
     if ctx.author.id in todos and 0 <= option_num < len(todos[ctx.author.id]):
         todos[ctx.author.id][option_num] = (todos[ctx.author.id][option_num][0], True)
         all_checked = all(checked for option, checked in todos[ctx.author.id])
-        await ctx.send(f"{option_num} 번째 할 일이 체크됐습니다")
+        await ctx.send(f"{option_num}번 째 TODO list 가 체크 됐어요!")
         if all_checked:
-            embed = discord.Embed(title="축하드려요!", description="모든 할 일을 완료하셨습니다. 보상으로 경험치 100을 획득했어요!", color=discord.Color.green())
+            embed = discord.Embed(title="축하드립니다!", description="모든 TODO list 가 체크됐어요! 보상으로 경험치 500을 드릴게요!", color=discord.Color.green())
             await ctx.send(embed=embed)
+            await ctx.send(f"/give-xp member:{ctx.author.mention} amount:500")  # Add this line
             completed_dates[ctx.author.id] = datetime.datetime.now()
     else:
-        await ctx.send("Invalid option number.")
+        await ctx.send("TODO list에 없는 항목이에요")
 
 @bot.command(name='체크해제')
 async def uncheck(ctx, option_num: int):
