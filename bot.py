@@ -44,6 +44,46 @@ async def gpt(ctx, *, message):
 
     embed = discord.Embed(title="답변", description=response, color=discord.Color.blue())
     await ctx.send(embed=embed)
+    
+------------------------------------------------
+
+@bot.command(name='할일')
+async def todo(ctx, *, options=None):
+    if options is None:
+        if ctx.author.id in todos:
+            todo_list = "\n".join([f"[{'x' if checked else ' '}] {option}" for option, checked in todos[ctx.author.id]])
+            await ctx.send(f"**Your TODO list:**\n{todo_list}")
+        else:
+            await ctx.send("You don't have any TODO list.")
+    else:
+        options = options.split(",")
+        todos[ctx.author.id] = [(option.strip(), False) for option in options]
+        await ctx.send("TODO list created.")
+
+@bot.command(name='취소')
+async def cancel(ctx):
+    if ctx.author.id in todos:
+        del todos[ctx.author.id]
+        await ctx.send("TODO list canceled.")
+    else:
+        await ctx.send("You don't have any TODO list.")
+
+@bot.command()
+async def check(ctx, option_num: int):
+    if ctx.author.id in todos and 0 <= option_num < len(todos[ctx.author.id]):
+        todos[ctx.author.id][option_num] = (todos[ctx.author.id][option_num][0], True)
+        await ctx.send(f"Option {option_num} checked.")
+    else:
+        await ctx.send("Invalid option number.")
+
+@bot.command()
+async def uncheck(ctx, option_num: int):
+    if ctx.author.id in todos and 0 <= option_num < len(todos[ctx.author.id]):
+        todos[ctx.author.id][option_num] = (todos[ctx.author.id][option_num][0], False)
+        await ctx.send(f"Option {option_num} unchecked.")
+    else:
+        await ctx.send("Invalid option number.")
+
 
 #Run the bot
 bot.run(TOKEN)
