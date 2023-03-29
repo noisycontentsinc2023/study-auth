@@ -50,6 +50,7 @@ async def gpt(ctx, *, message):
 
 todos = {}
 completed_dates = {}
+creation_times = {}
 
 @bot.command(name='할일')
 async def todo(ctx, *, options=None):
