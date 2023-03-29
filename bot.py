@@ -45,7 +45,7 @@ async def gpt(ctx, *, message):
     embed = discord.Embed(title="답변", description=response, color=discord.Color.blue())
     await ctx.send(embed=embed)
     
-------------------------------------------------
+#------------------------------------------------#
 
 @bot.command(name='할일')
 async def todo(ctx, *, options=None):
