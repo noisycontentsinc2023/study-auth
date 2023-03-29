@@ -47,6 +47,8 @@ async def gpt(ctx, *, message):
     
 #------------------------------------------------#
 
+todos = {}
+
 @bot.command(name='할일')
 async def todo(ctx, *, options=None):
     if options is None:
