@@ -53,6 +53,7 @@ completed_dates = {}
 creation_times = {}
 
 async def reset_todos():
+    await bot.wait_until_ready()  # Wait until the bot is ready
     while True:
         now = datetime.datetime.now()
         reset_time = datetime.datetime.combine(now.date(), datetime.time(hour=0))
@@ -93,7 +94,6 @@ async def todo(ctx, *, options=None):
         creation_times[ctx.author.id] = datetime.datetime.now()
         await ctx.send("TODO list created.")
 
-
 @bot.command(name='취소')
 async def cancel(ctx):
     if ctx.author.id in todos:
@@ -122,14 +122,6 @@ async def uncheck(ctx, option_num: int):
         await ctx.send(f"Option {option_num} unchecked.")
     else:
         await ctx.send("Invalid option number.")
-
-@bot.command(name='ToDo')
-async def check_all_completed(ctx):
-    if ctx.author.id in completed_dates and completed_dates[ctx.author.id].date() == datetime.datetime.now().date():
-        embed = discord.Embed(title="Today's todos have all been completed!", color=discord.Color.green())
-        await ctx.send(embed=embed)
-    else:
-        await ctx.send("You haven't completed all todos for today yet.")
 
 #Run the bot
 bot.run(TOKEN)
