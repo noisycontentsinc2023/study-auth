@@ -70,15 +70,18 @@ async def cancel(ctx):
     else:
         await ctx.send("You don't have any TODO list.")
 
-@bot.command()
+@bot.command(name='체크')
 async def check(ctx, option_num: int):
     if ctx.author.id in todos and 0 <= option_num < len(todos[ctx.author.id]):
         todos[ctx.author.id][option_num] = (todos[ctx.author.id][option_num][0], True)
+        all_checked = all(checked for option, checked in todos[ctx.author.id])
         await ctx.send(f"Option {option_num} checked.")
+        if all_checked:
+            await ctx.send("Congratulations, all options are checked!")
     else:
         await ctx.send("Invalid option number.")
 
-@bot.command()
+@bot.command(name='체크해제')
 async def uncheck(ctx, option_num: int):
     if ctx.author.id in todos and 0 <= option_num < len(todos[ctx.author.id]):
         todos[ctx.author.id][option_num] = (todos[ctx.author.id][option_num][0], False)
