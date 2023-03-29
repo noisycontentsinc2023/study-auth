@@ -56,13 +56,15 @@ creation_times = {}
 async def todo(ctx, *, options=None):
     if options is None:
         if ctx.author.id in todos:
-            todo_list = "\n".join([f"[{'x' if checked else ' '}] {option}" for option, checked in todos[ctx.author.id]])
+            todo_list = "\n".join([f"[{'O' if checked else ' '}] {option}" for option, checked in todos[ctx.author.id]])
             creation_time = creation_times.get(ctx.author.id, None)
             if creation_time is not None:
                 creation_time_str = creation_time.strftime("%Y-%m-%d %H:%M:%S")
-                await ctx.send(f"**Your TODO list (created at {creation_time_str}):**\n{todo_list}")
+                embed = discord.Embed(title=f"Your TODO list (created at {creation_time_str}):", description=todo_list, color=discord.Color.green())
+                await ctx.send(embed=embed)
             else:
-                await ctx.send(f"**Your TODO list:**\n{todo_list}")
+                embed = discord.Embed(title="Your TODO list:", description=todo_list, color=discord.Color.green())
+                await ctx.send(embed=embed)
         else:
             await ctx.send("You don't have any TODO list.")
     else:
@@ -86,7 +88,8 @@ async def check(ctx, option_num: int):
         all_checked = all(checked for option, checked in todos[ctx.author.id])
         await ctx.send(f"Option {option_num} checked.")
         if all_checked:
-            await ctx.send("Congratulations, all options are checked!")
+            embed = discord.Embed(title="Congratulations!", description="All options are checked!", color=discord.Color.green())
+            await ctx.send(embed=embed)
     else:
         await ctx.send("Invalid option number.")
 
