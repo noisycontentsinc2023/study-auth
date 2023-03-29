@@ -52,8 +52,6 @@ todos = {}
 completed_dates = {}
 creation_times = {}
 
-bot = commands.Bot(command_prefix="!")
-
 async def reset_todos():
     while True:
         now = datetime.datetime.now()
