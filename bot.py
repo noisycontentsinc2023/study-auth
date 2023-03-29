@@ -52,8 +52,9 @@ todos = {}
 completed_dates = {}
 creation_times = {}
 
+bot = commands.Bot(command_prefix="!")
+
 async def reset_todos():
-    await bot.wait_until_ready()  # Wait until the bot is ready
     while True:
         now = datetime.datetime.now()
         reset_time = datetime.datetime.combine(now.date(), datetime.time(hour=0))
@@ -64,8 +65,10 @@ async def reset_todos():
             creation_times.clear()
         await asyncio.sleep(3600)  # Check every hour
 
-# Start the task
-bot.loop.create_task(reset_todos())
+@bot.event
+async def on_ready():
+    print("Bot is ready.")
+    bot.loop.create_task(reset_todos())
 
 @bot.command(name='할일')
 async def todo(ctx, *, options=None):
