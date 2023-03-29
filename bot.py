@@ -68,6 +68,7 @@ async def on_ready():
     print("Bot is ready.")
     bot.loop.create_task(reset_todos())
 
+@bot.command(name='일할일')
 async def todo(ctx, *, options=None):
     if ctx.author.id in todos and all(checked for _, checked in todos[ctx.author.id]):
         await ctx.send("모든 할일을 완료하였습니다!")
