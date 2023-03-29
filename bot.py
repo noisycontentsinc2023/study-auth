@@ -71,7 +71,7 @@ async def on_ready():
 @bot.command(name='할일')
 async def todo(ctx, *, options=None):
     if ctx.author.id in todos and all(checked for _, checked in todos[ctx.author.id]):
-        await ctx.send("모든 할일을 완료하였습니다!")
+        await ctx.send("오늘의 TODO list 를 모두 완료했습니다!")
     elif options is None:
         if ctx.author.id in todos:
             todo_list = "\n".join([f"[{'O' if checked else ' '}] {option}" for option, checked in todos[ctx.author.id]])
