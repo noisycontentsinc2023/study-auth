@@ -112,16 +112,8 @@ async def check(ctx, option_num: int):
         all_checked = all(checked for option, checked in todos[ctx.author.id])
         await ctx.send(f"{option_num}번 째 TODO list 가 체크 됐어요!")
         if all_checked:
-            embed = discord.Embed(title="축하드립니다!", description="모든 TODO list 가 체크됐어요! 보상으로 경험치 500을 드릴게요!", color=discord.Color.green())
+            embed = discord.Embed(title="축하드립니다!", description="모든 TODO list 가 완료됐어요!", color=discord.Color.green())
             await ctx.send(embed=embed)
-            
-            try:
-                await ctx.message.delete()  # Optional: delete the original message to avoid confusion
-            except discord.errors.Forbidden:
-                pass
-            give_xp_message = f"/give-xp member:{ctx.author.mention} amount:500"
-            await ctx.send(give_xp_message, allowed_mentions=discord.AllowedMentions(users=[ctx.author]))
-            completed_dates[ctx.author.id] = datetime.datetime.now() 
     else:
         await ctx.send("TODO list에 없는 항목이에요")
 
