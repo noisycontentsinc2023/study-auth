@@ -68,7 +68,6 @@ async def on_ready():
     print("Bot is ready.")
     bot.loop.create_task(reset_todos())
 
-@bot.command(name='할일')
 async def todo(ctx, *, options=None):
     if ctx.author.id in todos and all(checked for _, checked in todos[ctx.author.id]):
         await ctx.send("모든 할일을 완료하였습니다!")
@@ -78,11 +77,11 @@ async def todo(ctx, *, options=None):
             creation_time = creation_times.get(ctx.author.id, None)
             if creation_time is not None:
                 creation_time_str = creation_time.strftime("%Y-%m-%d %H:%M:%S")
-                embed = discord.Embed(title=f"{ctx.author.mention} TODO list (만들어진 시간 {creation_time_str}):", description=todo_list, color=discord.Color.green())
-                await ctx.send(embed=embed)
+                embed = discord.Embed(title=f"TODO list (만들어진 시간 {creation_time_str}):", description=todo_list, color=discord.Color.green())
+                await ctx.send(f"{ctx.author.mention}", embed=embed)
             else:
-                embed = discord.Embed(title=f"{ctx.author.mention} TODO list:", description=todo_list, color=discord.Color.green())
-                await ctx.send(embed=embed)
+                embed = discord.Embed(title="TODO list:", description=todo_list, color=discord.Color.green())
+                await ctx.send(f"{ctx.author.mention}", embed=embed)
         elif options == "complete":
             if all(checked for _, checked in todos.get(ctx.author.id, [])):
                 embed = discord.Embed(title="Congratulations!", description="All options are checked!", color=discord.Color.green())
@@ -96,7 +95,7 @@ async def todo(ctx, *, options=None):
         todos[ctx.author.id] = [(option.strip(), False) for option in options]
         creation_times[ctx.author.id] = datetime.datetime.now()
         await ctx.send("TODO list 가 작성되었습니다!")
-
+        
 @bot.command(name='취소')
 async def cancel(ctx):
     if ctx.author.id in todos:
