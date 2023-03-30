@@ -163,12 +163,13 @@ async def add_memo(ctx, memo_input: str):
 @bot.command(name='메모보기')
 async def show_memo(ctx):
     author_mention = ctx.message.author.mention
+    load_memo()
     for memo_topic, memo_contents in memo_dict.items():
         embed = discord.Embed(title=memo_topic)
         for i, memo_content in enumerate(memo_contents):
             embed.add_field(name=f"Content {i+1}", value=memo_content, inline=False)
         await ctx.send(embed=embed)
-
+        
 #-------------------------사다리임-------------------------#
         
 players = [] # list of players
