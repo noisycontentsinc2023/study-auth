@@ -8,6 +8,7 @@ import openai
 import datetime
 import random
 import json
+import json.decoder
 
 from discord import Embed
 from discord.ext import tasks, commands
@@ -140,6 +141,10 @@ def load_memo():
             print("Loaded memo from memo.json")
     except FileNotFoundError:
         print("memo.json not found, creating a new file.")
+        memo_dict = {}
+        save_memo()
+    except json.decoder.JSONDecodeError:
+        print("memo.json contains invalid JSON data, creating a new file.")
         memo_dict = {}
         save_memo()
 
