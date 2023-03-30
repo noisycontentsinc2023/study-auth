@@ -139,11 +139,11 @@ def load_memo():
 
 def save_memo():
     with open('memo.json', 'w') as f:
-        json.dump({}, f)
+        json.dump(memo_dict, f)
 
-@bot.event
-async def on_ready():
-    load_memo()
+load_memo()
+
+bot = commands.Bot(command_prefix='!')
 
 @bot.command(name='메모')
 async def add_memo(ctx, memo_input: str):
@@ -151,11 +151,12 @@ async def add_memo(ctx, memo_input: str):
     memo_topic = memo_topic.strip()
     memo_content = memo_content.strip()
     if memo_topic in memo_dict:
-        await ctx.send(f"{memo_topic} already exists in memo.")
+        memo_dict[memo_topic] += '\n' + memo_content
+        await ctx.send(f"Memo '{memo_topic}' updated.")
     else:
         memo_dict[memo_topic] = memo_content
-        save_memo()
         await ctx.send(f"Memo '{memo_topic}' added.")
+    save_memo()
 
 @bot.command(name='메모보기')
 async def show_memo(ctx):
