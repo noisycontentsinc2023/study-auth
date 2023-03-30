@@ -149,8 +149,7 @@ async def on_ready():
     load_memo()
 
 @bot.command(name='메모')
-async def add_memo(ctx, memo_input: str):
-    memo_topic, memo_content = memo_input.split(',', 1)
+async def add_memo(ctx, memo_topic: str, *, memo_content: str):
     memo_topic = memo_topic.strip()
     memo_content = memo_content.strip()
     if memo_topic in memo_dict:
