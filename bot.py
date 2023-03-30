@@ -129,16 +129,17 @@ async def uncheck(ctx, option_num: int):
         await ctx.send("TODO list 에 없는 항목이에요")
         
 #-------------------------메-------------------------#
-memo = {}
+
+memo_dict = {}
 
 def load_memo():
-    global memo
+    global memo_dict
     with open('memo.json', 'r') as f:
-        memo = json.load(f)
+        memo_dict = json.load(f)
 
 def save_memo():
     with open('memo.json', 'w') as f:
-        json.dump(memo, f)
+        json.dump(memo_dict, f)
 
 @bot.event
 async def on_ready():
@@ -147,14 +148,14 @@ async def on_ready():
 @bot.command(name='메모')
 async def memo(ctx, memo_input: str):
     memo_name, memo_content = memo_input.split(',', 1)
-    memo[memo_name.strip()] = memo_content.strip()
+    memo_dict[memo_name.strip()] = memo_content.strip()
     save_memo()
     await ctx.send('Memo added!')
 
 @bot.command(name='메모보기')
 async def show_memo(ctx):
     embed = discord.Embed(title='Memo')
-    for memo_name, memo_content in memo.items():
+    for memo_name, memo_content in memo_dict.items():
         embed.add_field(name=memo_name, value=memo_content, inline=False)
 
     await ctx.send(embed=embed)
