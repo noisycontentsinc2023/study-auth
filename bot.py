@@ -128,34 +128,62 @@ async def uncheck(ctx, option_num: int):
 
 #-------------------------사다리-------------------------#
         
-def create_ghost_leg(num_players):
-    ghost_leg = ['|' for _ in range(num_players)]
+players = [] # list of players
+max_players = 10 # maximum number of players
+min_players = 2 # minimum number of players
+symbols = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"] # list of symbols
+play_image_url = "https://i.imgur.com/Nq...
 
-    for i in range(num_players - 1):
-        ghost_leg[i] += '---'
-    ghost_leg[-1] += '   '
-
-    for _ in range(5):
-        for i in range(num_players - 1):
-            if random.choice([True, False]):
-                ghost_leg[i] += '   '
-                ghost_leg[i + 1] += '---'
-            else:
-                ghost_leg[i] += '---'
-                ghost_leg[i + 1] += '   '
-        ghost_leg[-1] += '   '
-
-    return ghost_leg
+@bot.command()
+async def join(ctx):
+    if len(players) < max_players:
+        if ctx.author not in players:
+            players.append(ctx.author)
+            await ctx.send(f"{ctx.author.mention} has joined the game!")
+        else:
+            await ctx.send(f"{ctx.author.mention}, you're already in the game!")
+    else:
+        await ctx.send("The game is full!")
 
 @bot.command(name='사다리')
-async def play_ghost_leg(ctx, num_players: int):
-    if num_players < 2:
-        await ctx.send("You need at least 2 players to play Ghost Leg.")
-        return
+async def start(ctx):
+    if len(players) >= min_players:
+        random.shuffle(players)
+        await ctx.send("Let's start the game!")
+        for i in range(len(symbols)):
+            message = f"**Round {i+1}:** {symbols[i]}"
+            for player in players:
+                message += f" -> {player.mention}"
+            await ctx.send(message)
+            await ctx.send(file=discord.File('play_image.png'))
+        winner = random.choice(players)
+        await ctx.send(f"**The winner is {winner.mention}!**")
+        players.clear()
+    else:
+        await ctx.send(f"Not enough players! Need at least {min_players} players to start the game.")
 
-    ghost_leg = create_ghost_leg(num_players)
-    result = '\n'.join(ghost_leg)
-    await ctx.send(f"```{result}```")
+@bot.command()
+async def help(ctx):
+    embed = discord.Embed(title="Ghost Leg Game Bot Help", description="The following commands are available:")
+    embed.add_field(name="!join", value="Join the game", inline=False)
+    embed.add_field(name="!start", value="Start the game", inline=False)
+    embed.add_field(name="!help", value="Show this help message", inline=False)
+    await ctx.send(embed=embed, components=[Button(style=ButtonStyle.green, label="Get Started", id="start")])
+    
+@bot.event
+async def on_button_click(interaction):
+    if interaction.component.id == "start":
+        await interaction.respond(type=InteractionType.ChannelMessageWithSource, content="Welcome to Ghost Leg Game! Click the **Join** button to join the game.", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
+    elif interaction.component.id == "join":
+        if len(players) < max_players:
+            if interaction.user not in players:
+                players.append(interaction.user)
+                await interaction.respond(type=InteractionType.ChannelMessageWithSource, content=f"{interaction.user.mention} has joined the game!", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
+            else:
+                await interaction.respond(type=InteractionType.ChannelMessageWithSource, content=f"{interaction.user.mention}, you're already in the game!", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
+        else:
+            await interaction.respond(type=InteractionType.ChannelMessageWithSource, content="The game is full!", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
+
     
 #Run the bot
 bot.run(TOKEN)
