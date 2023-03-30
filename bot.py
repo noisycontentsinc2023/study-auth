@@ -138,14 +138,22 @@ def load_memo():
         with open('memo.json', 'r') as f:
             memo_dict = json.load(f)
     except FileNotFoundError:
+        print("memo.json not found, creating a new file.")
         memo_dict = {}
+        save_memo()
 
 def save_memo():
-    with open('memo.json', 'w') as f:
-        json.dump(memo_dict, f)
+    try:
+        with open('memo.json', 'w') as f:
+            json.dump(memo_dict, f)
+        print("Saved memo to memo.json")
+    except Exception as e:
+        print(f"Error while saving memo.json: {e}")
 
 @bot.event
 async def on_ready():
+    print("Bot is ready.")
+    print(f"Current working directory: {os.getcwd()}")
     load_memo()
 
 @bot.command(name='메모')
