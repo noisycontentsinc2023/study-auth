@@ -137,6 +137,7 @@ def load_memo():
     try:
         with open('memo.json', 'r') as f:
             memo_dict = json.load(f)
+            print("Loaded memo from memo.json")
     except FileNotFoundError:
         print("memo.json not found, creating a new file.")
         memo_dict = {}
