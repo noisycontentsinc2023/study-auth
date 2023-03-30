@@ -131,22 +131,21 @@ memo = {}
 
 @bot.event
 async def on_ready():
-    print('Logged in as {0.user}'.format(bot.user))
-
     with open('memo.json', 'r') as f:
         global memo
         memo = json.load(f)
 
-@bot.command(name='메모')
-async def memo(ctx, memo_name: str, *, memo_content: str):
-    memo[memo_name] = memo_content.strip()
+@bot.command()
+async def memo(ctx, memo_input: str):
+    memo_name, memo_content = memo_input.split(',', 1)
+    memo[memo_name.strip()] = memo_content.strip()
 
     with open('memo.json', 'w') as f:
         json.dump(memo, f)
 
     await ctx.send('Memo added!')
 
-@bot.command(name='메모보기')
+@bot.command()
 async def show_memo(ctx):
     embed = discord.Embed(title='Memo')
     for memo_name, memo_content in memo.items():
