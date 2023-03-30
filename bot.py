@@ -131,20 +131,24 @@ async def uncheck(ctx, option_num: int):
 #-------------------------메-------------------------#
 memo = {}
 
+def load_memo():
+    global memo
+    with open('memo.json', 'r') as f:
+        memo = json.load(f)
+
+def save_memo():
+    with open('memo.json', 'w') as f:
+        json.dump(memo, f)
+
 @bot.event
 async def on_ready():
-    with open('memo.json', 'r') as f:
-        global memo
-        memo = json.load(f)
+    load_memo()
 
 @bot.command(name='메모')
 async def memo(ctx, memo_input: str):
     memo_name, memo_content = memo_input.split(',', 1)
     memo[memo_name.strip()] = memo_content.strip()
-
-    with open('memo.json', 'w') as f:
-        json.dump(memo, f)
-
+    save_memo()
     await ctx.send('Memo added!')
 
 @bot.command(name='메모보기')
@@ -154,6 +158,7 @@ async def show_memo(ctx):
         embed.add_field(name=memo_name, value=memo_content, inline=False)
 
     await ctx.send(embed=embed)
+
 
 #-------------------------사다리-------------------------#
         
