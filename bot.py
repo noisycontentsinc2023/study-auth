@@ -7,6 +7,7 @@ import requests
 import openai
 import datetime
 import random
+
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.utils import get
