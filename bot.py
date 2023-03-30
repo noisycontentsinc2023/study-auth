@@ -136,11 +136,7 @@ def load_memo():
     global memo_dict
     try:
         with open('memo.json', 'r') as f:
-            contents = f.read().strip()
-            if contents:
-                memo_dict = json.loads(contents)
-            else:
-                memo_dict = {}
+            memo_dict = json.load(f)
     except FileNotFoundError:
         memo_dict = {}
 
@@ -148,7 +144,9 @@ def save_memo():
     with open('memo.json', 'w') as f:
         json.dump(memo_dict, f)
 
-load_memo()
+@bot.event
+async def on_ready():
+    load_memo()
 
 @bot.command(name='메모')
 async def add_memo(ctx, memo_input: str):
@@ -156,20 +154,20 @@ async def add_memo(ctx, memo_input: str):
     memo_topic = memo_topic.strip()
     memo_content = memo_content.strip()
     if memo_topic in memo_dict:
-        memo_dict[memo_topic] += '\n' + memo_content
-        await ctx.send(f"Memo '{memo_topic}' updated.")
+        memo_dict[memo_topic].append(memo_content)
     else:
-        memo_dict[memo_topic] = memo_content
-        await ctx.send(f"Memo '{memo_topic}' added.")
+        memo_dict[memo_topic] = [memo_content]
     save_memo()
+    await ctx.send(f"Memo '{memo_topic}' added.")
 
 @bot.command(name='메모보기')
 async def show_memo(ctx):
     author_mention = ctx.message.author.mention
-    embed = discord.Embed(title=f"{author_mention}'s Memo")
-    for memo_topic, memo_content in memo_dict.items():
-        embed.add_field(name=memo_topic, value=memo_content, inline=False)
-    await ctx.send(embed=embed)
+    for memo_topic, memo_contents in memo_dict.items():
+        embed = discord.Embed(title=memo_topic)
+        for i, memo_content in enumerate(memo_contents):
+            embed.add_field(name=f"Content {i+1}", value=memo_content, inline=False)
+        await ctx.send(embed=embed)
 
 #-------------------------사다리-------------------------#
         
