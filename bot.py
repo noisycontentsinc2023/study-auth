@@ -132,7 +132,7 @@ players = [] # list of players
 max_players = 10 # maximum number of players
 min_players = 2 # minimum number of players
 symbols = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"] # list of symbols
-play_image_url = "https://i.imgur.com/Nq...
+play_image = "🪜" # ladder emoticon
 
 @bot.command()
 async def join(ctx):
