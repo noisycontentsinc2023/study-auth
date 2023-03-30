@@ -134,8 +134,15 @@ memo_dict = {}
 
 def load_memo():
     global memo_dict
-    with open('memo.json', 'r') as f:
-        memo_dict = json.load(f)
+    try:
+        with open('memo.json', 'r') as f:
+            contents = f.read().strip()
+            if contents:
+                memo_dict = json.loads(contents)
+            else:
+                memo_dict = {}
+    except FileNotFoundError:
+        memo_dict = {}
 
 def save_memo():
     with open('memo.json', 'w') as f:
