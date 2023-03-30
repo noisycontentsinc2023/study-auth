@@ -134,7 +134,7 @@ min_players = 2 # minimum number of players
 symbols = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"] # list of symbols
 play_image = "🪜" # ladder emoticon
 
-@bot.command()
+@bot.command(name='참가')
 async def join(ctx):
     if len(players) < max_players:
         if ctx.author not in players:
@@ -161,14 +161,6 @@ async def start(ctx):
         players.clear()
     else:
         await ctx.send(f"Not enough players! Need at least {min_players} players to start the game.")
-
-@bot.command()
-async def help(ctx):
-    embed = discord.Embed(title="Ghost Leg Game Bot Help", description="The following commands are available:")
-    embed.add_field(name="!join", value="Join the game", inline=False)
-    embed.add_field(name="!start", value="Start the game", inline=False)
-    embed.add_field(name="!help", value="Show this help message", inline=False)
-    await ctx.send(embed=embed, components=[Button(style=ButtonStyle.green, label="Get Started", id="start")])
     
 @bot.event
 async def on_button_click(interaction):
