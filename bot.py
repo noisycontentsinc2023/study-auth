@@ -125,5 +125,36 @@ async def uncheck(ctx, option_num: int):
     else:
         await ctx.send("TODO list 에 없는 항목이에요")
 
+#-------------------------사다리-------------------------#
+        
+def create_ghost_leg(num_players):
+    ghost_leg = ['|' for _ in range(num_players)]
+
+    for i in range(num_players - 1):
+        ghost_leg[i] += '---'
+    ghost_leg[-1] += '   '
+
+    for _ in range(5):
+        for i in range(num_players - 1):
+            if random.choice([True, False]):
+                ghost_leg[i] += '   '
+                ghost_leg[i + 1] += '---'
+            else:
+                ghost_leg[i] += '---'
+                ghost_leg[i + 1] += '   '
+        ghost_leg[-1] += '   '
+
+    return ghost_leg
+
+@bot.command(name='사다리')
+async def play_ghost_leg(ctx, num_players: int):
+    if num_players < 2:
+        await ctx.send("You need at least 2 players to play Ghost Leg.")
+        return
+
+    ghost_leg = create_ghost_leg(num_players)
+    result = '\n'.join(ghost_leg)
+    await ctx.send(f"```{result}```")
+    
 #Run the bot
 bot.run(TOKEN)
