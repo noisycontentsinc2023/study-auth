@@ -148,16 +148,21 @@ async def on_ready():
 @bot.command(name='메모')
 async def add_memo(ctx, memo_input: str):
     memo_topic, memo_content = memo_input.split(',', 1)
-    memo_dict[memo_topic.strip()] = memo_content.strip()
-    save_memo()
-    await ctx.send('메모가 추가됐습니다!')
+    memo_topic = memo_topic.strip()
+    memo_content = memo_content.strip()
+    if memo_topic in memo_dict:
+        await ctx.send(f"{memo_topic} already exists in memo.")
+    else:
+        memo_dict[memo_topic] = memo_content
+        save_memo()
+        await ctx.send(f"Memo '{memo_topic}' added.")
 
 @bot.command(name='메모보기')
 async def show_memo(ctx):
-    embed = discord.Embed(title='Memo')
+    author_mention = ctx.message.author.mention
+    embed = discord.Embed(title=f"{author_mention}'s Memo")
     for memo_topic, memo_content in memo_dict.items():
         embed.add_field(name=memo_topic, value=memo_content, inline=False)
-
     await ctx.send(embed=embed)
 
 #-------------------------사다리-------------------------#
