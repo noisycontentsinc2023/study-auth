@@ -137,7 +137,7 @@ async def on_ready():
         global memo
         memo = json.load(f)
 
-@bot.command()
+@bot.command(name='메모')
 async def memo(ctx, memo_input: str):
     memo_name, memo_content = memo_input.split(',', 1)
     memo[memo_name.strip()] = memo_content.strip()
@@ -147,7 +147,7 @@ async def memo(ctx, memo_input: str):
 
     await ctx.send('Memo added!')
 
-@bot.command()
+@bot.command(name='메모보기')
 async def show_memo(ctx):
     embed = discord.Embed(title='Memo')
     for memo_name, memo_content in memo.items():
