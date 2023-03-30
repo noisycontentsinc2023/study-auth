@@ -169,7 +169,7 @@ async def show_memo(ctx):
             embed.add_field(name=f"Content {i+1}", value=memo_content, inline=False)
         await ctx.send(embed=embed)
 
-#-------------------------사다리-------------------------#
+#-------------------------사다리임-------------------------#
         
 players = [] # list of players
 max_players = 10 # maximum number of players
