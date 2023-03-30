@@ -139,7 +139,7 @@ def load_memo():
 
 def save_memo():
     with open('memo.json', 'w') as f:
-        json.dump(memo_dict, f)
+        json.dump({}, f)
 
 @bot.event
 async def on_ready():
