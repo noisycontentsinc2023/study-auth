@@ -150,8 +150,6 @@ def save_memo():
 
 load_memo()
 
-bot = commands.Bot(command_prefix='!')
-
 @bot.command(name='메모')
 async def add_memo(ctx, memo_input: str):
     memo_topic, memo_content = memo_input.split(',', 1)
