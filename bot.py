@@ -125,6 +125,34 @@ async def uncheck(ctx, option_num: int):
         await ctx.send(f"Option {option_num} unchecked.")
     else:
         await ctx.send("TODO list 에 없는 항목이에요")
+        
+#-------------------------메-------------------------#
+memo = {}
+
+@client.event
+async def on_ready():
+    print('Logged in as {0.user}'.format(client))
+
+    with open('memo.json', 'r') as f:
+        global memo
+        memo = json.load(f)
+
+@client.command()
+async def memo(ctx, memo_name: str, *, memo_content: str):
+    memo[memo_name] = memo_content.strip()
+
+    with open('memo.json', 'w') as f:
+        json.dump(memo, f)
+
+    await ctx.send('Memo added!')
+
+@client.command()
+async def show_memo(ctx):
+    embed = discord.Embed(title='Memo')
+    for memo_name, memo_content in memo.items():
+        embed.add_field(name=memo_name, value=memo_content, inline=False)
+
+    await ctx.send(embed=embed)
 
 #-------------------------사다리-------------------------#
         
