@@ -187,11 +187,17 @@ async def show_memo(ctx):
         
 @bot.command(name='운세')
 async def Fortune(ctx):
-    embed = discord.Embed(title="Fortune for 2023", description="What is your fortune for this year in 2023?", color=0xffd700)
-    embed.set_footer(text="Click here for your fortune!")
-    button = discord.ui.Button(label="Your Fortune", url="https://bit.ly/2023_fortune")
-    action_row = discord.ui.ActionRow(button)
-    await ctx.send(embed=embed, components=[action_row])
+    embed = discord.Embed(title="2023년 외국어 운세보기", description="올해 나의 운세를 외국어로 점쳐봅시다!", color=0xffd700)
+    embed.set_footer(text="클릭하여 운세를 확인하세요!")
+    button = discord.ui.Button(style=discord.ButtonStyle.primary, label="올해 나의 운세는?", url="https://bit.ly/2023_fortune")
+    view = discord.ui.View()
+    view.add_item(button)
+    await ctx.send(embed=embed, view=view)
+
+@bot.event
+async def on_button_click(interaction: discord.Interaction):
+    if interaction.component.label == "올해 나의 운세는?":
+        await interaction.response.send_message("당신의 운세는 ... (미구현)")
     
 #Run the bot
 bot.run(TOKEN)
