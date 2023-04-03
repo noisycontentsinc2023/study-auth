@@ -193,6 +193,14 @@ async def Fortune(ctx):
     view = discord.ui.View()
     view.add_item(button)
     await ctx.send(embed=embed, view=view)
-    
+
+@bot.command(name='공부')
+async def study(ctx):
+    if random.random() < 0.8:
+        message = "오늘 같은 날은 집에서 공부하고 일취월장 인증 어떠신가요🥳"
+    else:
+        message = "오늘 공부는 패스!"
+    embed = discord.Embed(title="Study message", description=message, color=0xffd700)
+    await ctx.send(embed=embed)
 #Run the bot
 bot.run(TOKEN)
