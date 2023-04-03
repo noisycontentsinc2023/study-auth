@@ -193,11 +193,6 @@ async def Fortune(ctx):
     view = discord.ui.View()
     view.add_item(button)
     await ctx.send(embed=embed, view=view)
-
-@bot.event
-async def on_button_click(interaction: discord.Interaction):
-    if interaction.component.label == "올해 나의 운세는?":
-        await interaction.response.send_message("당신의 운세는 ... (미구현)")
     
 #Run the bot
 bot.run(TOKEN)
