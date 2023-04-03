@@ -185,54 +185,11 @@ async def show_memo(ctx):
         
 #-------------------------사다리임-------------------------#
         
-players = [] # list of players
-max_players = 10 # maximum number of players
-min_players = 2 # minimum number of players
-symbols = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"] # list of symbols
-play_image = "🪜" # ladder emoticon
-
-@bot.command(name='참가')
-async def join(ctx):
-    if len(players) < max_players:
-        if ctx.author not in players:
-            players.append(ctx.author)
-            await ctx.send(f"{ctx.author.mention} has joined the game!")
-        else:
-            await ctx.send(f"{ctx.author.mention}, you're already in the game!")
-    else:
-        await ctx.send("The game is full!")
-
-@bot.command(name='사다리')
-async def start(ctx):
-    if len(players) >= min_players:
-        random.shuffle(players)
-        await ctx.send("Let's start the game!")
-        for i in range(len(symbols)):
-            message = f"**Round {i+1}:** {symbols[i]}"
-            for player in players:
-                message += f" -> {player.mention}"
-            await ctx.send(message)
-            await ctx.send(file=discord.File('play_image.png'))
-        winner = random.choice(players)
-        await ctx.send(f"**The winner is {winner.mention}!**")
-        players.clear()
-    else:
-        await ctx.send(f"Not enough players! Need at least {min_players} players to start the game.")
-    
-@bot.event
-async def on_button_click(interaction):
-    if interaction.component.id == "start":
-        await interaction.respond(type=InteractionType.ChannelMessageWithSource, content="Welcome to Ghost Leg Game! Click the **Join** button to join the game.", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
-    elif interaction.component.id == "join":
-        if len(players) < max_players:
-            if interaction.user not in players:
-                players.append(interaction.user)
-                await interaction.respond(type=InteractionType.ChannelMessageWithSource, content=f"{interaction.user.mention} has joined the game!", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
-            else:
-                await interaction.respond(type=InteractionType.ChannelMessageWithSource, content=f"{interaction.user.mention}, you're already in the game!", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
-        else:
-            await interaction.respond(type=InteractionType.ChannelMessageWithSource, content="The game is full!", components=[Button(style=ButtonStyle.blue, label="Join", id="join")])
-
+@bot.command(name='운세')
+async def Fortune(ctx):
+    embed = discord.Embed(title="Fortune for 2023", description="What is your fortune for this year in 2023?", color=0xffd700)
+    embed.set_footer(text="Click here for your fortune!", icon_url="https://bit.ly/2023_fortune")
+    await ctx.send(embed=embed)
     
 #Run the bot
 bot.run(TOKEN)
