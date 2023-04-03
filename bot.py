@@ -9,8 +9,7 @@ import datetime
 import random
 import json
 import json.decoder
-import discord_components
-from discord_components import DiscordComponents, Button
+
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.utils import get
