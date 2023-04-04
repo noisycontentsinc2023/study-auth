@@ -169,9 +169,9 @@ async def memo(ctx):
     for col in range(1, num_cols+1):
         sheet.update_cell(1, col, user_id)
 
-    # Write memo to row 2 onwards of each column
+    # Write memo to row 2 of each column
     for col in range(1, num_cols+1):
-        sheet.update_cell(row, col, memo)
+        sheet.update_cell(2, col, memo)
 
     await ctx.send(f'{ctx.author.mention} memo saved.')
 
