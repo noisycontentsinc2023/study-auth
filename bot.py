@@ -148,7 +148,7 @@ creds_info = {
 }
 creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
 client = gspread.authorize(creds)
-sheet = client.open('Notes').worksheet('Sheet1')
+sheet = client.open('테스트').worksheet('메')
 
 @bot.event
 async def on_ready():
