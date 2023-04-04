@@ -227,17 +227,13 @@ async def delete_memo(ctx, memo_number: int):
     # Retrieve memo content for the user from row 2
     memo_values = sheet.col_values(col)[1:]
 
-    # Filter user memos
-    user_memos = [memo for memo in memo_values if memo.startswith(f'{user_id}:')]
-
     # Check if the given memo number is valid
-    if memo_number <= 0 or memo_number > len(user_memos):
+    if memo_number <= 0 or memo_number > len(memo_values):
         await ctx.send(f'{ctx.author.mention} invalid memo number.')
         return
 
     # Find the memo content to delete and the index of the memo content
-    memo_to_delete = user_memos[memo_number - 1]
-    index_to_delete = memo_values.index(memo_to_delete) + 2
+    index_to_delete = memo_number + 1
 
     # Delete the memo content from the spreadsheet
     sheet.update_cell(index_to_delete, col, '')
