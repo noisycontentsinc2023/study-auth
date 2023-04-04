@@ -181,6 +181,7 @@ async def memo(ctx):
     sheet.update_cell(row, col, memo)
 
     await ctx.send(f'{ctx.author.mention} memo saved.')
+    
 @bot.command(name='메모보기')
 async def view_memo(ctx):
     # Extract user ID
@@ -223,5 +224,6 @@ async def study(ctx):
         message = "오늘 공부는 패스!"
     embed = discord.Embed(title="Study message", description=message, color=0xffd700)
     await ctx.send(embed=embed)
+    
 #Run the bot
 bot.run(TOKEN)
