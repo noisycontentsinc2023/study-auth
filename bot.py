@@ -244,7 +244,7 @@ async def delete_memo(ctx, memo_number: int):
     memo = memo_contents[memo_number-1]
 
     # Find the index of the memo content to delete
-    index_to_delete = memo_contents.index(memo) + 2
+    index_to_delete = memo_values[memo_number-1][0].row
 
     # Delete the memo content from the spreadsheet
     sheet.update_cell(index_to_delete, col, '')
