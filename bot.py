@@ -237,12 +237,12 @@ async def delete_memo(ctx, memo_numbers: str):
     # Delete the memo contents from the spreadsheet and shift the remaining memos up
     for memo_number in memo_numbers:
         index_to_delete = memo_number + 1
-        remaining_memos = memo_values[index_to_delete - 2:]
-        for i, _ in enumerate(remaining_memos[:-1]):
-            sheet.update_cell(index_to_delete + i, col, remaining_memos[i + 1])
+        remaining_memos = [memo for i, memo in enumerate(memo_values) if i != memo_number]
+        for i, memo in enumerate(remaining_memos):
+            sheet.update_cell(i+2, col, memo)
 
         # Clear the last cell after shifting the memos or if the deleted memo is the last one
-        sheet.update_cell(index_to_delete + len(remaining_memos) - 1, col, '')
+        sheet.update_cell(len(remaining_memos)+1, col, '')
 
     await ctx.send(f'{ctx.author.mention} 메모 {", ".join(str(memo_number) for memo_number in memo_numbers)}이(가) 정상적으로 삭제됐어요!')
         
