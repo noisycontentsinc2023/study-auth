@@ -164,16 +164,21 @@ async def memo(ctx):
         return
     memo = message_content.split('!메모 ')[1]
 
-    # Find the column index of the user ID in row 1
+    # Find the next available column to write data to
     header_values = sheet.row_values(1)
-    try:
-        col = header_values.index(user_id) + 1
-    except ValueError:
+    if user_id not in header_values:
         col = sheet.col_count + 1
         sheet.update_cell(1, col, user_id)
+    else:
+        col = header_values.index(user_id) + 1
 
-    # Append memo content to the corresponding column
-    sheet.append_row([None] * (col-1) + [memo])
+    # Find the next available row to write data to
+    values = sheet.col_values(col)
+    row = len(values) + 1
+
+    # Write user ID and memo content to the corresponding cell
+    sheet.update_cell(1, col, user_id)
+    sheet.update_cell(row, col, memo)
 
     await ctx.send(f'{ctx.author.mention} memo saved.')
 
