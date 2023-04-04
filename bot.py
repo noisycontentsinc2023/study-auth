@@ -213,41 +213,44 @@ async def view_memo(ctx):
         
 @bot.command(name='메모삭제')
 async def delete_memo(ctx, memo_number: int):
+    # Extract user ID and memo content
+    user_id = str(ctx.author.id)
+    message_content = ctx.message.content
+    memo = message_content.split('!delete_comment ')[1]
+
     # Define the column letter
     col_letter = 'A'
-
-    # Extract user ID
-    user_id = str(ctx.author.id)
 
     # Find the column index of the user ID in row 1
     header_values = sheet.row_values(1)
     try:
         col = header_values.index(user_id) + 1
-        col_letter = chr(ord('A') + col - 1)
     except ValueError:
         await ctx.send(f'{ctx.author.mention} memo not found.')
         return
 
     # Retrieve memo content for the user from row 2
-    memo_values = sheet.col_values(col)[1:]
+    memo_range = sheet.get(f'{col_letter}{row_start}:{col_letter}{sheet.row_count}')
+    memo_values = memo_range[1:]
+    memo_contents = [row[0].value for row in memo_values]
 
     # Check if the given memo number is valid
-    if memo_number <= 0 or memo_number > len(memo_values):
+    if memo_number <= 0 or memo_number > len(memo_contents):
         await ctx.send(f'{ctx.author.mention} invalid memo number.')
         return
 
     # Find the index of the memo content to delete
-    index_to_delete = memo_values.index(memo_values[memo_number-1]) + 2
+    index_to_delete = memo_contents.index(f'{memo_number}. {user_id}: {memo}') + 2
 
-    # Delete the memo content from the list and update the spreadsheet
-    sheet.delete_row(index_to_delete)
+    # Delete the memo content from the spreadsheet
+    sheet.update_cell(index_to_delete, col, '')
 
     # Shift remaining memo numbers up by one
     memo_range = sheet.get(f'{col_letter}{row_start}:{col_letter}{sheet.row_count}')
     memo_values = memo_range[1:]
     for i, row in enumerate(memo_values):
         memo_number = i + 1
-        row[0].update_value(memo_number)
+        row[0].update_value(f'{memo_number}. {user_id}: {row[0].value}')
     sheet.update(f'{col_letter}{row_start}:{col_letter}{sheet.row_count}', memo_values)
 
     await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
