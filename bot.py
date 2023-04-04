@@ -233,7 +233,7 @@ async def delete_memo(ctx, memo_number: int):
         return
 
     # Delete the memo content from the spreadsheet and shift the remaining memos up
-    index_to_delete = memo_number + 1
+    index_to_delete = memo_number
     remaining_memos = memo_values[index_to_delete - 1:]
     for i, _ in enumerate(remaining_memos[:-1]):
         sheet.update_cell(index_to_delete + i, col, remaining_memos[i + 1])
