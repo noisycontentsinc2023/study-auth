@@ -260,7 +260,7 @@ async def delete_all_memos(ctx):
         return
 
     # Delete the entire column for the user
-    sheet.delete_cols(col)
+    sheet.delete_columns(col)
 
     await ctx.send(f'{ctx.author.mention} 모든 메모가 삭제됐어요!')
         
