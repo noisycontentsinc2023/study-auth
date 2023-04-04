@@ -194,25 +194,51 @@ def save_memo():
         print(f"Error while saving memo to Google Spreadsheet: {e}")
 
 @bot.command(name='메모')
-async def add_memo(ctx, memo_topic: str, *, memo_content: str):
-    memo_topic = memo_topic.strip()
-    memo_content = memo_content.strip()
-    if memo_topic in memo_dict:
-        memo_dict[memo_topic].append(memo_content)
-    else:
-        memo_dict[memo_topic] = [memo_content]
-    save_memo()
-    await ctx.send(f"Memo '{memo_topic}' added.")
+async def memo(ctx, *, memo):
+    # Get the user's name
+    user = str(ctx.author)
 
+    # Open the Google Sheet
+    sheet = client.open("Memo").sheet1
+
+    # Append the user's name and memo to the sheet
+    sheet.append_row([user, memo])
+
+    # Send a confirmation message
+    await ctx.send(f"{user}, your memo has been saved.")
+
+# Define the view command
 @bot.command(name='메모보기')
-async def show_memo(ctx):
-    author_mention = ctx.message.author.mention
-    load_memo()
-    for memo_topic, memo_contents in memo_dict.items():
-        embed = discord.Embed(title=memo_topic)
-        for i, memo_content in enumerate(memo_contents):
-            embed.add_field(name=f"Content {i+1}", value=memo_content, inline=False)
-        await ctx.send(embed=embed)
+async def view(ctx):
+    # Get the user's name
+    user = str(ctx.author)
+
+    # Open the Google Sheet
+    sheet = client.open("Memo").sheet1
+
+    # Search for the user's name in the sheet
+    cell = sheet.find(user)
+
+    # If the user's name is found, get the memos recorded for that user
+    if cell:
+        row = cell.row
+        memos = sheet.range(f"B{row}:B{sheet.row_count}")
+        memo_list = [memo.value for memo in memos if memo.value]
+
+        # If the user has memos, send an embed message with the memos
+        if memo_list:
+            embed = discord.Embed(title=f"Memos for {user}")
+            for i, memo in enumerate(memo_list):
+                embed.add_field(name=f"{i+1}.", value=memo, inline=False)
+            await ctx.send(embed=embed)
+
+        # If the user has no memos, send a message saying so
+        else:
+            await ctx.send(f"{user}, you have no memos.")
+
+    # If the user's name is not found, send a message saying so
+    else:
+        await ctx.send(f"{user}, you have no memos.")
         
 #-------------------------사다리임-------------------------#
         
