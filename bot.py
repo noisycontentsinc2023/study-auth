@@ -237,7 +237,7 @@ async def delete_memo(ctx, memo_number: int):
 
     # Delete the memo content from the list and update the spreadsheet
     memo_values.pop(index_to_delete)
-    sheet.update_column(col, [user_id] + memo_values)
+    sheet.update((1, col), [[user_id]] + [[memo] for memo in memo_values if memo != memo_values[memo_number-1]])
 
     await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
         
