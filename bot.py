@@ -154,22 +154,30 @@ sheet = client.open('테스트').worksheet('메모')
 async def on_ready():
     print(f'Logged in as {bot.user.name} ({bot.user.id})')
 
-@bot.command()
+@bot.command(name='메모')
 async def memo(ctx):
     user = ctx.author.name
     memo = ctx.message.content[6:]
-    row = sheet.find(user).row if sheet.find(user) else sheet.row_count + 1
+    values = sheet.get_all_values()
+
+    # Find the next available row to write data to
+    row = len(values) + 1
+
     sheet.update_cell(row, 1, user)
     sheet.update_cell(row, 2, memo)
     await ctx.send(f'{user} memo saved.')
 
-@bot.command()
+@bot.command(name='메모보기')
 async def view_memo(ctx):
     user = ctx.author.name
     row = sheet.find(user).row if sheet.find(user) else 0
     if row > 0:
         memo = sheet.cell(row, 2).value
-        await ctx.send(f'{user} memo: {memo}')
+
+        # Create an embed message
+        embed = discord.Embed(title=f"{user}'s Memo", description=memo, color=0x00ff00)
+
+        await ctx.send(embed=embed)
     else:
         await ctx.send(f'{user} memo not found.')
         
