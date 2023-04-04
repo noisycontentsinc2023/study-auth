@@ -225,26 +225,28 @@ async def delete_memo(ctx, memo_number: int):
         return
 
     # Retrieve memo content for the user from row 2
-    memo_values = sheet.col_values(col)[1:]
-
+    memo_range = sheet.get(f'{col_letter}{row_start}:{col_letter}{sheet.row_count}')
+    memo_values = memo_range[1:]
+    memo_dict = {i+1: memo_values[i][0].value for i in range(len(memo_values))}
+    
     # Check if the given memo number is valid
-    if memo_number <= 0 or memo_number > len(memo_values):
+    if memo_number not in memo_dict:
         await ctx.send(f'{ctx.author.mention} invalid memo number.')
         return
 
     # Find the index of the memo content to delete
-    index_to_delete = memo_values.index(memo_values[memo_number-1]) + 2
+    memo_index = memo_values[memo_number-1][0].row
 
-    # Delete the memo content from the list and update the spreadsheet
-    sheet.delete_row(index_to_delete)
+    # Delete the memo content from the cell and update the spreadsheet
+    sheet.update_cell(memo_index, col, "")
 
     # Shift remaining memo numbers up by one
-    memo_range = sheet.get(f'{col_letter}{row_start}:{col_letter}{sheet.row_count}')
-    memo_values = memo_range[1:]
-    for i, row in enumerate(memo_values):
-        memo_number = i + 1
-        row[0].update_value(memo_number)
-    sheet.update(f'{col_letter}{row_start}:{col_letter}{sheet.row_count}', memo_values)
+    for i in range(memo_number, len(memo_dict)):
+        memo_dict[i] = memo_dict.pop(i+1)
+
+    # Write the updated memo numbers to the spreadsheet
+    for memo_num, memo_val in memo_dict.items():
+        sheet.update_cell(memo_num+1, col, memo_val)
 
     await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
         
