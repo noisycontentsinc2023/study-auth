@@ -153,7 +153,7 @@ sheet = client.open('테스트').worksheet('메모')
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name} ({bot.user.id})')
-
+    
 @bot.command(name='메모')
 async def memo(ctx):
     # Extract user ID and memo content
@@ -186,7 +186,7 @@ async def memo(ctx):
         row += 1
     sheet.update_cell(row, col, memo)
 
-    await ctx.send(f'{ctx.author.mention} memo saved.')
+    await ctx.send(f'{ctx.author.mention} 메모가 저장됐어요')
     
 @bot.command(name='메모보기')
 async def view_memo(ctx):
@@ -198,7 +198,7 @@ async def view_memo(ctx):
     try:
         col = header_values.index(user_id) + 1
     except ValueError:
-        await ctx.send(f'{ctx.author.mention} memo not found.')
+        await ctx.send(f'{ctx.author.mention} 메모를 찾을 수 없습니다 :(')
         return
 
     # Retrieve memo content for the user from row 2
@@ -206,13 +206,13 @@ async def view_memo(ctx):
     if memo_values:
         memo_list = [f'{i+1}. {memo}' for i, memo in enumerate(memo_values)]
         memo_str = '\n'.join(memo_list)
-        embed = discord.Embed(title=f'Memo for {ctx.author.name}', description=memo_str)
+        embed = discord.Embed(title=f"{ctx.author.name}의 메모입니다", description=memo_str)
         await ctx.send(embed=embed)
     else:
-        await ctx.send(f'{ctx.author.mention} memo not found.')
+        await ctx.send(f'{ctx.author.mention} 메모를 찾지 못했어요')
         
 @bot.command(name='메모삭제')
-async def delete_memo(ctx, memo_number: int):
+async def delete_memo(ctx, *memo_numbers):
     # Extract user ID
     user_id = str(ctx.author.id)
 
@@ -221,27 +221,47 @@ async def delete_memo(ctx, memo_number: int):
     try:
         col = header_values.index(user_id) + 1
     except ValueError:
-        await ctx.send(f'{ctx.author.mention} memo not found.')
+        await ctx.send(f'{ctx.author.mention} 메모를 찾지 못했어요')
         return
 
     # Retrieve memo content for the user from row 2
     memo_values = sheet.col_values(col)[1:]
 
-    # Check if the given memo number is valid
-    if memo_number <= 0 or memo_number > len(memo_values):
-        await ctx.send(f'{ctx.author.mention} invalid memo number.')
-        return
+    # Convert memo_numbers to integers and sort them in descending order
+    memo_numbers = sorted([int(n) for n in memo_numbers], reverse=True)
 
     # Delete the memo content from the spreadsheet and shift the remaining memos up
-    index_to_delete = memo_number + 1
-    remaining_memos = memo_values[index_to_delete - 2:]
-    for i, _ in enumerate(remaining_memos[:-1]):
-        sheet.update_cell(index_to_delete + i, col, remaining_memos[i + 1])
+    for memo_number in memo_numbers:
+        if memo_number <= 0 or memo_number > len(memo_values):
+            await ctx.send(f'{ctx.author.mention} {memo_number}번 메모를 찾지 못했어요')
+            continue
+        index_to_delete = memo_number + 1
+        remaining_memos = memo_values[index_to_delete - 2:]
+        for i, _ in enumerate(remaining_memos[:-1]):
+            sheet.update_cell(index_to_delete + i, col, remaining_memos[i + 1])
 
-    # Clear the last cell after shifting the memos or if the deleted memo is the last one
-    sheet.update_cell(index_to_delete + len(remaining_memos) - 1, col, '')
+        # Clear the last cell after shifting the memos or if the deleted memo is the last one
+        sheet.update_cell(index_to_delete + len(remaining_memos) - 1, col, '')
 
-    await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
+        await ctx.send(f'{ctx.author.mention} {memo_number}번 메모가 정상적으로 삭제됐어요!')
+        
+@bot.command(name='메모전체삭제')
+async def delete_all_memos(ctx):
+    # Extract user ID
+    user_id = str(ctx.author.id)
+
+    # Find the column index of the user ID in row 1
+    header_values = sheet.row_values(1)
+    try:
+        col = header_values.index(user_id) + 1
+    except ValueError:
+        await ctx.send(f'{ctx.author.mention} 메모를 찾을 수 없습니다 :(')
+        return
+
+    # Delete the entire column for the user
+    sheet.delete_column(col)
+
+    await ctx.send(f'{ctx.author.mention} 모든 메모가 삭제됐어요!')
         
 #-------------------------사다리임-------------------------#
         
