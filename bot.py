@@ -211,6 +211,35 @@ async def view_memo(ctx):
     else:
         await ctx.send(f'{ctx.author.mention} memo not found.')
         
+@bot.command(name='메모삭제')
+async def delete_memo(ctx, memo_number):
+    # Extract user ID
+    user_id = str(ctx.author.id)
+
+    # Find the column index of the user ID in row 1
+    header_values = sheet.row_values(1)
+    try:
+        col = header_values.index(user_id) + 1
+    except ValueError:
+        await ctx.send(f'{ctx.author.mention} memo not found.')
+        return
+
+    # Retrieve memo content for the user from row 2
+    memo_values = sheet.col_values(col)[1:]
+    if memo_values:
+        try:
+            memo_index = int(memo_number) - 1
+            memo_values.pop(memo_index)
+            sheet.clear()
+            sheet.update_cell(1, 1, user_id)
+            for i, memo in enumerate(memo_values):
+                sheet.update_cell(i+2, col, memo)
+            await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
+        except ValueError:
+            await ctx.send(f'{ctx.author.mention} invalid memo number.')
+    else:
+        await ctx.send(f'{ctx.author.mention} memo not found.')
+        
 #-------------------------사다리임-------------------------#
         
 @bot.command(name='운세')
