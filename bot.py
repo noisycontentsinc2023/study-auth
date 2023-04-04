@@ -158,7 +158,7 @@ async def on_ready():
 async def memo(ctx):
     # Extract user ID and memo content
     user_id = str(ctx.author.id)
-    memo = ctx.message.content[6:]
+    memo = ctx.message.content.split('!메모 ')[1 ]
 
     # Write user ID to row 1 of each column
     num_cols = sheet.col_count
@@ -173,17 +173,23 @@ async def memo(ctx):
 
 @bot.command(name='메모보기')
 async def view_memo(ctx):
-    user = ctx.author.name
-    row = sheet.find(user).row if sheet.find(user) else 0
-    if row > 0:
-        memo = sheet.cell(row, 2).value
+    # Extract user ID
+    user_id = str(ctx.author.id)
 
-        # Create an embed message
-        embed = discord.Embed(title=f"{user}'s Memo", description=memo, color=0x00ff00)
+    # Find the row index of the user ID in row 1
+    header_values = sheet.row_values(1)
+    try:
+        col = header_values.index(user_id) + 1
+    except ValueError:
+        await ctx.send(f'{ctx.author.mention} memo not found.')
+        return
 
-        await ctx.send(embed=embed)
+    # Retrieve memo content for the user from row 2
+    memo = sheet.cell(2, col).value
+    if memo:
+        await ctx.send(f'{ctx.author.mention} memo: {memo}')
     else:
-        await ctx.send(f'{user} memo not found.')
+        await ctx.send(f'{ctx.author.mention} memo not found.')
         
 #-------------------------사다리임-------------------------#
         
