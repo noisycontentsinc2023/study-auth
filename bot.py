@@ -242,7 +242,10 @@ async def delete_memo(ctx, memo_number: int):
     for i in range(index_to_delete - 1, len(memo_values)):
         current_memo = memo_values[i] if i < len(memo_values) else ''
         if current_memo:
-            updated_memo = f"{user_id}: {current_memo.split(': ')[1]}"
+            try:
+                updated_memo = f"{user_id}: {current_memo.split(': ')[1]}"
+            except IndexError:
+                continue
             sheet.update_cell(i + 2, col, updated_memo)
 
     await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
