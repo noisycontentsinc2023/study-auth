@@ -240,11 +240,6 @@ async def delete_memo(ctx, memo_number: int):
     # Delete the memo content from the spreadsheet
     sheet.update_cell(index_to_delete, col, '')
 
-    # Shift remaining memo numbers up by one and update the sheet
-    for i, memo in enumerate(user_memos[memo_number:], memo_number):
-        updated_content = f'{user_id}: {memo.split(": ")[1]}'
-        sheet.update_cell(index_to_delete + i - 1, col, updated_content)
-
     await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
         
 #-------------------------사다리임-------------------------#
