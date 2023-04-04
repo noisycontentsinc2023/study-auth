@@ -232,20 +232,12 @@ async def delete_memo(ctx, memo_number: int):
         await ctx.send(f'{ctx.author.mention} invalid memo number.')
         return
 
-    # Delete the memo content from the spreadsheet
+    # Delete the memo content from the spreadsheet and shift the remaining memos up
     index_to_delete = memo_number + 1
-    sheet.update_cell(index_to_delete, col, '')
-
-    # Update memo numbers for the remaining memos
     remaining_memos = memo_values[index_to_delete - 1:]
     for i, current_memo in enumerate(remaining_memos):
-        if current_memo:
-            try:
-                memo_parts = current_memo.split(': ')
-                updated_memo = f"{user_id}: {memo_parts[1]}"
-            except IndexError:
-                continue
-            sheet.update_cell(index_to_delete + i, col, updated_memo)
+        next_memo = remaining_memos[i + 1] if i + 1 < len(remaining_memos) else ""
+        sheet.update_cell(index_to_delete + i, col, next_memo)
 
     await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
         
