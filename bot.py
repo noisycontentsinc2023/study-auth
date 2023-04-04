@@ -160,18 +160,14 @@ async def memo(ctx):
     user_id = str(ctx.author.id)
     memo = ctx.message.content[6:]
 
-    # Find the next available row to write data to
-    values = sheet.get_all_values()
-    row = len(values) + 1
-
     # Write user ID to row 1 of each column
     num_cols = sheet.col_count
     for col in range(1, num_cols+1):
         sheet.update_cell(1, col, user_id)
 
-    # Write memo to row 2 of each column
-    for col in range(1, num_cols+1):
-        sheet.update_cell(2, col, memo)
+    # Append memo content to a new row
+    row_data = [memo] * num_cols
+    sheet.append_row(row_data)
 
     await ctx.send(f'{ctx.author.mention} memo saved.')
 
