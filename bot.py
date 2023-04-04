@@ -177,14 +177,13 @@ async def memo(ctx):
         col = header_values.index(user_id) + 1
 
     # Find the next available row to write data to
-    user_values = sheet.col_values(1)
-    if user_id not in user_values:
-        row = len(user_values) + 1
-        sheet.update_cell(row, 1, user_id)
-    else:
-        row = user_values.index(user_id) + 1
+    values = sheet.col_values(col)
+    row = len(values) + 1
 
     # Write user ID and memo content to the corresponding cell
+    if row == 1:
+        sheet.update_cell(row, col, user_id)
+        row += 1
     sheet.update_cell(row, col, memo)
 
     await ctx.send(f'{ctx.author.mention} memo saved.')
