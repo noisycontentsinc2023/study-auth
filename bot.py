@@ -253,14 +253,14 @@ async def delete_all_memos(ctx):
 
     # Find the column index of the user ID in row 1
     header_values = sheet.row_values(1)
-    if user_id not in header_values:
-        await ctx.send(f'{ctx.author.mention} 저장된 메모가 없습니다.')
-        return
-    else:
+    try:
         col = header_values.index(user_id) + 1
+    except ValueError:
+        await ctx.send(f'{ctx.author.mention} 저장된 메모가 없습니다')
+        return
 
     # Delete the entire column for the user
-    sheet.delete_column(col)
+    sheet.delete_cols(col)
 
     await ctx.send(f'{ctx.author.mention} 모든 메모가 삭제됐어요!')
         
