@@ -164,8 +164,11 @@ async def memo(ctx):
     # Find the next available column to write data to
     header_values = sheet.row_values(1)
     if user_id not in header_values:
-        col = sheet.col_count + 1
-        sheet.update_cell(1, col, user_id)
+        if len(header_values) > 0:
+            col = len(header_values)
+        else:
+            col = 1
+        sheet.update_cell(1, col + 1, user_id)
     else:
         col = header_values.index(user_id) + 1
 
@@ -178,7 +181,6 @@ async def memo(ctx):
     sheet.update_cell(row, col, memo)
 
     await ctx.send(f'{ctx.author.mention} memo saved.')
-
 @bot.command(name='메모보기')
 async def view_memo(ctx):
     # Extract user ID
