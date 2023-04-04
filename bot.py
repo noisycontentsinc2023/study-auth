@@ -227,29 +227,32 @@ async def delete_memo(ctx, memo_number: int):
     # Retrieve memo content for the user from row 2
     memo_range = sheet.get(f'B2:B{sheet.row_count}')
     memo_values = memo_range[1:]
-    memo_contents = [row[0].value for row in memo_values]
 
     # Check if the given memo number is valid
-    if memo_number <= 0 or memo_number > len(memo_contents):
+    if memo_number <= 0 or memo_number > len(memo_values):
         await ctx.send(f'{ctx.author.mention} invalid memo number.')
         return
 
-    # Find the memo content to delete
-    memo = memo_contents[memo_number-1]
+    # Find the memo content to delete and the index of the memo content
+    index_to_delete = None
+    for i, row in enumerate(memo_values):
+        if row[0].startswith(f'{memo_number}. {user_id}:'):
+            index_to_delete = i + 2
+            break
 
-    # Find the index of the memo content to delete
-    index_to_delete = memo_contents.index(memo) + 2
+    # If memo not found, send an error message
+    if index_to_delete is None:
+        await ctx.send(f'{ctx.author.mention} memo not found.')
+        return
 
     # Delete the memo content from the spreadsheet
     sheet.update_cell(index_to_delete, col, '')
 
-    # Shift remaining memo numbers up by one
-    memo_range = sheet.get(f'B2:B{sheet.row_count}')
-    memo_values = memo_range[1:]
-    for i, row in enumerate(memo_values):
-        memo_number = i + 1
-        row[0].update_value(f'{memo_number}. {user_id}: {row[0].value}')
-    sheet.update(f'B2:B{sheet.row_count}', memo_values)
+    # Shift remaining memo numbers up by one and update the sheet
+    for i, row in enumerate(memo_values[index_to_delete - 1:]):
+        new_memo_number = memo_number + i
+        updated_content = f'{new_memo_number}. {user_id}: {row[0].split(": ")[1]}'
+        sheet.update_cell(index_to_delete + i, col, updated_content)
 
     await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
         
