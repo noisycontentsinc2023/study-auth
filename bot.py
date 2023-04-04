@@ -11,7 +11,7 @@ import json
 import json.decoder
 import gspread
 
-from ouath2client.servive_account import ServiceAccountCredentials
+from google.oauth2 import service_account
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.utils import get
