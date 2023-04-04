@@ -158,7 +158,11 @@ async def on_ready():
 async def memo(ctx):
     # Extract user ID and memo content
     user_id = str(ctx.author.id)
-    memo = ctx.message.content.split('!memo ')[1]
+    message_content = ctx.message.content
+    if '!memo ' not in message_content:
+        await ctx.send(f'{ctx.author.mention} please provide memo content.')
+        return
+    memo = message_content.split('!memo ')[1]
 
     # Find the column index of the user ID in row 1
     header_values = sheet.row_values(1)
