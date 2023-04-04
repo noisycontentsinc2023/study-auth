@@ -171,7 +171,7 @@ async def memo(ctx):
         last_user_id = header_values[-1]
         last_user_id_col = header_values.index(last_user_id) + 1
         col = last_user_id_col + 1
-        sheet.insert_column(col)
+        sheet.append_dimension(rows=1, cols=1)
         sheet.update_cell(1, col, user_id)
     else:
         col = header_values.index(user_id) + 1
