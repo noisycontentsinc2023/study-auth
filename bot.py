@@ -253,7 +253,7 @@ async def delete_memo(ctx, memo_number: int):
         updated_content = f'{new_memo_number}. {user_id}: {memo.split(": ")[1]}'
         sheet.update_cell(index_to_delete + i, col, updated_content)
 
-    await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.'
+    await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
         
 #-------------------------사다리임-------------------------#
         
