@@ -134,8 +134,8 @@ async def uncheck(ctx, option_num: int):
 #-------------------------메-------------------------#
 
 memo_dict = {}
-sheet_name = 'Sheet1'
-spreadsheet_url = 'https://docs.google.com/spreadsheets/d/19fztMa5sCm_yE5cyYoKpbF015QFq2xFThyiEYjkNi6w/edit#gid=0'
+sheet_name = '메모'
+spreadsheet_url = 'https://docs.google.com/spreadsheets/d/19fztMa5sCm_yE5cyYoKpbF015QFq2xFThyiEYjkNi6w/edit?usp=sharing'
 
 def load_memo():
     global memo_dict
