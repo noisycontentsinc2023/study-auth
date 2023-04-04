@@ -212,7 +212,7 @@ async def view_memo(ctx):
         await ctx.send(f'{ctx.author.mention} memo not found.')
         
 @bot.command(name='메모삭제')
-async def delete_memo(ctx, memo_number):
+async def delete_memo(ctx, memo_number: int):
     # Extract user ID
     user_id = str(ctx.author.id)
 
@@ -226,19 +226,20 @@ async def delete_memo(ctx, memo_number):
 
     # Retrieve memo content for the user from row 2
     memo_values = sheet.col_values(col)[1:]
-    if memo_values:
-        try:
-            memo_index = int(memo_number) - 1
-            memo_values.pop(memo_index)
-            sheet.clear()
-            sheet.update_cell(1, 1, user_id)
-            for i, memo in enumerate(memo_values):
-                sheet.update_cell(i+2, col, memo)
-            await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
-        except ValueError:
-            await ctx.send(f'{ctx.author.mention} invalid memo number.')
-    else:
-        await ctx.send(f'{ctx.author.mention} memo not found.')
+
+    # Check if the given memo number is valid
+    if memo_number <= 0 or memo_number > len(memo_values):
+        await ctx.send(f'{ctx.author.mention} invalid memo number.')
+        return
+
+    # Find the index of the memo content to delete
+    index_to_delete = memo_values.index(memo_values[memo_number-1])
+
+    # Delete the memo content from the list and update the spreadsheet
+    memo_values.pop(index_to_delete)
+    sheet.update_column(col, [user_id] + memo_values)
+
+    await ctx.send(f'{ctx.author.mention} memo {memo_number} deleted.')
         
 #-------------------------사다리임-------------------------#
         
