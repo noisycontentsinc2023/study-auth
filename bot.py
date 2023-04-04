@@ -216,7 +216,7 @@ async def delete_memo(ctx, memo_number: int):
     # Extract user ID and memo content
     user_id = str(ctx.author.id)
     message_content = ctx.message.content
-    memo = message_content.split('!delete_comment ')[1]
+    memo = message_content.split('!메모삭제 ')[1]
 
     # Define the column letter
     col_letter = 'A'
