@@ -212,7 +212,7 @@ async def view_memo(ctx):
         await ctx.send(f'{ctx.author.mention} 메모를 찾지 못했어요')
         
 @bot.command(name='메모삭제')
-async def delete_memo(ctx, *memo_numbers):
+async def delete_memo(ctx, memo_numbers: str):
     # Extract user ID
     user_id = str(ctx.author.id)
 
@@ -227,14 +227,15 @@ async def delete_memo(ctx, *memo_numbers):
     # Retrieve memo content for the user from row 2
     memo_values = sheet.col_values(col)[1:]
 
-    # Convert memo_numbers to integers and sort them in descending order
-    memo_numbers = sorted([int(n) for n in memo_numbers], reverse=True)
+    # Split memo numbers by comma and convert to list of integers
+    memo_numbers = memo_numbers.split(',')
+    memo_numbers = [int(memo_number.strip()) for memo_number in memo_numbers]
 
-    # Delete the memo content from the spreadsheet and shift the remaining memos up
+    # Sort memo numbers in descending order to avoid index errors
+    memo_numbers.sort(reverse=True)
+
+    # Delete the memo contents from the spreadsheet and shift the remaining memos up
     for memo_number in memo_numbers:
-        if memo_number <= 0 or memo_number > len(memo_values):
-            await ctx.send(f'{ctx.author.mention} {memo_number}번 메모를 찾지 못했어요')
-            continue
         index_to_delete = memo_number + 1
         remaining_memos = memo_values[index_to_delete - 2:]
         for i, _ in enumerate(remaining_memos[:-1]):
@@ -243,9 +244,9 @@ async def delete_memo(ctx, *memo_numbers):
         # Clear the last cell after shifting the memos or if the deleted memo is the last one
         sheet.update_cell(index_to_delete + len(remaining_memos) - 1, col, '')
 
-        await ctx.send(f'{ctx.author.mention} {memo_number}번 메모가 정상적으로 삭제됐어요!')
+    await ctx.send(f'{ctx.author.mention} 메모 {", ".join(str(memo_number) for memo_number in memo_numbers)}이(가) 정상적으로 삭제됐어요!')
         
-@bot.command(name='메모전체삭제')
+@bot.command(name='전체삭제')
 async def delete_all_memos(ctx):
     # Extract user ID
     user_id = str(ctx.author.id)
