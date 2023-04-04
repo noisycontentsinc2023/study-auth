@@ -213,10 +213,8 @@ async def view_memo(ctx):
         
 @bot.command(name='메모삭제')
 async def delete_memo(ctx, memo_number: int):
-    # Extract user ID and memo content
+    # Extract user ID
     user_id = str(ctx.author.id)
-    message_content = ctx.message.content
-    memo = message_content.split('!메모삭제 ')[1]
 
     # Define the column letter
     col_letter = 'B'
@@ -242,8 +240,11 @@ async def delete_memo(ctx, memo_number: int):
         await ctx.send(f'{ctx.author.mention} invalid memo number.')
         return
 
+    # Find the memo content to delete
+    memo = memo_contents[memo_number-1]
+
     # Find the index of the memo content to delete
-    index_to_delete = memo_contents.index(f'{memo_number}. {user_id}: {memo}') + 2
+    index_to_delete = memo_contents.index(memo) + 2
 
     # Delete the memo content from the spreadsheet
     sheet.update_cell(index_to_delete, col, '')
