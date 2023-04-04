@@ -158,7 +158,7 @@ async def on_ready():
 async def memo(ctx):
     # Extract user ID and memo content
     user_id = str(ctx.author.id)
-    memo = ctx.message.content.split('!메모 ')[1 ]
+    memo = ctx.message.content.split('!메모 ')[1]
 
     # Write user ID to row 1 of each column
     num_cols = sheet.col_count
