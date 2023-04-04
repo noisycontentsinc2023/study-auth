@@ -158,16 +158,18 @@ async def on_ready():
 async def memo(ctx):
     # Extract user ID and memo content
     user_id = str(ctx.author.id)
-    memo = ctx.message.content.split('!메모 ')[1]
+    memo = ctx.message.content.split('!memo ')[1]
 
-    # Write user ID to row 1 of each column
-    num_cols = sheet.col_count
-    for col in range(1, num_cols+1):
+    # Find the column index of the user ID in row 1
+    header_values = sheet.row_values(1)
+    try:
+        col = header_values.index(user_id) + 1
+    except ValueError:
+        col = sheet.col_count + 1
         sheet.update_cell(1, col, user_id)
 
-    # Append memo content to a new row
-    row_data = [memo] * num_cols
-    sheet.append_row(row_data)
+    # Append memo content to the corresponding column
+    sheet.append_row([None] * (col-1) + [memo])
 
     await ctx.send(f'{ctx.author.mention} memo saved.')
 
@@ -176,7 +178,7 @@ async def view_memo(ctx):
     # Extract user ID
     user_id = str(ctx.author.id)
 
-    # Find the row index of the user ID in row 1
+    # Find the column index of the user ID in row 1
     header_values = sheet.row_values(1)
     try:
         col = header_values.index(user_id) + 1
@@ -185,9 +187,12 @@ async def view_memo(ctx):
         return
 
     # Retrieve memo content for the user from row 2
-    memo = sheet.cell(2, col).value
-    if memo:
-        await ctx.send(f'{ctx.author.mention} memo: {memo}')
+    memo_values = sheet.col_values(col)[1:]
+    if memo_values:
+        memo_list = [f'{i+1}. {memo}' for i, memo in enumerate(memo_values)]
+        memo_str = '\n'.join(memo_list)
+        embed = discord.Embed(title=f'Memo for {ctx.author.name}', description=memo_str)
+        await ctx.send(embed=embed)
     else:
         await ctx.send(f'{ctx.author.mention} memo not found.')
         
