@@ -219,7 +219,10 @@ async def delete_memo(ctx, memo_number: int):
     memo = message_content.split('!메모삭제 ')[1]
 
     # Define the column letter
-    col_letter = 'A'
+    col_letter = 'B'
+    
+    # Define the starting row number for the memo data
+    row_start = 2
 
     # Find the column index of the user ID in row 1
     header_values = sheet.row_values(1)
