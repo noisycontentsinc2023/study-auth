@@ -156,16 +156,24 @@ async def on_ready():
 
 @bot.command(name='메모')
 async def memo(ctx):
-    user = ctx.author.name
+    # Extract user ID and memo content
+    user_id = str(ctx.author.id)
     memo = ctx.message.content[6:]
-    values = sheet.get_all_values()
 
     # Find the next available row to write data to
+    values = sheet.get_all_values()
     row = len(values) + 1
 
-    sheet.update_cell(row, 1, user)
-    sheet.update_cell(row, 2, memo)
-    await ctx.send(f'{user} memo saved.')
+    # Write user ID to row 1 of each column
+    num_cols = sheet.col_count
+    for col in range(1, num_cols+1):
+        sheet.update_cell(1, col, user_id)
+
+    # Write memo to row 2 onwards of each column
+    for col in range(1, num_cols+1):
+        sheet.update_cell(row, col, memo)
+
+    await ctx.send(f'{ctx.author.mention} memo saved.')
 
 @bot.command(name='메모보기')
 async def view_memo(ctx):
