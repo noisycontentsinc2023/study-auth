@@ -68,9 +68,7 @@ async def lottery(ctx):
 
     # Add random items to the embed message at 0.5 second intervals
     for i in range(10):
-        # Clear existing fields
-        embed.clear_fields()
-        # Add new field
+        embed.clear_fields() # clear fields before adding new item
         embed.add_field(name=f'{i+1}th item', value=random.choice(choices), inline=True)
         await message.edit(embed=embed)
         await asyncio.sleep(0.5)
