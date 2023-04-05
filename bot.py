@@ -70,8 +70,10 @@ creds_info = {
 creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
 client = gspread.authorize(creds)
 sheet = client.open('테스트').worksheet('고정')
+rows = sheet.get_all_values()
 
 sticky_messages = {}
+
 for row in rows:
     sticky_messages[int(row[0])] = row[1]
     
