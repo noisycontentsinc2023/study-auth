@@ -60,19 +60,21 @@ async def lottery(ctx):
     choices = ['학습하는 언어 한 마디 녹음하기', '일취월장에 인증하기', '!메모 기능을 활용해서 안외워지는 단어 입력해보기', '학습하는 언어 유튜브 검색해보기', 'item5', 'item6', 'item7', 'item8', 'item9', 'item10']
 
     # Create an embed message that will output the result
-    embed = discord.Embed(title='오늘의 미션', color=0xff0000)
+    embed = discord.Embed(title='Lottery result', color=0xff0000)
 
     # Send the initial message and store the message ID
     message = await ctx.send(embed=embed)
     message_id = message.id
 
-    # Add fields to the embed message
-    for i in range(10):
-        embed.add_field(name=f'{i+1}th item', value='', inline=True)
-
     # Add random items to the embed message at 0.5 second intervals
     for i in range(10):
-        embed.set_field_at(i, name=f'{i+1}th item', value=random.choice(choices), inline=True)
+        field = discord.utils.get(embed.fields, name=f'{i+1}th item')
+        if not field:
+            # Field does not exist, create a new one
+            embed.add_field(name=f'{i+1}th item', value=random.choice(choices), inline=True)
+        else:
+            # Field exists, update its value
+            field.value = random.choice(choices)
         await message.edit(embed=embed)
         await asyncio.sleep(0.5)
 
