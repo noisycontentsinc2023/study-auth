@@ -82,18 +82,16 @@ async def play_game(user_choice, ctx):
     elif (user_choice == '가위' and bot_choice == '보') or \
          (user_choice == '바위' and bot_choice == '가위') or \
          (user_choice == '보' and bot_choice == '바위'):
-        result = '이겼습니다!'
+        result = '테이망령이 졌습니다!😭'
         color = discord.Color.green()
         emoji = '🎉'
     else:
-        result = '졌습니다!'
+        result = '테이망령이 이겼습니다!🥳'
         color = discord.Color.red()
         emoji = '😭'
 
     embed = discord.Embed(title=f'{user_choice} 대 {bot_choice}', description=result, color=color)
     embed.set_author(name='게임 결과')
-    embed.add_field(name='사용자', value=f'{emoji} {ctx.author.display_name}', inline=True)
-    embed.add_field(name='봇', value=f'{emoji} 봇', inline=True)
 
     await ctx.send(embed=embed)
     
