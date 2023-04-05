@@ -66,30 +66,23 @@ async def lottery(ctx):
     message = await ctx.send(embed=embed)
     message_id = message.id
 
-    # Add random items to the embed message at 0.5 second intervals
-    for i in range(10):
-        embed.clear_fields() # clear fields before adding new item
-        embed.add_field(name=f'{i+1}th item', value=random.choice(choices), inline=True)
+    # 5 seconds countdown
+    for i in range(5, 0, -1):
+        embed.set_footer(text=f'{i} 초 남았습니다')
         await message.edit(embed=embed)
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(1)
 
-    # Add random items to the embed message at 0.5 second intervals
+    # Add random items to the embed message at 0.5 second intervals and clear existing fields
     for i in range(10):
         embed.clear_fields()
         embed.add_field(name=f'{i+1}th item', value=random.choice(choices), inline=True)
         await message.edit(embed=embed)
-        await asyncio.sleep(0.5)
-
-        # start countdown
-        if i == 0:
-            for j in range(5):
-                embed.set_footer(text=f'{5-j} seconds left')
-                await message.edit(embed=embed)
-                await asyncio.sleep(1)
+        await asyncio.sleep(0.2)
 
     # Randomize the final result
     result = random.choice(choices)
-    embed.add_field(name='뽑기 결과', value=result, inline=False)
+    embed.clear_fields()
+    embed.add_field(name='Lottery Result', value=result, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
 
     # Update the embed message
