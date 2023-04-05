@@ -57,28 +57,25 @@ async def gpt(ctx, *, message):
 @bot.command(name='미션')
 async def lottery(ctx):
     choices = ['항목1', '항목2', '항목3', '항목4', '항목5', '항목6', '항목7', '항목8', '항목9', '항목10']
-    
-    # 임베드 메시지 생성
-    embed = discord.Embed(title='추첨을 시작합니다!', description='\u200b', color=discord.Color.blue())
-    embed.set_footer(text='5초 후에 오늘의 미션이 결정됩니다!')
+    embed = discord.Embed(title='오늘의 미션', color=discord.Color.blue())
+    message = await ctx.send(embed=embed)
 
-    # 10개의 항목을 랜덤하게 보여주기
     for i in range(10):
-        await embed.add_field(name=f'{i+1}번째 항목', value=random.choice(choices), inline=True)
         await asyncio.sleep(0.4)
-        await ctx.send(embed=embed)
-        embed.clear_fields()
-    
-    # 5초 카운트다운
-    for i in range(5, 0, -1):
-        embed.set_footer(text=f'{i}초 후에 오늘의 미션이 결정됩니다!')
-        await ctx.send(embed=embed)
-        await asyncio.sleep(1)
-    
-    # 당첨 항목 랜덤 출력
-    winning_choice = random.choice(choices)
-    embed.set_footer(text=f'오늘의 미션은 {winning_choice}입니다!')
-    await ctx.send(embed=embed)
+        await embed.add_field(name=f'{i+1}번째 항목', value=random.choice(choices), inline=True)
+        await message.edit(embed=embed)
+
+    embed.set_footer(text='5초 후에 오늘의 미션이 결정됩니다!')
+    await message.edit(embed=embed)
+
+    for i in range(5):
+        await asyncio.sleep(1.0)
+        embed.set_footer(text=f'{5-i}초 남았습니다)
+        await message.edit(embed=embed)
+
+    embed.set_footer(text=f'오늘의 미션은: {random.choice(choices)}')
+    embed.clear_fields()
+    await message.edit(embed=embed)
         
 #Run the bot
 bot.run(TOKEN)
