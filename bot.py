@@ -337,10 +337,9 @@ class MenuSelector(discord.ui.View):
     async def select_callback(self, interaction: discord.Interaction):
         self.category = interaction.data['values'][0]
 
-        # update the url of the existing button
-        self.recommend_button = discord.ui.Button(label="추천받기!", disabled=True, style=discord.ButtonStyle.primary)
-        self.recommend_button.callback = self.recommend_callback
-        self.add_item(self.recommend_button)
+        # update the label and disabled state of the existing button
+        self.recommend_button.label = "추천받기!"
+        self.recommend_button.disabled = False
 
         await interaction.response.edit_message(embed=food, view=self)
         
