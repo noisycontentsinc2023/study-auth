@@ -98,7 +98,6 @@ async def on_ready():
 
 # 고정 메시지를 추가하고, 스프레드시트에 저장합니다.
 @bot.command(name='고정')
-@has_specific_roles(allowed_role_ids)
 async def sticky(ctx, *, message):
     global sticky_messages
     sticky_messages[ctx.channel.id] = message
@@ -108,7 +107,6 @@ async def sticky(ctx, *, message):
 
 # 고정 메시지를 삭제하고, 스프레드시트에 저장합니다.
 @bot.command(name='해제')
-@has_specific_roles(allowed_role_ids)
 async def unsticky(ctx):
     global sticky_messages
     if ctx.channel.id in sticky_messages:
