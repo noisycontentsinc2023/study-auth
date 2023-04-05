@@ -78,8 +78,6 @@ class SlotMachineButton(discord.ui.Button):
         self.disabled = False
         self.label = 'START'
 
-bot = commands.Bot(command_prefix='!')
-
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
