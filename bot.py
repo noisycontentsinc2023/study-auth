@@ -54,21 +54,41 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-
-    if message.content.startswith('!추첨'):
-        await message.channel.send('추첨을 시작합니다!')
-        results = ['당첨!', '꽝', '꽝', '꽝']
+class SlotMachineButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label='START', style=discord.ButtonStyle.blurple)
+        self.disabled = False
+        
+    async def on_button_click(self, button, interaction):
+        if self.label == 'STOP':
+            return
+        
+        self.disabled = True
+        self.label = 'STOP'
+        await interaction.response.edit_message(content='추첨을 시작합니다!')
+        results = ['꽝', '꽝', '꽝', '꽝', '당첨!']
         for i in range(5):
-            result = random.choice(results)
             result_message = ' '.join(random.sample(results, len(results)))
-            await message.edit(content=f'[{i+1}번째] {result_message}')
+            await interaction.message.edit(content=f'[{i+1}번째] {result_message}')
+            await interaction.response.defer(edit_origin=True)
             await asyncio.sleep(1.0)
-        await message.edit(content=f'추첨 결과: {result}')
-        return 
+
+        result = random.choice(results)
+        await interaction.message.edit(content=f'추첨 결과: {result}')
+        self.disabled = False
+        self.label = 'START'
+
+bot = commands.Bot(command_prefix='!')
+
+@bot.event
+async def on_ready():
+    print(f'{bot.user} has connected to Discord!')
+
+@bot.command(name='추첨')
+async def slot_machine(ctx):
+    view = discord.ui.View()
+    view.add_item(SlotMachineButton())
+    await ctx.send('버튼을 눌러서 추첨을 시작하세요!', view=view)
         
 #Run the bot
 bot.run(TOKEN)
