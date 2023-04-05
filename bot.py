@@ -338,13 +338,16 @@ class MenuSelector(discord.ui.View):
         self.category = interaction.data['values'][0]
 
         # update the label and disabled state of the existing button
-        self.recommend_button.url = "https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing"
+        self.recommend_button.callback = self.recommend_callback
         self.recommend_button.disabled = False
 
         await interaction.response.edit_message(view=self)
 
     async def recommend_callback(self, interaction: discord.Interaction):
-        selected_food = random.choice(self.foods[self.category])
+        if self.category is not None:
+            selected_food = random.choice(self.foods[self.category])
+        else:
+            selected_food = "카테고리를 선택해주세요."
         food = discord.Embed(title=f"{self.category} 추천메뉴", description="아래 추천받기 버튼을 클릭해서 메뉴를 추천받아보세요!", color=0x00ff00)
         food.add_field(name="메뉴", value=f"{selected_food}")
         food.set_footer(text="맛있게 드세요! 🥳")
