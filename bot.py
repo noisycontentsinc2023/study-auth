@@ -16,6 +16,7 @@ from discord import Embed
 from discord.ext import tasks, commands
 from discord.utils import get
 from urllib.request import Request
+from discord.ui import Select, Button, View
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
@@ -284,5 +285,59 @@ async def study(ctx):
     embed = discord.Embed(title="Study message", description=message, color=0xffd700)
     await ctx.send(embed=embed)
     
+#-------------------------메뉴추천-------------------------#
+
+class MenuSelector(View):
+    def __init__(self, ctx):
+        super().__init__()
+        self.ctx = ctx
+        self.menu_select = Select(
+            placeholder="원하시는 종류를 선택해주세요!",
+            options=[
+                discord.SelectOption(label="분식", value="분식"),
+                discord.SelectOption(label="한식", value="한식"),
+                discord.SelectOption(label="일식", value="일식"),
+                discord.SelectOption(label="양식", value="양식"),
+                discord.SelectOption(label="디저트", value="디저트"),
+                discord.SelectOption(label="편의점", value="편의점"),
+                discord.SelectOption(label="중식", value="중식"),
+                discord.SelectOption(label="기타", value="기타"),
+            ],
+        )
+        self.add_item(self.menu_select)
+    
+    async def on_select(self, interaction: discord.Interaction):
+        if interaction.component == self.menu_select:
+            await self.show_recommendation(self.menu_select.values[0])
+
+    async def show_recommendation(self, category):
+        foods = {
+            "분식": ["김밥", "라면", "떡볶이", "튀김"],
+            "한식": ["비빔밥", "불고기", "된장찌개", "김치찌개"],
+            "일식": ["초밥", "우동", "돈까스", "라멘"],
+            "양식": ["피자", "스파게티", "스테이크", "샐러드"],
+            "디저트": ["아이스크림", "빵", "과일", "케이크"],
+            "편의점": ["삼각김밥", "도시락", "샌드위치", "컵라면"],
+            "중식": ["짜장면", "짬뽕", "탕수육", "양장피"],
+            "기타": ["치킨", "햄버거", "파스타", "초밥"],
+        }
+
+        selected_food = random.choice(foods[category])
+        food = discord.Embed(title=f"{category} 추천메뉴", description=f"{category} 추천메뉴입니다.", color=0x00ff00)
+        food.add_field(name="메뉴", value=f"{selected_food}")
+        food.set_footer(text="🎉 맛있게 드세요! 🎉")
+        await interaction.message.edit(embed=food, view=None)
+
+class MyMenuBot(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix="!")
+        self.add_command(self.menu_recommendation)
+
+    @commands.command(name='메뉴추천')
+    async def menu_recommendation(self, ctx):
+        selector_view = MenuSelector(ctx)
+        message = await ctx.send("원하시는 종류를 선택해주세요!", view=selector_view)
+        selector_view.message = message
+        
 #Run the bot
 bot.run(TOKEN)
