@@ -62,14 +62,11 @@ async def lottery(ctx):
     # Create an embed message that will output the result
     embed = discord.Embed(title='Lottery result', color=0xff0000)
 
-    # Add 10 empty fields to the embed message
-    for i in range(10):
-        embed.add_field(name=f'{i+1}th item', value='\u200b', inline=True)
-
-    # Send the initial embed message
+    # Send the initial message and store the message ID
     message = await ctx.send(embed=embed)
+    message_id = message.id
 
-    # Update the fields with random items at 0.5 second intervals
+    # Add random items to the embed message at 0.5 second intervals
     for i in range(10):
         embed.set_field_at(i, name=f'{i+1}th item', value=random.choice(choices), inline=True)
         await message.edit(embed=embed)
@@ -83,7 +80,7 @@ async def lottery(ctx):
 
     # Randomize the final result
     result = random.choice(choices)
-    embed.set_field_at(10, name='Lottery Result', value=result, inline=False)
+    embed.add_field(name='Lottery Result', value=result, inline=False)
     embed.set_footer(text='Congratulations!')
 
     # Update the embed message
