@@ -287,11 +287,21 @@ async def study(ctx):
     
 #-------------------------메뉴추천-------------------------#
 
-class MenuSelector(View):
-    def __init__(self, ctx):
+class MenuSelector(discord.ui.View):
+    def __init__(self):
         super().__init__()
-        self.ctx = ctx
-        self.menu_select = Select(
+        self.category = None
+        self.foods = {
+            "분식": ["김밥", "라면", "떡볶이", "튀김"],
+            "한식": ["비빔밥", "불고기", "된장찌개", "김치찌개"],
+            "일식": ["초밥", "우동", "돈까스", "라멘"],
+            "양식": ["피자", "스파게티", "스테이크", "샐러드"],
+            "디저트": ["아이스크림", "빵", "과일", "케이크"],
+            "편의점": ["삼각김밥", "도시락", "샌드위치", "컵라면"],
+            "중식": ["짜장면", "짬뽕", "탕수육", "양장피"],
+            "기타": ["치킨", "햄버거", "파스타", "초밥"],
+        }
+        self.menu_select = discord.ui.Select(
             placeholder="원하시는 종류를 선택해주세요!",
             options=[
                 discord.SelectOption(label="분식", value="분식"),
@@ -304,35 +314,29 @@ class MenuSelector(View):
                 discord.SelectOption(label="기타", value="기타"),
             ],
         )
+        self.menu_select.callback = self.select_callback
         self.add_item(self.menu_select)
-    
-    async def on_select(self, interaction: discord.Interaction):
-        if interaction.component == self.menu_select:
-            await self.show_recommendation(interaction, self.menu_select.values[0])
+        self.recommend_button = discord.ui.Button(label="추천받기!", disabled=True, style=discord.ButtonStyle.primary)
+        self.recommend_button.callback = self.recommend_callback
+        self.add_item(self.recommend_button)
 
-    async def show_recommendation(self, interaction, category):
-        foods = {
-            "분식": ["김밥", "라면", "떡볶이", "튀김"],
-            "한식": ["비빔밥", "불고기", "된장찌개", "김치찌개"],
-            "일식": ["초밥", "우동", "돈까스", "라멘"],
-            "양식": ["피자", "스파게티", "스테이크", "샐러드"],
-            "디저트": ["아이스크림", "빵", "과일", "케이크"],
-            "편의점": ["삼각김밥", "도시락", "샌드위치", "컵라면"],
-            "중식": ["짜장면", "짬뽕", "탕수육", "양장피"],
-            "기타": ["치킨", "햄버거", "파스타", "초밥"],
-        }
+    async def select_callback(self, interaction: discord.Interaction):
+        self.category = interaction.data['values'][0]
+        self.recommend_button.disabled = False
+        await interaction.response.edit_message(view=self)
 
-        selected_food = random.choice(foods[category])
-        food = discord.Embed(title=f"{category} 추천메뉴", description=f"{category} 추천메뉴입니다.", color=0x00ff00)
+    async def recommend_callback(self, interaction: discord.Interaction):
+        selected_food = random.choice(self.foods[self.category])
+        food = discord.Embed(title=f"{self.category} 추천메뉴", description="아래 추천받기 버튼을 클릭해서 메뉴를 추천받아보세요!", color=0x00ff00)
         food.add_field(name="메뉴", value=f"{selected_food}")
         food.set_footer(text="🎉 맛있게 드세요! 🎉")
-        await interaction.message.edit(embed=food, view=None)
-
+        await interaction.response.edit_message(embed=food, view=self)
+        
 @bot.command(name='메뉴추천')
 async def menu_recommendation(ctx):
-    selector_view = MenuSelector(ctx)
+    selector_view = MenuSelector()
     message = await ctx.send("원하시는 종류를 선택해주세요!", view=selector_view)
     selector_view.message = message
-        
+    
 #Run the bot
 bot.run(TOKEN)
