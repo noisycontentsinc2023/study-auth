@@ -54,39 +54,25 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
-class SlotMachineButton(discord.ui.Button):
-    def __init__(self):
-        super().__init__(label='START', style=discord.ButtonStyle.blurple)
-        self.disabled = False
-        
-    async def on_button_click(self, button, interaction):
-        if self.label == 'STOP':
-            return
-        
-        self.disabled = True
-        self.label = 'STOP'
-        await interaction.response.edit_message(content='추첨을 시작합니다!')
-        results = ['꽝', '꽝', '꽝', '꽝', '당첨!']
-        for i in range(5):
-            result_message = ' '.join(random.sample(results, len(results)))
-            await interaction.message.edit(content=f'[{i+1}번째] {result_message}')
-            await interaction.response.defer(edit_origin=True)
-            await asyncio.sleep(1.0)
-
-        result = random.choice(results)
-        await interaction.message.edit(content=f'추첨 결과: {result}')
-        self.disabled = False
-        self.label = 'START'
-
-@bot.event
-async def on_ready():
-    print(f'{bot.user} has connected to Discord!')
-
 @bot.command(name='추첨')
 async def slot_machine(ctx):
-    view = discord.ui.View()
-    view.add_item(SlotMachineButton())
-    await ctx.send('버튼을 눌러서 추첨을 시작하세요!', view=view)
+    items = ['사과', '배', '딸기', '바나나', '귤', '포도', '수박', '참외', '메론', '복숭아']
+    messages = []
+    for i in range(10):
+        item = random.choice(items)
+        messages.append(await ctx.send(f'{i+1}. {item}'))
+        
+    for _ in range(5):
+        for i in range(10):
+            item = random.choice(items)
+            await messages[i].edit(content=f'{i+1}. {item}')
+            await asyncio.sleep(0.5)
+            if i > 0:
+                await messages[i-1].delete()
+        await messages[-1].delete()
+
+    result = random.choice(items)
+    await ctx.send(f'추첨 결과: {result}')
         
 #Run the bot
 bot.run(TOKEN)
