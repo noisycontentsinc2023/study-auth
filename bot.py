@@ -341,7 +341,7 @@ class MenuSelector(discord.ui.View):
         self.recommend_button.url = "https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing"
         self.recommend_button.disabled = False
 
-        await interaction.message.edit(view=self)
+        await interaction.response.edit_message(embed=self.food, view=selector_view)
         
     async def recommend_callback(self, interaction: discord.Interaction):
         selected_food = random.choice(self.foods[self.category])
