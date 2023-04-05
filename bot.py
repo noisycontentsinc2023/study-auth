@@ -333,9 +333,9 @@ class MenuSelector(discord.ui.View):
         food.add_field(name="메뉴", value=f"{selected_food}")
         food.set_footer(text="맛있게 드세요! 🥳 스터디미니 재학생들의 추천 음식점이 궁금하다면?", icon_url="https://i.imgur.com/ZMjVzAF.png")
 
-        # add a button with a link to the restaurant recommendation map
-        button = discord.ui.Button(style=discord.ButtonStyle.link, label="재학생들의 국내/외 맛집 리스트!", url="https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing")
-        self.add_item(button)
+        # update the url of the existing button
+        self.recommend_button.url = "https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing"
+        self.recommend_button.disabled = True
 
         await interaction.response.edit_message(embed=food, view=self)
         
