@@ -57,24 +57,19 @@ async def gpt(ctx, *, message):
 @bot.command(name='미션')
 async def lottery(ctx):
     choices = ['항목1', '항목2', '항목3', '항목4', '항목5', '항목6', '항목7', '항목8', '항목9', '항목10']
-    embed = discord.Embed(title='오늘의 미션', color=discord.Color.blue())
-    message = await ctx.send(embed=embed)
-
-    for i in range(10):
-        await asyncio.sleep(0.4)
-        await embed.add_field(name=f'{i+1}번째 항목', value=random.choice(choices), inline=True)
-        await message.edit(embed=embed)
-
-    embed.set_footer(text='5초 후에 오늘의 미션이 결정됩니다!')
-    await message.edit(embed=embed)
+    embed = discord.Embed(title='추첨 결과', description='0.4초마다 항목이 랜덤하게 바뀝니다', color=0xff0000)
 
     for i in range(5):
-        await asyncio.sleep(1.0)
+        embed.clear_fields()
+        for j in range(10):
+            embed.add_field(name=f'{j+1}번째 항목', value=random.choice(choices), inline=True)
         embed.set_footer(text=f'{5-i}초 남았습니다')
-        await message.edit(embed=embed)
+        message = await ctx.send(embed=embed)
+        await asyncio.sleep(0.4)
 
-    embed.set_footer(text=f'오늘의 미션은: {random.choice(choices)}')
     embed.clear_fields()
+    result = random.choice(choices)
+    embed.add_field(name='당첨 결과', value=result, inline=True)
     await message.edit(embed=embed)
         
 #Run the bot
