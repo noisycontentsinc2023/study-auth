@@ -292,13 +292,14 @@ class MenuSelector(discord.ui.View):
         super().__init__()
         self.category = None
         self.foods = {
-            "분식": ["김밥", "라면", "떡볶이", "튀김", "순대", "만두", "라볶이", "어묵"],
-            "한식": ["비빔밥", "불고기", "된장찌개", "김치찌개", "제육볶음", "족발", "부침개", "곱창", "보쌈", "치킨!!"],
+            "분식": ["김밥", "라면", "떡볶이", "튀김", "순대", "만두", "라볶이", "어묵", "소떡소떡", "핫도그", "떡국", "잔치국수", "볶음밥"],
+            "한식": ["비빔밥", "불고기", "된장찌개", "김치찌개", "제육볶음", "족발", "부침개", "곱창", "보쌈", "치킨!!", "생선구이", "비빔밥", "쌈밥", "게장", "불고기"],
+            "중식": ["짜장면", "짬뽕", "탕수육", "양장피", "마라탕", "마라샹궈", "양꼬치", "깐쇼새우", "깐풍기"],
             "일식": ["초밥", "우동", "돈까스", "라멘", "회", "타코야끼", "샤브샤브"],
             "양식": ["피자", "파스타", "스테이크", "샐러드", "햄버거", "바베큐", "그라탕"],
+            "해장": ["우거지국", "홍합탕", "순대국", "콩나물국밥", "뼈해장국", "대파라면", "선지해장국", "매생이국", "북엇국"]
             "디저트": ["아이스크림", "빵", "과일", "케이크", "마카롱", "요거트", "와플"],
             "편의점": ["삼각김밥", "도시락", "샌드위치", "컵라면", "컵밥", "라이스바"],
-            "중식": ["짜장면", "짬뽕", "탕수육", "양장피", "마라탕", "마라샹궈", "양꼬치", "깐쇼새우", "깐풍기"],
             "기타": ["월남쌈", "나시고랭", "브리또", "케밥", "맥앤치즈", "분짜", "쌀국수"],
         }
         self.menu_select = discord.ui.Select(
@@ -306,11 +307,12 @@ class MenuSelector(discord.ui.View):
             options=[
                 discord.SelectOption(label="분식", value="분식"),
                 discord.SelectOption(label="한식", value="한식"),
+                discord.SelectOption(label="중식", value="중식"),
                 discord.SelectOption(label="일식", value="일식"),
                 discord.SelectOption(label="양식", value="양식"),
+                discord.SelectOption(label="해장", value="해장"),
                 discord.SelectOption(label="디저트", value="디저트"),
                 discord.SelectOption(label="편의점", value="편의점"),
-                discord.SelectOption(label="중식", value="중식"),
                 discord.SelectOption(label="기타", value="기타"),
             ],
         )
