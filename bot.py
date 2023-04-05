@@ -71,53 +71,53 @@ creds = service_account.Credentials.from_service_account_info(info=creds_info, s
 client = gspread.authorize(creds)
 sheet = client.open('테스트').worksheet('고정')
 
-# 저장된 고정 메시지를 불러옵니다.
-def load_sticky_messages():
-    global sticky_messages
-    try:
-        data = sheet.get_all_values()
-        sticky_messages = {int(row[0]): row[1] for row in data}
-    except gspread.exceptions.APIError:
-        sticky_messages = {}
+sticky_messages = {}
+for row in rows:
+    sticky_messages[int(row[0])] = row[1]
+    
+# 스프레드시트에서 초기 고정 메시지를 가져옵니다.
+sticky_messages = {}
+
+for row in sheet.get_all_values():
+    if len(row) == 2 and row[0].isdigit():
+        sticky_messages[int(row[0])] = row[1]
+
+last_sticky_messages = {}
 
 
-# 고정 메시지를 스프레드시트에 저장합니다.
-def save_sticky_messages():
-    global sticky_messages
-    sheet.clear()
-    for channel_id, message in sticky_messages.items():
-        sheet.append_row([channel_id, message])
-
-
-# 봇 시작시 스프레드시트에서 고정 메시지를 불러옵니다.
-@bot.event
-async def on_ready():
-    load_sticky_messages()
-    print('봇이 성공적으로 시작되었습니다.')
-
-
-# 고정 메시지를 추가하고, 스프레드시트에 저장합니다.
 @bot.command(name='고정')
 async def sticky(ctx, *, message):
     global sticky_messages
-    sticky_messages[ctx.channel.id] = message
+    channel_id = ctx.channel.id
+    sticky_messages[channel_id] = message
+
+    # 스프레드시트에 고정 메시지를 저장합니다.
+    if str(channel_id) in sheet.col_values(1):
+        row_num = int(sheet.col_values(1).index(str(channel_id))) + 1
+        sheet.update_cell(row_num, 2, message)
+    else:
+        row_num = len(sheet.col_values(1)) + 1
+        sheet.update_cell(row_num, 1, str(channel_id))
+        sheet.update_cell(row_num, 2, message)
+
     await ctx.send(f'메시지가 고정됐습니다!')
-    save_sticky_messages()
 
-
-# 고정 메시지를 삭제하고, 스프레드시트에 저장합니다.
 @bot.command(name='해제')
 async def unsticky(ctx):
     global sticky_messages
-    if ctx.channel.id in sticky_messages:
-        del sticky_messages[ctx.channel.id]
+    channel_id = ctx.channel.id
+
+    if channel_id in sticky_messages:
+        del sticky_messages[channel_id]
+
+        # 스프레드시트에서 고정 메시지를 삭제합니다.
+        row_num = int(sheet.col_values(1).index(str(channel_id))) + 1
+        sheet.delete_row(row_num)
+
         await ctx.send('고정이 해제됐어요!')
-        save_sticky_messages()
     else:
         await ctx.send('이 채널에는 고정된 메시지가 없어요')
 
-
-# 스프레드시트에서 불러온 고정 메시지를 사용하여 메시지를 고정합니다.
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -127,6 +127,19 @@ async def on_message(message):
 
     global sticky_messages
     global last_sticky_messages
-    
+
+    channel_id = message.channel.id
+
+    if channel_id in sticky_messages:
+        if channel_id in last_sticky_messages:
+            old_message = last_sticky_messages[channel_id]
+            try:
+                await old_message.delete()
+            except discord.NotFound:
+                pass
+
+        new_message = await message.channel.send(sticky_messages[message.channel.id])
+        last_sticky_messages[message.channel.id] = new_message
+        
 #Run the bot
 bot.run(TOKEN)
