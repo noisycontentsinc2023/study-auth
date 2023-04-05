@@ -70,7 +70,7 @@ async def lottery(ctx):
 
     for i in range(5):
         await asyncio.sleep(1.0)
-        embed.set_footer(text=f'{5-i}초 남았습니다)
+        embed.set_footer(text=f'{5-i}초 남았습니다')
         await message.edit(embed=embed)
 
     embed.set_footer(text=f'오늘의 미션은: {random.choice(choices)}')
