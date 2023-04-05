@@ -69,7 +69,7 @@ creds_info = {
 }
 creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
 client = gspread.authorize(creds)
-sheet = client.open('테스트').worksheet('')
+sheet = client.open('테스트').worksheet('고정')
 
 # 저장된 고정 메시지를 불러옵니다.
 def load_sticky_messages():
