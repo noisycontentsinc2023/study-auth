@@ -68,14 +68,13 @@ async def lottery(ctx):
 
     # Add random items to the embed message at 0.5 second intervals
     for i in range(10):
-        field = discord.utils.get(embed.fields, name=f'{i+1}th item')
-        if not field:
-            # Field does not exist, create a new one
-            embed.add_field(name=f'{i+1}th item', value=random.choice(choices), inline=True)
+        new_field = discord.utils.get(embed.fields, name=f'{i+1}th item')
+        if new_field:
+            new_field.value = random.choice(choices)
+            await message.edit(embed=embed)
         else:
-            # Field exists, update its value
-            field.value = random.choice(choices)
-        await message.edit(embed=embed)
+            embed.add_field(name=f'{i+1}th item', value=random.choice(choices), inline=True)
+            await message.edit(embed=embed)
         await asyncio.sleep(0.5)
 
     # 5 seconds countdown
