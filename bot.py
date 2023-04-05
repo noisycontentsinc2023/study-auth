@@ -54,25 +54,31 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
-@bot.command(name='추첨')
-async def slot_machine(ctx):
-    items = ['사과', '배', '딸기', '바나나', '귤', '포도', '수박', '참외', '메론', '복숭아']
-    messages = []
-    for i in range(10):
-        item = random.choice(items)
-        messages.append(await ctx.send(f'{i+1}. {item}'))
-        
-    for _ in range(5):
-        for i in range(10):
-            item = random.choice(items)
-            await messages[i].edit(content=f'{i+1}. {item}')
-            await asyncio.sleep(0.5)
-            if i > 0:
-                await messages[i-1].delete()
-        await messages[-1].delete()
+@bot.command(name='미션')
+async def lottery(ctx):
+    choices = ['항목1', '항목2', '항목3', '항목4', '항목5', '항목6', '항목7', '항목8', '항목9', '항목10']
+    
+    # 임베드 메시지 생성
+    embed = discord.Embed(title='추첨을 시작합니다!', description='\u200b', color=discord.Color.blue())
+    embed.set_footer(text='5초 후에 오늘의 미션이 결정됩니다!')
 
-    result = random.choice(items)
-    await ctx.send(f'추첨 결과: {result}')
+    # 10개의 항목을 랜덤하게 보여주기
+    for i in range(10):
+        await embed.add_field(name=f'{i+1}번째 항목', value=random.choice(choices), inline=True)
+        await asyncio.sleep(0.4)
+        await ctx.send(embed=embed)
+        embed.clear_fields()
+    
+    # 5초 카운트다운
+    for i in range(5, 0, -1):
+        embed.set_footer(text=f'{i}초 후에 오늘의 미션이 결정됩니다!')
+        await ctx.send(embed=embed)
+        await asyncio.sleep(1)
+    
+    # 당첨 항목 랜덤 출력
+    winning_choice = random.choice(choices)
+    embed.set_footer(text=f'오늘의 미션은 {winning_choice}입니다!')
+    await ctx.send(embed=embed)
         
 #Run the bot
 bot.run(TOKEN)
