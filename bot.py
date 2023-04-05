@@ -338,10 +338,10 @@ class MenuSelector(discord.ui.View):
         self.category = interaction.data['values'][0]
 
         # update the label and disabled state of the existing button
-        self.recommend_button.url = f"https://www.google.com/search?q={self.category}+음식점"
+        self.recommend_button.url = "https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing""
         self.recommend_button.disabled = False
 
-        await interaction.response.edit_message(view=self)
+        await interaction.message.edit(view=self)
         
     async def recommend_callback(self, interaction: discord.Interaction):
         selected_food = random.choice(self.foods[self.category])
