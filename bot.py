@@ -333,7 +333,7 @@ class MyMenuBot(commands.Bot):
         super().__init__(command_prefix="!")
         self.add_command(self.menu_recommendation)
 
-    @commands.command(name='메뉴추천')
+    @bot.command(name='메뉴추천')
     async def menu_recommendation(self, ctx):
         selector_view = MenuSelector(ctx)
         message = await ctx.send("원하시는 종류를 선택해주세요!", view=selector_view)
