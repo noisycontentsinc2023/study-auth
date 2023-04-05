@@ -308,9 +308,9 @@ class MenuSelector(View):
     
     async def on_select(self, interaction: discord.Interaction):
         if interaction.component == self.menu_select:
-            await self.show_recommendation(self.menu_select.values[0])
+            await self.show_recommendation(interaction, self.menu_select.values[0])
 
-    async def show_recommendation(self, category):
+    async def show_recommendation(self, interaction, category):
         foods = {
             "분식": ["김밥", "라면", "떡볶이", "튀김"],
             "한식": ["비빔밥", "불고기", "된장찌개", "김치찌개"],
@@ -328,16 +328,11 @@ class MenuSelector(View):
         food.set_footer(text="🎉 맛있게 드세요! 🎉")
         await interaction.message.edit(embed=food, view=None)
 
-class MyMenuBot(commands.Bot):
-    def __init__(self):
-        super().__init__(command_prefix="!")
-        self.add_command(self.menu_recommendation)
-
-    @bot.command(name='메뉴추천')
-    async def menu_recommendation(self, ctx):
-        selector_view = MenuSelector(ctx)
-        message = await ctx.send("원하시는 종류를 선택해주세요!", view=selector_view)
-        selector_view.message = message
+@bot.command(name='메뉴추천')
+async def menu_recommendation(ctx):
+    selector_view = MenuSelector(ctx)
+    message = await ctx.send("원하시는 종류를 선택해주세요!", view=selector_view)
+    selector_view.message = message
         
 #Run the bot
 bot.run(TOKEN)
