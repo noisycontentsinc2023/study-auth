@@ -338,7 +338,7 @@ class MenuSelector(discord.ui.View):
         self.category = interaction.data['values'][0]
 
         # update the label and disabled state of the existing button
-        self.recommend_button.url = "https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing""
+        self.recommend_button.url = "https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing"
         self.recommend_button.disabled = False
 
         await interaction.message.edit(view=self)
