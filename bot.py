@@ -57,16 +57,20 @@ async def gpt(ctx, *, message):
 @bot.command(name='미션')
 async def lottery(ctx):
     # 랜덤하게 선택될 항목들
-    choices = ['항목1', '항목2', '항목3', '항목4', '항목5', '항목6', '항목7', '항목8', '항목9', '항목10']
-    
+    choices = ['녹음하기', '단어 3개쓰기', '학습지 한 강 학습하고 인증하기', '학습하는 언어와 관련된 음식 먹기', '항목5', '항목6', '항목7', '항목8', '항목9', '항목10']
+
     # 결과가 출력될 임베드 메시지 생성
     embed = discord.Embed(title='추첨 결과', color=0xff0000)
-    message = await ctx.send(embed=embed)
 
-    # 0.4초 간격으로 랜덤한 항목들을 임베드 메시지에 추가
+    # 최종 결과 랜덤 선택을 위한 변수 설정
+    result = ''
+
+    # 0.5초 간격으로 랜덤한 항목들을 임베드 메시지에 추가
     for i in range(10):
-        embed.add_field(name=f'{i+1}번째 항목', value=random.choice(choices), inline=True)
-        await message.edit(embed=embed)
+        embed.set_footer(text='')
+        embed.clear_fields()
+        embed.add_field(name='추첨 중...', value=random.choice(choices), inline=False)
+        message = await ctx.send(embed=embed)
         await asyncio.sleep(0.5)
 
     # 5초 카운트 다운
@@ -77,8 +81,9 @@ async def lottery(ctx):
 
     # 최종 결과 랜덤 선택
     result = random.choice(choices)
+    embed.clear_fields()
     embed.add_field(name='추첨 결과', value=result, inline=False)
-    embed.set_footer(text='축하드립니다!')
+    embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed)
         
 #Run the bot
