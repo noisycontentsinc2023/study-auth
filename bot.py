@@ -335,7 +335,7 @@ class MenuSelector(discord.ui.View):
 
         # update the url of the existing button
         self.recommend_button.url = "https://www.google.com/maps/d/edit?mid=1-le8EVMGB6tH-4ryziNUUub1XyOSgHI&usp=sharing"
-        self.recommend_button.disabled = 
+        self.recommend_button.disabled = False
 
         await interaction.response.edit_message(embed=food, view=self)
         
