@@ -115,17 +115,44 @@ class AuthButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             return
-        row = [str(self.user), self.date]
         existing_users = sheet2.col_values(1)
-        if str(self.user) in existing_users:
-            index = existing_users.index(str(self.user)) + 1
-            cell = sheet2.find(self.date, in_row=1)
-            sheet2.update_cell(index, cell.col, "✅")
+        if str(self.user) not in existing_users:
+            empty_row = len(existing_users) + 2
+            sheet2.update_cell(empty_row, 1, str(self.user))
+            existing_dates = sheet2.row_values(1)
+            if self.date not in existing_dates:
+                empty_col = len(existing_dates) + 1
+                sheet2.update_cell(1, empty_col, self.date)
+                cell = sheet2.cell(empty_row, empty_col)
+                cell.data_validation = gspread.DataValidationRule(
+                    gspread.DataValidationType.CHECKBOX, True, True
+                )
+                cell.value = True
+            else:
+                col = existing_dates.index(self.date) + 1
+                cell = sheet2.cell(empty_row, col)
+                cell.data_validation = gspread.DataValidationRule(
+                    gspread.DataValidationType.CHECKBOX, True, True
+                )
+                cell.value = True
         else:
-            empty_row = len(existing_users) + 1
-            sheet2.insert_row(row, empty_row)
-            cell = sheet2.find(self.date, in_row=1)
-            sheet2.update_cell(empty_row, cell.col, "✅")
+            index = existing_users.index(str(self.user)) + 1
+            existing_dates = sheet2.row_values(1)
+            if self.date not in existing_dates:
+                empty_col = len(existing_dates) + 1
+                sheet2.update_cell(1, empty_col, self.date)
+                cell = sheet2.cell(index, empty_col)
+                cell.data_validation = gspread.DataValidationRule(
+                    gspread.DataValidationType.CHECKBOX, True, True
+                )
+                cell.value = True
+            else:
+                col = existing_dates.index(self.date) + 1
+                cell = sheet2.cell(index, col)
+                cell.data_validation = gspread.DataValidationRule(
+                    gspread.DataValidationType.CHECKBOX, True, True
+                )
+                cell.value = True
         await interaction.message.edit(embed=discord.Embed(title="Authentication", description="Authentication complete"), view=None)
 
 @bot.command(name='인증')
