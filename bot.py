@@ -114,6 +114,7 @@ class AuthView(discord.ui.View):
     
     async def on_timeout(self):
         await self.message.edit(embed=discord.Embed(title="Authentication", description="Authentication timed out"), view=None)
+        self.clear_items()  # Remove all items from the view
     
     @discord.ui.button(label="Confirm authentication", style=discord.ButtonStyle.green)
     async def auth_button(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -142,7 +143,7 @@ class AuthView(discord.ui.View):
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
         await self.message.edit(embed=discord.Embed(title="인증상황", description="인증완료!"), view=self)
-        self.stop()  # Stop the view from being active after the button is clicked and the interaction is handled
+        self.clear_items()  # Remove all items from the view
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
