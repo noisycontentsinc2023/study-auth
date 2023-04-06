@@ -119,13 +119,13 @@ class AuthButton(discord.ui.Button):
         existing_users = sheet2.col_values(1)
         if str(self.user) in existing_users:
             index = existing_users.index(str(self.user)) + 1
-            cell = sheet.find(self.date, in_row=1)
-            sheet.update_cell(index, cell.col, "✅")
+            cell = sheet2.find(self.date, in_row=1)
+            sheet2.update_cell(index, cell.col, "✅")
         else:
             empty_row = len(existing_users) + 1
-            sheet.insert_row(row, empty_row)
-            cell = sheet.find(self.date, in_row=1)
-            sheet.update_cell(empty_row, cell.col, "✅")
+            sheet2.insert_row(row, empty_row)
+            cell = sheet2.find(self.date, in_row=1)
+            sheet2.update_cell(empty_row, cell.col, "✅")
         await interaction.message.edit(embed=discord.Embed(title="Authentication", description="Authentication complete"), view=None)
 
 @bot.command(name='인증')
