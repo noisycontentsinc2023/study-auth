@@ -141,7 +141,7 @@ class AuthView(discord.ui.View):
             else:
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
-        await self.message.edit(embed=discord.Embed(title="인증상태", description="인증 완료!"), view=None)
+        await self.message.edit(embed=discord.Embed(title="인증상황", description="인증완료!"), view=self)
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
@@ -149,6 +149,7 @@ async def Authentication(ctx, date):
     embed = discord.Embed(title="일취월장 인증", description="인증 대기중")
     view = AuthView(ctx.author, date)
     msg = await ctx.send(embed=embed, view=view)
+    view.message = msg  # Save the message object to the view
     await view.wait()
 
         
