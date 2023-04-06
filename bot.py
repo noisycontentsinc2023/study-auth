@@ -142,6 +142,7 @@ class AuthView(discord.ui.View):
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
         await self.message.edit(embed=discord.Embed(title="인증상황", description="인증완료!"), view=self)
+        self.stop()  # Stop the view from being active after the button is clicked and the interaction is handled
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
