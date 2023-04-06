@@ -106,33 +106,37 @@ async def lottery(ctx):
 sheet2 = client.open('테스트').worksheet('일취월장')
 rows = sheet2.get_all_values()
 
-@bot.command()
-async def Authentication(ctx, date):
-    await ctx.message.delete()
-    embed = discord.Embed(title="Authentication", description="Verifying authentication")
-    msg = await ctx.send(embed=embed)
-    await msg.add_reaction("✅")
-
-    def check(reaction, user):
-        return str(reaction.emoji) == "✅" and discord.utils.get(user.roles, id=922400231549722664) is not None and reaction.message.id == msg.id
-
-    try:
-        reaction, user = await client.wait_for("reaction_add", timeout=60, check=check)
-    except:
-        await msg.edit(embed=discord.Embed(title="Authentication", description="Failed to authenticate"))
-    else:
-        row = [str(user), date]
+class AuthButton(discord.ui.Button):
+    def __init__(self, user, date):
+        super().__init__(style=discord.ButtonStyle.green, label="Confirm authentication")
+        self.user = user
+        self.date = date
+    
+    async def callback(self, interaction: discord.Interaction):
+        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
+            return
+        row = [str(self.user), self.date]
         existing_users = sheet.col_values(1)
-        if str(user) in existing_users:
-            index = existing_users.index(str(user)) + 1
-            cell = sheet.find(date, in_row=1)
+        if str(self.user) in existing_users:
+            index = existing_users.index(str(self.user)) + 1
+            cell = sheet.find(self.date, in_row=1)
             sheet.update_cell(index, cell.col, "✅")
         else:
             empty_row = len(existing_users) + 1
             sheet.insert_row(row, empty_row)
-            cell = sheet.find(date, in_row=1)
+            cell = sheet.find(self.date, in_row=1)
             sheet.update_cell(empty_row, cell.col, "✅")
-        await msg.edit(embed=discord.Embed(title="Authentication", description="Authentication complete"))
+        await interaction.message.edit(embed=discord.Embed(title="Authentication", description="Authentication complete"), view=None)
+
+@bot.command(name='인증')
+async def Authentication(ctx, date):
+    await ctx.message.delete()
+    embed = discord.Embed(title="Authentication", description="Verifying authentication")
+    view = discord.ui.View()
+    button = AuthButton(ctx.author, date)
+    view.add_item(button)
+    msg = await ctx.send(embed=embed, view=view)
+    await button.wait_for("click")
 
         
 #Run the bot
