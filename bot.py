@@ -106,22 +106,15 @@ async def lottery(ctx):
 # Set up Google Sheets worksheet
 sheet2 = client.open('테스트').worksheet('일취월장')
 rows = sheet2.get_all_values()
-
-class AuthView(discord.ui.View):
+class AuthButton(discord.ui.Button):
     def __init__(self, user, date):
-        super().__init__(timeout=None)
+        super().__init__(style=discord.ButtonStyle.green, label="확인 ")
         self.user = user
         self.date = date
-
-    async def on_timeout(self):
-        await self.message.edit(embed=discord.Embed(title="인증상태", description="인증시간 초과"), view=None)
-        self.clear_items()
-
-    @discord.ui.button(label="확인 중", style=discord.ButtonStyle.green)
-    async def auth_button(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if discord.utils.get(self.user.roles, id=922400231549722664) is None:
+    
+    async def callback(self, interaction: discord.Interaction):
+        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             return
-
         existing_users = sheet2.col_values(1)
         if str(self.user) not in existing_users:
             empty_row = len(existing_users) + 2
@@ -144,19 +137,17 @@ class AuthView(discord.ui.View):
             else:
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
-
-        await self.message.edit(embed=discord.Embed(title="인증상황", description="인증완료!"), view=self)
-        self.remove_item(button)
-        self.add_item(discord.ui.Button(label="인증되셨습니다!", style=discord.ButtonStyle.green, disabled=True))
+        await interaction.message.edit(embed=discord.Embed(title="인증상황", description="인증완료"), view=None)
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
     await ctx.message.delete()
-    embed = discord.Embed(title="일취월장 인증", description="인증 대기중")
-    view = AuthView(ctx.author, date)
+    embed = discord.Embed(title="인증상황", description="Verifying authentication")
+    view = discord.ui.View()
+    button = AuthButton(ctx.author, date)
+    view.add_item(button)
     msg = await ctx.send(embed=embed, view=view)
-    view.message = msg
-    await view.wait()
+    await button.wait_for("click")
 
         
 #Run the bot
