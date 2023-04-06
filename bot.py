@@ -123,37 +123,22 @@ class AuthButton(discord.ui.Button):
             if self.date not in existing_dates:
                 empty_col = len(existing_dates) + 1
                 sheet2.update_cell(1, empty_col, self.date)
-                cell = sheet2.cell(empty_row, empty_col)
-                cell.data_validation = gspread.DataValidationRule(
-                    gspread.DataValidationType.CHECKBOX, True, True
-                )
-                cell.value = True
+                sheet2.update_cell(empty_row, empty_col, "1")
             else:
                 col = existing_dates.index(self.date) + 1
-                cell = sheet2.cell(empty_row, col)
-                cell.data_validation = gspread.DataValidationRule(
-                    gspread.DataValidationType.CHECKBOX, True, True
-                )
-                cell.value = True
+                sheet2.update_cell(empty_row, col, "1")
         else:
             index = existing_users.index(str(self.user)) + 1
             existing_dates = sheet2.row_values(1)
             if self.date not in existing_dates:
                 empty_col = len(existing_dates) + 1
                 sheet2.update_cell(1, empty_col, self.date)
-                cell = sheet2.cell(index, empty_col)
-                cell.data_validation = gspread.DataValidationRule(
-                    gspread.DataValidationType.CHECKBOX, True, True
-                )
-                cell.value = True
+                sheet2.update_cell(index, empty_col, "1")
             else:
                 col = existing_dates.index(self.date) + 1
-                cell = sheet2.cell(index, col)
-                cell.data_validation = gspread.DataValidationRule(
-                    gspread.DataValidationType.CHECKBOX, True, True
-                )
-                cell.value = True
+                sheet2.update_cell(index, col, "1")
         await interaction.message.edit(embed=discord.Embed(title="Authentication", description="Authentication complete"), view=None)
+
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
