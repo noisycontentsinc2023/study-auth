@@ -106,13 +106,17 @@ async def lottery(ctx):
 sheet2 = client.open('테스트').worksheet('일취월장')
 rows = sheet2.get_all_values()
 
-class AuthButton(discord.ui.Button):
+class AuthView(discord.ui.View):
     def __init__(self, user, date):
-        super().__init__(style=discord.ButtonStyle.green, label="Confirm authentication")
+        super().__init__(timeout=None)  # Set timeout to None for an indefinite active time
         self.user = user
         self.date = date
     
-    async def callback(self, interaction: discord.Interaction):
+    async def on_timeout(self):
+        await self.message.edit(embed=discord.Embed(title="Authentication", description="Authentication timed out"), view=None)
+    
+    @discord.ui.button(label="Confirm authentication", style=discord.ButtonStyle.green)
+    async def auth_button(self, button: discord.ui.Button, interaction: discord.Interaction):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             return
         existing_users = sheet2.col_values(1)
@@ -137,18 +141,15 @@ class AuthButton(discord.ui.Button):
             else:
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
-        await interaction.message.edit(embed=discord.Embed(title="Authentication", description="Authentication complete"), view=None)
+        await interaction.message.edit(embed=discord.Embed(title="인증상태", description="인증완료!"), view=None)
 
-
-@bot.command(name='인증')
+@bot.command()
 async def Authentication(ctx, date):
     await ctx.message.delete()
-    embed = discord.Embed(title="Authentication", description="Verifying authentication")
-    view = discord.ui.View()
-    button = AuthButton(ctx.author, date)
-    view.add_item(button)
+    embed = discord.Embed(title="일취월장 인증", description="인증 대기중")
+    view = AuthView(ctx.author, date)
     msg = await ctx.send(embed=embed, view=view)
-    await button.wait_for("click")
+    await view.wait()
 
         
 #Run the bot
