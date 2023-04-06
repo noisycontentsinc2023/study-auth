@@ -116,7 +116,7 @@ class AuthButton(discord.ui.Button):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             return
         row = [str(self.user), self.date]
-        existing_users = sheet.col_values(1)
+        existing_users = sheet2.col_values(1)
         if str(self.user) in existing_users:
             index = existing_users.index(str(self.user)) + 1
             cell = sheet.find(self.date, in_row=1)
