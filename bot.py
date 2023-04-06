@@ -103,6 +103,7 @@ async def lottery(ctx):
     await message.edit(embed=embed)
     
 #------------------------------------------------#
+# Set up Google Sheets worksheet
 sheet2 = client.open('테스트').worksheet('일취월장')
 rows = sheet2.get_all_values()
 
@@ -116,7 +117,7 @@ class AuthView(discord.ui.View):
         await self.message.edit(embed=discord.Embed(title="인증상태", description="인증시간 초과"), view=None)
         self.clear_items()
 
-    @discord.ui.button(label="Confirm authentication", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="확인 중", style=discord.ButtonStyle.green)
     async def auth_button(self, button: discord.ui.Button, interaction: discord.Interaction):
         if discord.utils.get(self.user.roles, id=922400231549722664) is None:
             return
@@ -146,6 +147,7 @@ class AuthView(discord.ui.View):
 
         await self.message.edit(embed=discord.Embed(title="인증상황", description="인증완료!"), view=self)
         self.remove_item(button)
+        self.add_item(discord.ui.Button(label="인증되셨습니다!", style=discord.ButtonStyle.green, disabled=True))
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
