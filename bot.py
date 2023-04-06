@@ -17,6 +17,7 @@ from discord.ext import tasks, commands
 from discord.utils import get
 from urllib.request import Request
 from discord.ui import Select, Button, View
+from nltk.corpus import wordnet as wn
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
@@ -84,6 +85,27 @@ async def lottery(ctx):
 
     # Update the embed message
     await message.edit(embed=embed)
+    
+#------------------------------------------------#
+@bot.command(name='오늘의단어')
+async def word(ctx, language):
+    lang_codes = {'영어': 'eng', '스페인어': 'spa', '중국어': 'cmn-s'}
+    lang = lang_codes.get(language.lower(), None)
+    if lang is None:
+        await ctx.send(f"Sorry, I don't have word lists for the language {language}.")
+        return
+
+    synsets = wn.all_synsets(lang=lang)
+    words = random.sample(list(set(synset.lemma_names(lang=lang) for synset in synsets)), 5)
+    embed = discord.Embed(title=f"Word of the day in {language.capitalize()}", color=discord.Color.blue())
+    for word in words:
+        synset = wn.synset(f"{word}.n.{lang}.01")
+        definition = synset.definition()
+        examples = ", ".join(synset.examples()[:3])
+        pronunciation = f"/{synset.pronunciations()[0].pronunciation}/" if synset.pronunciations() else "Not available"
+        embed.add_field(name=word, value=f"Definition: {definition}\nExamples: {examples}\nPronunciation: {pronunciation}", inline=False)
+    await ctx.send(embed=embed)
+
         
 #Run the bot
 bot.run(TOKEN)
