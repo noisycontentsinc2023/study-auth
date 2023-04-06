@@ -108,18 +108,19 @@ rows = sheet2.get_all_values()
 
 class AuthView(discord.ui.View):
     def __init__(self, user, date):
-        super().__init__(timeout=None)  # Set timeout to None for an indefinite active time
+        super().__init__(timeout=None)
         self.user = user
         self.date = date
-    
+
     async def on_timeout(self):
-        await self.message.edit(embed=discord.Embed(title="Authentication", description="Authentication timed out"), view=None)
-        self.clear_items()  # Remove all items from the view
-    
+        await self.message.edit(embed=discord.Embed(title="인증상태", description="인증시간 초과"), view=None)
+        self.clear_items()
+
     @discord.ui.button(label="Confirm authentication", style=discord.ButtonStyle.green)
     async def auth_button(self, button: discord.ui.Button, interaction: discord.Interaction):
         if discord.utils.get(self.user.roles, id=922400231549722664) is None:
             return
+
         existing_users = sheet2.col_values(1)
         if str(self.user) not in existing_users:
             empty_row = len(existing_users) + 2
@@ -142,8 +143,9 @@ class AuthView(discord.ui.View):
             else:
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
+
         await self.message.edit(embed=discord.Embed(title="인증상황", description="인증완료!"), view=self)
-        self.stop()
+        self.remove_item(button)
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
@@ -151,7 +153,7 @@ async def Authentication(ctx, date):
     embed = discord.Embed(title="일취월장 인증", description="인증 대기중")
     view = AuthView(ctx.author, date)
     msg = await ctx.send(embed=embed, view=view)
-    view.message = msg  # Save the message object to the view
+    view.message = msg
     await view.wait()
 
         
