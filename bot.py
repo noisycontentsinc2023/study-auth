@@ -87,6 +87,8 @@ async def lottery(ctx):
     await message.edit(embed=embed)
     
 #------------------------------------------------#
+nltk.download('wordnet')
+
 @bot.command(name='오늘의단어')
 async def word(ctx, language):
     lang_codes = {'영어': 'eng', '스페인어': 'spa', '중국어': 'cmn-s'}
