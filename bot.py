@@ -117,7 +117,7 @@ class AuthView(discord.ui.View):
     
     @discord.ui.button(label="Confirm authentication", style=discord.ButtonStyle.green)
     async def auth_button(self, button: discord.ui.Button, interaction: discord.Interaction):
-        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
+        if discord.utils.get(interaction.author.roles, id=922400231549722664) is None:
             return
         existing_users = sheet2.col_values(1)
         if str(self.user) not in existing_users:
