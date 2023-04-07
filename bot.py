@@ -12,7 +12,6 @@ import json.decoder
 import gspread
 import re
 
-from sudoku import Sudoku
 from google.oauth2 import service_account
 from discord import Embed
 from discord.ext import tasks, commands
