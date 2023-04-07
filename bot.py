@@ -10,6 +10,7 @@ import random
 import json
 import json.decoder
 import gspread
+import re
 
 from google.oauth2 import service_account
 from discord import Embed
@@ -142,6 +143,12 @@ class AuthButton(discord.ui.Button):
 @bot.command(name='인증')
 async def Authentication(ctx, date):
     await ctx.message.delete()
+    
+    # Validate the input date
+    if not re.match(r'^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$', date):
+        await ctx.send("정확한 날짜를 입력해주세요! 날짜는 네 자리 숫자로 작성해주세요. 1월 1일을 입력하시려면 0101을 입력해주세요.")
+        return
+      
     embed = discord.Embed(title="인증상황", description=f"{ctx.author.mention}의 {date} 일취월장 인증입니다")
     view = discord.ui.View()
     button = AuthButton(ctx.author, date)
