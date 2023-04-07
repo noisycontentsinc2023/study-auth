@@ -99,9 +99,15 @@ class RandomMissionView(View):
         super().__init__(timeout=None)
         self.ctx = ctx
 
-    @discord.ui.button(label='랜덤미션 다시 뽑기')
+    @discord.ui.button(label='랜덤미션 다시 뽑기', disabled=True) # 버튼을 비활성화
     async def random_mission_button(self, button: Button, interaction: discord.Interaction):
-        await self.ctx.invoke(self.ctx.bot.get_command('미션'))
+        # 버튼이 활성화되어있는 경우
+        if not self.random_mission_button.disabled:
+            await self.ctx.invoke(self.ctx.bot.get_command('미션'))
+            # 버튼을 비활성화하고, "다시 뽑기는 1회만 가능합니다" 메시지 출력
+            self.random_mission_button.disabled = True
+            embed = discord.Embed(description="다시 뽑기는 1회만 가능합니다", color=0xff0000)
+            await self.message.edit(embed=embed, view=self)
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
