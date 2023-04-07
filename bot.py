@@ -117,7 +117,7 @@ class AuthButton(discord.ui.Button):
             return
         existing_users = sheet2.col_values(1)
         if str(self.user) not in existing_users:
-            empty_row = len(existing_users) + 2
+            empty_row = len(existing_users) + 1
             sheet2.update_cell(empty_row, 1, str(self.user))
             existing_dates = sheet2.row_values(1)
             if self.date not in existing_dates:
