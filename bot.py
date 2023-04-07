@@ -85,7 +85,6 @@ async def Register(ctx):
 
     # Append the username to the first empty row in column A
     sheet3.update_cell(row, 1, username)
-    sheet3.append_row([username])
 
     role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
     await ctx.author.add_roles(role)
