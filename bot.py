@@ -93,16 +93,15 @@ async def Register(ctx):
     embed = discord.Embed(description=f"{ctx.author.mention}님, 랜덤미션스터디에 정상적으로 등록됐습니다!",
                           color=0x00FF00)
     await ctx.send(embed=embed)
-
+    
 class RandomMissionView(View):
-    def __init__(self, ctx: commands.Context, message: discord.Message):
+    def __init__(self, ctx: Context, message: discord.Message):
         super().__init__(timeout=None)
         self.ctx = ctx
         self.message = message
 
     @discord.ui.button(label='다시 뽑기', style=discord.ButtonStyle.secondary)
     async def random_mission_button(self, button: Button, interaction: discord.Interaction):
-        # 재뽑기 버튼 클릭시 동작할 함수
         await self.message.edit(content="다시 뽑는 중...")
         await asyncio.sleep(1)
 
