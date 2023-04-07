@@ -149,7 +149,10 @@ async def Authentication(ctx, date):
     msg = await ctx.send(embed=embed, view=view)
     
     # Change this line to use the wait_for_component method on the view instance instead of the button.
-    await view.wait_for_component()
+    def check(interaction: discord.Interaction):
+        return interaction.message.id == msg.id and isinstance(interaction.component, discord.ui.Button)
+    
+    await bot.wait_for("interaction", check=check)
 
         
 #Run the bot
