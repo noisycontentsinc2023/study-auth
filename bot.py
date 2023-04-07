@@ -77,6 +77,14 @@ rows = sheet3.get_all_values()
 @bot.command(name='등록')
 async def Register(ctx):
     username = str(ctx.message.author)
+    
+    # Find the first empty row in column A
+    row = 2
+    while sheet3.cell(row, 1).value:
+        row += 1
+
+    # Append the username to the first empty row in column A
+    sheet3.update_cell(row, 1, username)
     sheet3.append_row([username])
 
     role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
