@@ -173,29 +173,27 @@ async def Relottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
-#------------------------------------------------#
-sheet3 = client.open('서버기록').worksheet('랜덤미션')
-rows = sheet3.get_all_values()
-
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     username = str(ctx.message.author)
     # Check if the user has already authenticated today
     today = datetime.datetime.now().strftime('%m%d')
+    
     try:
-        user_row = sheet3.find(username).row
+        user_cell = sheet3.find(username)
     except gspread.exceptions.CellNotFound:
         embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
         await ctx.send(embed=embed)
         return
 
+    user_row = user_cell.row
     if sheet3.cell(user_row, sheet3.find(today).col).value == '1':
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
     else:
         # If the user has not authenticated today, send an authentication window
-        embed = discord.Embed(title='랜덤미션인증툴', description=f'{username}\'님의 미션 인증 대기 중')
+        embed = discord.Embed(title='Authentication', description=f'{username}\'s authentication for today. 미션 인증 대기 중')
         view = discord.ui.View()
         button = AuthButton(ctx, username, today)
         view.add_item(button)
