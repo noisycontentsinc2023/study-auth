@@ -11,6 +11,7 @@ import json
 import json.decoder
 import gspread
 import re
+import pytz
 
 from google.oauth2 import service_account
 from discord import Embed
@@ -171,7 +172,49 @@ async def Relottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
-    
+
+@bot.command(name='랜덤미션인증')
+async def random_mission_auth(ctx, username):
+    # check if the user has already authenticated today
+    today = datetime.datetime.now().strftime('%m%d')
+    if sheet3.cell(sheet3.find(username).row, 1).value != username:
+        # if the username is not in the spreadsheet, send an error message
+        embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
+        await ctx.send(embed=embed)
+    elif sheet3.cell(sheet3.find(username).row, sheet3.find(today).col).value == '1':
+        # if the user has already authenticated today, send an error message
+        embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
+        await ctx.send(embed=embed)
+    else:
+        # if the user has not authenticated today, send an authentication window
+        embed = discord.Embed(title='Authentication', description=f'{username}\'s authentication for today.')
+        view = discord.ui.View()
+        button = AuthButton(ctx, username, today)
+        view.add_item(button)
+        await ctx.send(embed=embed, view=view)
+
+class AuthButton(discord.ui.Button):
+    def __init__(self, ctx, username, today):
+        super().__init__(style=discord.ButtonStyle.green, label="Authenticate")
+        self.ctx = ctx
+        self.username = username
+        self.today = today
+
+    async def callback(self, interaction: discord.Interaction):
+        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
+            # if the user doesn't have the required role, send an error message
+            embed = discord.Embed(title='Error', description='You do not have permission to authenticate.')
+            await interaction.message.edit(embed=embed, view=None)
+            return
+
+        # authenticate the user in the spreadsheet
+        user_row = sheet3.find(self.username).row
+        today_col = sheet3.find(self.today).col
+        sheet3.update_cell(user_row, today_col, '1')
+
+        # send a success message
+        embed = discord.Embed(title='Success', description=f'{self.username} has been authenticated.')
+        await interaction.message.edit(embed=embed, view=None) 
 #------------------------------------------------#
 # Set up Google Sheets worksheet
 sheet2 = client.open('서버기록').worksheet('일취월장')
