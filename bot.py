@@ -49,9 +49,6 @@ creds_info = {
 }
 creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
 client = gspread.authorize(creds)
-spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1s0_70dU_Jh1--QoCqYIlwlaQkgDXtNh08e6qZRMu2kY/edit?usp=sharing'
-# 스프레스시트 문서 가져오기 
-doc = gc.open_by_url(spreadsheet_url)
 
 async def generate_response(prompt):
     response = openai.Completion.create(
