@@ -97,46 +97,55 @@ async def Register(ctx):
 async def random_mission_button(self, button: Button, interaction: discord.Interaction):
     await self.ctx.invoke(self.ctx.bot.get_command('미션'))
 
+class RandomMissionView(View):
+    def __init__(self, ctx: Context):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+
+    @discord.ui.button(label='다시 뽑기')
+    async def random_mission_button(self, button: Button, interaction: discord.Interaction):
+        await self.lottery()
+
+    async def lottery(self):
+        choices = [('Mission 1', '★'), ('Mission 2', '★★'),
+                   ('Mission 3', '★★★'),
+                   ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
+                   ('Mission 9', '★★★'), ('Mission 10', '★★')]
+
+        embed = discord.Embed(title=f"{self.ctx.author.name}님의 오늘의 미션입니다", color=0xff0000)
+        message = await self.ctx.send(embed=embed)
+        selected_choices = random.sample(choices, 10)
+
+        for i, (choice, difficulty) in enumerate(selected_choices):
+            embed.clear_fields()
+            embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
+            embed.add_field(name='난이도', value=difficulty, inline=True)
+            await message.edit(embed=embed)
+            await asyncio.sleep(0.2)
+
+        result, difficulty = random.choice(selected_choices)
+        embed.clear_fields()
+        embed.add_field(name="랜덤미션뽑기중.", value=result, inline=False)
+        embed.add_field(name='난이도', value=difficulty, inline=False)
+        embed.set_footer(text='오늘의 미션입니다!')
+        view = RandomMissionView(self.ctx)
+        await message.edit(embed=embed, view=view)
+        await view.message.remove_reaction(button.emoji, self.ctx.author)
+
 @bot.command(name='미션')
 async def Random_Mission(ctx):
     # Check if the user has the required role
     required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
     if required_role in ctx.author.roles:
         if str(ctx.channel.id) == "1093780375890825246":
-            await lottery(ctx)
+            view = RandomMissionView(ctx)
+            await view.lottery()
         else:
             await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
     else:
         # Send the message if the user does not have the required role
         embed = discord.Embed(description="랜덤미션스터디 참여자만 !미션 명령어를 사용할 수 있어요", color=0xff0000)
         await ctx.send(embed=embed)
-
-
-async def lottery(ctx):
-    choices = [('Mission 1', '★'), ('Mission 2', '★★'),
-               ('Mission 3', '★★★'),
-               ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
-               ('Mission 9', '★★★'), ('Mission 10', '★★')]
-
-    embed = discord.Embed(title=f"{ctx.author.name}님의 오늘의 미션입니다", color=0xff0000)
-    message = await ctx.send(embed=embed)
-    message_id = message.id
-    selected_choices = random.sample(choices, 10)
-
-    for i, (choice, difficulty) in enumerate(selected_choices):
-        embed.clear_fields()
-        embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
-        embed.add_field(name='난이도', value=difficulty, inline=True)
-        await message.edit(embed=embed)
-        await asyncio.sleep(0.2)
-
-    result, difficulty = random.choice(selected_choices)
-    embed.clear_fields()
-    embed.add_field(name="랜덤미션뽑기중.", value=result, inline=False)
-    embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='오늘의 미션입니다!')
-    view = RandomMissionView(ctx)
-    await message.edit(embed=embed, view=view)
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
