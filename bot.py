@@ -195,7 +195,7 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
     else:
         # If the user has not authenticated today, send an authentication window
-        embed = discord.Embed(title='Authentication', description=f'{username}\'s authentication for today. 미션 인증 대기 중')
+        embed = discord.Embed(title='랜덤미션인증툴', description=f'{username}\'님의 미션 인증 대기 중')
         view = discord.ui.View()
         button = AuthButton(ctx, username, today)
         view.add_item(button)
@@ -203,7 +203,7 @@ async def random_mission_auth(ctx):
         
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today):
-        super().__init__(style=discord.ButtonStyle.green, label="Authenticate")
+        super().__init__(style=discord.ButtonStyle.green, label="인증대기")
         self.ctx = ctx
         self.username = username
         self.today = today
@@ -211,7 +211,7 @@ class AuthButton2(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             # If the user doesn't have the required role, send an error message
-            embed = discord.Embed(title='Error', description='You do not have permission to authenticate.')
+            embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
             await interaction.message.edit(embed=embed, view=None)
             return
 
@@ -227,7 +227,7 @@ class AuthButton2(discord.ui.Button):
         sheet3.update_cell(user_row, today_col, '1')
 
         # Send a success message
-        embed = discord.Embed(title='Success', description=f'{self.username} has been authenticated. 정상적으로 인증되셨습니다')
+        embed = discord.Embed(title='Success', description=f'{self.username}님, 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
         
 #------------------------------------------------#
