@@ -71,35 +71,49 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
+@bot.command(name='등록')
+async def Register(ctx):
+    username = str(ctx.message.author)
+    sheet3.append_row([username])
+
+    role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
+    await ctx.author.add_roles(role)
+
+    embed = discord.Embed(description=f"{ctx.author.mention}님, 랜덤미션스터디에 정상적으로 등록됐습니다!",
+                          color=0x00FF00)
+    await ctx.send(embed=embed)
+
+
 @bot.command(name='미션')
+@commands.has_role(1093781563508015105)
+async def Random_Mission(ctx):
+    if str(ctx.channel.id) == "1093780375890825246":
+        await lottery(ctx)
+    else:
+        await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
+
+
 async def lottery(ctx):
-    # Items to be randomly selected
-    choices = ['학습하는 언어 한 마디 녹음하기', '일취월장에 인증하기', '!메모 기능을 활용해서 안외워지는 단어 입력해보기', '학습하는 언어 유튜브 검색해보기', '미션 패스권!', 'item6', 'item7', 'item8', 'item9', 'item10']
+    choices = ['미션1', '미션2',
+               '미션3',
+               '미션4', '미션패스권!', '미션6', '미션7', '미션8',
+               '미션9', '미션10']
 
-    # Create an embed message that will output the result
-    embed = discord.Embed(title='오늘의 미션', color=0xff0000)
-
-    # Send the initial message and store the message ID
+    embed = discord.Embed(title="Today's Mission", color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
-
-    # Randomly select 10 items from choices
     selected_choices = random.sample(choices, 10)
 
-    # Add randomly selected items to the embed message at 0.2 second intervals and clear existing fields
     for i, choice in enumerate(selected_choices):
         embed.clear_fields()
-        embed.add_field(name=f'{i+1}번 미션', value=choice, inline=True)
+        embed.add_field(name=f'{i + 1} mission', value=choice, inline=True)
         await message.edit(embed=embed)
         await asyncio.sleep(0.2)
 
-    # Randomize the final result from selected_choices
     result = random.choice(selected_choices)
     embed.clear_fields()
-    embed.add_field(name='Lottery Result', value=result, inline=False)
+    embed.add_field(name='오늘의 미션은..', value=result, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
-
-    # Update the embed message
     await message.edit(embed=embed)
     
 #------------------------------------------------#
