@@ -98,16 +98,50 @@ class RandomMissionView(View):
     def __init__(self, ctx: Context):
         super().__init__(timeout=None)
         self.ctx = ctx
-        self.is_clicked = None # 수정된 부분
 
-    @discord.ui.button(label='랜덤미션 다시 뽑기', disabled=False) # 수정된 부분
+    @discord.ui.button(label='랜덤미션 다시 뽑기')
     async def random_mission_button(self, button: Button, interaction: discord.Interaction):
-        if self.is_clicked: # 수정된 부분
-            await button.reply("다시 뽑기는 1회만 가능합니다.") # 수정된 부분
-        else:
-            await self.ctx.invoke(self.ctx.bot.get_command('미션'))
-            self.is_clicked = True # 수정된 부분
-            button.disabled = True # 수정된 부분
+        # Delete the RandomMissionView object
+        await self.delete()
+        
+        # Create a new RandomMissionAgainView object and call the lottery function
+        view = RandomMissionAgainView(self.ctx)
+        await view.lottery()
+
+class RandomMissionAgainView(View):
+    def __init__(self, ctx: Context):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+
+    @discord.ui.button(label='다시 뽑기')
+    async def random_mission_again_button(self, button: Button, interaction: discord.Interaction):
+        await self.lottery()
+
+    async def lottery(self):
+        choices = [('Mission 1', '★'), ('Mission 2', '★★'),
+                   ('Mission 3', '★★★'),
+                   ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
+                   ('Mission 9', '★★★'), ('Mission 10', '★★')]
+
+        embed = discord.Embed(title=f"{self.ctx.author.name}님의 오늘의 미션입니다!", color=0xff0000)
+        message = await self.ctx.send(embed=embed)
+        selected_choices = random.sample(choices, 10)
+
+        for i, (choice, difficulty) in enumerate(selected_choices):
+            embed.clear_fields()
+            embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
+            embed.add_field(name='난이도', value=difficulty, inline=True)
+            await message.edit(embed=embed)
+            await asyncio.sleep(0.2)
+
+        result, difficulty = random.choice(selected_choices)
+        embed.clear_fields()
+        embed.add_field(name="랜덤미션뽑기중...", value=result, inline=False)
+        embed.add_field(name='난이도', value=difficulty, inline=False)
+        embed.set_footer(text='오늘의 미션입니다!')
+        view = RandomMissionView(self.ctx)
+        await message.edit(embed=embed, view=view)
+        await message.remove_reaction(button.emoji, self.ctx.bot.user)
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
