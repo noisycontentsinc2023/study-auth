@@ -173,7 +173,7 @@ async def Relottery(ctx):
     await message.edit(embed=embed, view=view)
 
 
-@bot.command(name='랜덤미션인증')
+@bot.command(name='미션인증')
 async def random_mission_auth(ctx, username):
     # check if the user has already authenticated today
     today = datetime.datetime.now().strftime('%m%d')
