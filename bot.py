@@ -137,17 +137,19 @@ class AuthButton(discord.ui.Button):
             else:
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
-        await interaction.message.edit(embed=discord.Embed(title="인증상황", description="인증완료"), view=None)
+        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}'s {self.date} 인증이 완료됐습니다"), view=None)
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
     await ctx.message.delete()
-    embed = discord.Embed(title="인증상황", description="Verifying authentication")
+    embed = discord.Embed(title="인증상황", description=f"This is {ctx.author.mention}'s {date} 일취월장 인증입니다")
     view = discord.ui.View()
     button = AuthButton(ctx.author, date)
     view.add_item(button)
     msg = await ctx.send(embed=embed, view=view)
-    await button.wait_for("click")
+    
+    # Change this line to use the wait_for_component method on the view instance instead of the button.
+    await view.wait_for_component()
 
         
 #Run the bot
