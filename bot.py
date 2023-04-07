@@ -147,7 +147,7 @@ async def lottery(ctx):
     await message.edit(embed=embed, view=view)
 
 @bot.command(name='再次')
-async def lottery(ctx):
+async def Relottery(ctx):
     choices = [('Mission 1', '★'), ('Mission 2', '★★'),
                ('Mission 3', '★★★'),
                ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
