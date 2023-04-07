@@ -100,34 +100,11 @@ class RandomMissionView(View):
         self.ctx = ctx
         self.message = message
 
-    @discord.ui.button(label='다시 뽑기', style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label='다시 뽑기')
     async def random_mission_button(self, button: Button, interaction: discord.Interaction):
-        await self.message.edit(content="다시 뽑는 중...")
-        await asyncio.sleep(1)
+        await self.message.delete()
+        await self.ctx.invoke(self.ctx.bot.get_command('再次'))
 
-        choices = [('Mission 1', '★'), ('Mission 2', '★★'),
-                   ('Mission 3', '★★★'),
-                   ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
-                   ('Mission 9', '★★★'), ('Mission 10', '★★')]
-
-        embed = discord.Embed(title=f"{self.ctx.author.name}님의 오늘의 미션입니다!", color=0xff0000)
-        selected_choices = random.sample(choices, 10)
-
-        for i, (choice, difficulty) in enumerate(selected_choices):
-            embed.clear_fields()
-            embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
-            embed.add_field(name='난이도', value=difficulty, inline=True)
-            await self.message.edit(embed=embed)
-            await asyncio.sleep(0.2)
-
-        result, difficulty = random.choice(selected_choices)
-        embed.clear_fields()
-        embed.add_field(name='난이도', value=difficulty, inline=False)
-        embed.set_footer(text='오늘의 미션입니다!')
-        view = RandomMissionView(self.ctx, self.message)
-        await self.message.edit(embed=embed, view=view)
-        await button.disable() # 버튼 비활성화
-        await self.message.channel.send(f"{self.ctx.author.mention}, 미션을 다시 뽑았습니다!")
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
@@ -166,7 +143,32 @@ async def lottery(ctx):
     embed.clear_fields()
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
-    view = RandomMissionView(ctx)
+    view = RandomMissionView(ctx, message)
+    await message.edit(embed=embed, view=view)
+
+@bot.command(name='再次')
+async def lottery(ctx):
+    choices = [('Mission 1', '★'), ('Mission 2', '★★'),
+               ('Mission 3', '★★★'),
+               ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
+               ('Mission 9', '★★★'), ('Mission 10', '★★')]
+
+    embed = discord.Embed(title=f"{ctx.author.name}님의 다시 뽑기 결과입니다!", color=0xff0000)
+    message = await ctx.send(embed=embed)
+    message_id = message.id
+    selected_choices = random.sample(choices, 10)
+
+    for i, (choice, difficulty) in enumerate(selected_choices):
+        embed.clear_fields()
+        embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
+        embed.add_field(name='난이도', value=difficulty, inline=True)
+        await message.edit(embed=embed)
+        await asyncio.sleep(0.2)
+
+    result, difficulty = random.choice(selected_choices)
+    embed.clear_fields()
+    embed.add_field(name='난이도', value=difficulty, inline=False)
+    embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
     
