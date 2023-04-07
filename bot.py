@@ -172,6 +172,9 @@ async def Relottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
+#------------------------------------------------#
+sheet3 = client.open('서버기록').worksheet('랜덤미션')
+rows = sheet3.get_all_values()
 
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx, username):
