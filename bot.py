@@ -232,7 +232,7 @@ class AuthButton2(discord.ui.Button):
         embed = discord.Embed(title='Success', description=f'{self.username}님, 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
         
-@bot.command(name='적누적')
+@bot.command(name='누적')
 async def mission_count(ctx):
     username = str(ctx.message.author)
     
