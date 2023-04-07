@@ -137,7 +137,7 @@ class AuthButton(discord.ui.Button):
             else:
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
-        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}의 {self.date} 인증이 완료됐습니다"), view=None)
+        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {ctx.author.mention}의 {date} 일취월장 인증을 완료됐습니다"), view=None)
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
