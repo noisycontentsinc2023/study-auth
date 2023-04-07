@@ -142,7 +142,7 @@ class AuthButton(discord.ui.Button):
 @bot.command(name='인증')
 async def Authentication(ctx, date):
     await ctx.message.delete()
-    embed = discord.Embed(title="인증상황", description=f"This is {ctx.author.mention}'s {date} 일취월장 인증입니다")
+    embed = discord.Embed(title="인증상황", description=f"{ctx.author.mention}'s {date} 일취월장 인증입니다")
     view = discord.ui.View()
     button = AuthButton(ctx.author, date)
     view.add_item(button)
