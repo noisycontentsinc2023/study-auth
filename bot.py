@@ -178,7 +178,7 @@ rows = sheet3.get_all_values()
 
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
-    username = ctx.author.name
+    username = str(ctx.message.author)
     # Check if the user has already authenticated today
     today = datetime.datetime.now().strftime('%m%d')
     try:
@@ -200,7 +200,6 @@ async def random_mission_auth(ctx):
         view.add_item(button)
         await ctx.send(embed=embed, view=view)
 
-
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, username, today):
         super().__init__(style=discord.ButtonStyle.green, label="Authenticate")
@@ -211,18 +210,25 @@ class AuthButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             # If the user doesn't have the required role, send an error message
-            embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
+            embed = discord.Embed(title='Error', description='You do not have permission to authenticate.')
+            await interaction.message.edit(embed=embed, view=None)
+            return
+
+        try:
+            user_row = sheet3.find(self.username).row
+        except gspread.exceptions.CellNotFound:
+            embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
             await interaction.message.edit(embed=embed, view=None)
             return
 
         # Authenticate the user in the spreadsheet
-        user_row = sheet3.find(self.username).row
         today_col = sheet3.find(self.today).col
         sheet3.update_cell(user_row, today_col, '1')
 
         # Send a success message
-        embed = discord.Embed(title='Success', description=f'{self.username}님 정상적으로 인증되셨습니다')
+        embed = discord.Embed(title='Success', description=f'{self.username} has been authenticated. 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
+        
 #------------------------------------------------#
 # Set up Google Sheets worksheet
 sheet2 = client.open('서버기록').worksheet('일취월장')
