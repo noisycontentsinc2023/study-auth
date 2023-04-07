@@ -10,6 +10,7 @@ import random
 import json
 import json.decoder
 import gspread
+import gspread.exceptions
 import re
 import pytz
 
@@ -196,7 +197,7 @@ async def random_mission_auth(ctx):
         # If the user has not authenticated today, send an authentication window
         embed = discord.Embed(title='Authentication', description=f'{username}\'s authentication for today. 미션 인증 대기 중')
         view = discord.ui.View()
-        button = AuthButton2(ctx, username, today)
+        button = AuthButton(ctx, username, today)
         view.add_item(button)
         await ctx.send(embed=embed, view=view)
         
