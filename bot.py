@@ -232,6 +232,36 @@ class AuthButton2(discord.ui.Button):
         embed = discord.Embed(title='Success', description=f'{self.username}님, 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
         
+@bot.command(name='미션')
+async def mission_count(ctx):
+    username = str(ctx.message.author)
+    
+    # Find the user's row in the Google Sheet
+    user_row = None
+    for row in sheet3.get_all_values():
+        if username in row:
+            user_row = row
+            break
+
+    if user_row is None:
+        embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
+        await ctx.send(embed=embed)
+        return
+
+    user_cell = sheet3.find(username)
+    count = int(sheet3.cell(user_cell.row, 9).value)  # Column I is the 9th column
+
+    # Send the embed message with the user's authentication count
+    embed = discord.Embed(description=f"{ctx.author.mention}님은 {count} 회 인증하셨어요!", color=0x00FF00)
+    await ctx.send(embed=embed)
+
+    # Check if the user's count is 6 or 7 and grant the Finisher role
+    if count in [6, 7]:
+        role = discord.utils.get(ctx.guild.roles, id=1093831438475989033)
+        await ctx.author.add_roles(role)
+        embed = discord.Embed(description="완주를 축하드립니다! 완주자 롤을 받으셨어요!", color=0x00FF00)
+        await ctx.send(embed=embed)
+        
 #------------------------------------------------#
 # Set up Google Sheets worksheet
 sheet2 = client.open('서버기록').worksheet('일취월장')
