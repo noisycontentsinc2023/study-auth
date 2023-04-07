@@ -199,7 +199,7 @@ async def random_mission_auth(ctx):
         button = AuthButton(ctx, username, today)
         view.add_item(button)
         await ctx.send(embed=embed, view=view)
-
+        
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, username, today):
         super().__init__(style=discord.ButtonStyle.green, label="Authenticate")
