@@ -93,6 +93,14 @@ async def Register(ctx):
                           color=0x00FF00)
     await ctx.send(embed=embed)
 
+class RandomMissionView(View):
+    def __init__(self, ctx: Context):
+        super().__init__(timeout=None)
+        self.ctx = ctx
+
+    @discord.ui.button(label='랜덤미션을 한 번 더 돌릴까요?')
+    async def random_mission_button(self, button: Button, interaction: discord.Interaction):
+        await self.ctx.invoke(self.ctx.bot.get_command('mission'))
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
@@ -115,7 +123,7 @@ async def lottery(ctx):
                ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
                ('Mission 9', '★★★'), ('Mission 10', '★★')]
 
-    embed = discord.Embed(title="Today's Mission", color=0xff0000)
+    embed = discord.Embed(title=f"Today's Mission for {ctx.author.mention}", color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
@@ -132,7 +140,8 @@ async def lottery(ctx):
     embed.add_field(name="랜덤미션뽑기중.", value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
-    await message.edit(embed=embed)
+    view = RandomMissionView(ctx)
+    await message.edit(embed=embed, view=view)
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
