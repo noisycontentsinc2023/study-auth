@@ -177,7 +177,8 @@ sheet3 = client.open('서버기록').worksheet('랜덤미션')
 rows = sheet3.get_all_values()
 
 @bot.command(name='미션인증')
-async def random_mission_auth(ctx, username):
+async def random_mission_auth(ctx):
+    username = ctx.author.name
     # check if the user has already authenticated today
     today = datetime.datetime.now().strftime('%m%d')
     if sheet3.cell(sheet3.find(username).row, 1).value != username:
