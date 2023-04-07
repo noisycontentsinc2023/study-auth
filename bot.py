@@ -108,8 +108,9 @@ async def lottery(ctx):
 sheet2 = client.open('테스트').worksheet('일취월장')
 rows = sheet2.get_all_values()
 class AuthButton(discord.ui.Button):
-    def __init__(self, user, date):
+    def __init__(self, ctx, user, date):
         super().__init__(style=discord.ButtonStyle.green, label="확인 ")
+        self.ctx = ctx
         self.user = user
         self.date = date
     
@@ -138,7 +139,7 @@ class AuthButton(discord.ui.Button):
             else:
                 col = existing_dates.index(self.date) + 1
                 sheet2.update_cell(index, col, "1")
-        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {ctx.author.mention}의 {date} 일취월장 인증을 완료됐습니다"), view=None)
+        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장 인증을 완료됐습니다"), view=None)
 
 @bot.command(name='인증')
 async def Authentication(ctx, date):
@@ -149,16 +150,26 @@ async def Authentication(ctx, date):
         await ctx.send("정확한 날짜를 입력해주세요! 날짜는 네 자리 숫자로 작성해주세요. 1월 1일을 입력하시려면 0101을 입력해주세요.")
         return
       
+    existing_users = sheet2.col_values(1)
+    if str(ctx.author) in existing_users:
+        user_index = existing_users.index(str(ctx.author)) + 1
+        existing_dates = sheet2.row_values(1)
+        if date in existing_dates:
+            date_index = existing_dates.index(date) + 1
+            cell_value = sheet2.cell(user_index, date_index).value
+            if cell_value == "1":
+                await ctx.send(embed=discord.Embed(title="인증상황", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
+                return
+
     embed = discord.Embed(title="인증상황", description=f"{ctx.author.mention}의 {date} 일취월장 인증입니다")
     view = discord.ui.View()
-    button = AuthButton(ctx.author, date)
+    button = AuthButton(ctx, ctx.author, date)
     view.add_item(button)
     msg = await ctx.send(embed=embed, view=view)
-    
-    # Change this line to use the wait_for_component method on the view instance instead of the button.
+
     def check(interaction: discord.Interaction):
         return interaction.message.id == msg.id and interaction.data.get("component_type") == discord.ComponentType.button.value
-    
+
     await bot.wait_for("interaction", check=check)
 
         
