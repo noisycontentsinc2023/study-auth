@@ -96,12 +96,18 @@ async def Register(ctx):
 
 
 @bot.command(name='미션')
-@commands.has_role(1093781563508015105)
 async def Random_Mission(ctx):
-    if str(ctx.channel.id) == "1093780375890825246":
-        await lottery(ctx)
+    # Check if the user has the required role
+    required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
+    if required_role in ctx.author.roles:
+        if str(ctx.channel.id) == "1093780375890825246":
+            await lottery(ctx)
+        else:
+            await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
     else:
-        await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
+        # Send the message if the user does not have the required role
+        embed = discord.Embed(description="랜덤미션스터디 참여자만 !미션 명령어를 사용할 수 있어요", color=0xff0000)
+        await ctx.send(embed=embed)
 
 
 async def lottery(ctx):
