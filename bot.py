@@ -124,7 +124,7 @@ async def lottery(ctx):
                ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
                ('Mission 9', '★★★'), ('Mission 10', '★★')]
 
-    embed = discord.Embed(title=f"Today's Mission for {ctx.author.mention}", color=0xff0000)
+    embed = discord.Embed(title=f"{self.ctx.author.mention}님의 오늘의 미션입니다", color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
