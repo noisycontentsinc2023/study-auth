@@ -179,15 +179,19 @@ async def random_mission_auth(ctx):
     # Check if the user has already authenticated today
     today = datetime.datetime.now().strftime('%m%d')
     
-    try:
-        user_cell = sheet3.find(username)
-    except gspread.exceptions.CellNotFound:
+    user_row = None
+    for row in sheet3.get_all_values():
+        if username in row:
+            user_row = row
+            break
+
+    if user_row is None:
         embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
         await ctx.send(embed=embed)
         return
 
-    user_row = user_cell.row
-    if sheet3.cell(user_row, sheet3.find(today).col).value == '1':
+    user_cell = sheet3.find(username)
+    if sheet3.cell(user_cell.row, sheet3.find(today).col).value == '1':
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
