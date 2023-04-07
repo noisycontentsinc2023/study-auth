@@ -14,7 +14,8 @@ import re
 
 from google.oauth2 import service_account
 from discord import Embed
-from discord.ext import tasks, commands, Context
+from discord.ext import tasks, commands
+from discord.ext.commands import Context
 from discord.utils import get
 from urllib.request import Request
 from discord.ui import Select, Button, View
