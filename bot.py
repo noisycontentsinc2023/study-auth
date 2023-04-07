@@ -105,7 +105,7 @@ async def lottery(ctx):
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
-sheet2 = doc.open('서버기록').worksheet('일취월장')
+sheet2 = client.open('서버기록').worksheet('일취월장')
 rows = sheet2.get_all_values()
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, user, date):
