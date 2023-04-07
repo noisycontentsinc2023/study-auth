@@ -172,6 +172,20 @@ async def Authentication(ctx, date):
 
     await bot.wait_for("interaction", check=check)
 
-        
+
+@bot.command(name='스도쿠')
+async def generate_sudoku(ctx, difficulty: str = 'easy'):
+    if difficulty.lower() not in ['easy', 'medium', 'hard']:
+        await ctx.send('Invalid difficulty. Please choose "easy", "medium", or "hard".')
+        return
+
+    # Generate a Sudoku puzzle
+    puzzle = Sudoku(difficulty=difficulty.lower())
+    puzzle_text = '```\n' + str(puzzle) + '```'
+
+    # Send the puzzle to the user
+    embed = discord.Embed(title=f'Sudoku Puzzle ({difficulty.capitalize()})', description=puzzle_text)
+    await ctx.send(embed=embed)
+    
 #Run the bot
 bot.run(TOKEN)
