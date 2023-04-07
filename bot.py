@@ -196,11 +196,11 @@ async def random_mission_auth(ctx):
         # If the user has not authenticated today, send an authentication window
         embed = discord.Embed(title='Authentication', description=f'{username}\'s authentication for today. 미션 인증 대기 중')
         view = discord.ui.View()
-        button = AuthButton(ctx, username, today)
+        button = AuthButton2(ctx, username, today)
         view.add_item(button)
         await ctx.send(embed=embed, view=view)
         
-class AuthButton(discord.ui.Button):
+class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today):
         super().__init__(style=discord.ButtonStyle.green, label="Authenticate")
         self.ctx = ctx
