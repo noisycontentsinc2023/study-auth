@@ -111,25 +111,27 @@ async def Random_Mission(ctx):
 
 
 async def lottery(ctx):
-    choices = ['미션1', '미션2',
-               '미션3',
-               '미션4', '미션패스권!', '미션6', '미션7', '미션8',
-               '미션9', '미션10']
+    choices = [('Mission 1', '★'), ('Mission 2', '★★'),
+               ('Mission 3', '★★★'),
+               ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
+               ('Mission 9', '★★★'), ('Mission 10', '★★')]
 
     embed = discord.Embed(title="Today's Mission", color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
 
-    for i, choice in enumerate(selected_choices):
+    for i, (choice, difficulty) in enumerate(selected_choices):
         embed.clear_fields()
-        embed.add_field(name=f'{i + 1} mission', value=choice, inline=True)
+        embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
+        embed.add_field(name='난이도', value=difficulty, inline=True)
         await message.edit(embed=embed)
         await asyncio.sleep(0.2)
 
-    result = random.choice(selected_choices)
+    result, difficulty = random.choice(selected_choices)
     embed.clear_fields()
-    embed.add_field(name='오늘의 미션은..', value=result, inline=False)
+    embed.add_field(name="랜덤미션뽑기중.", value=result, inline=False)
+    embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed)
     
