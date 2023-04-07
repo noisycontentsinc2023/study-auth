@@ -150,7 +150,7 @@ async def Authentication(ctx, date):
     
     # Change this line to use the wait_for_component method on the view instance instead of the button.
     def check(interaction: discord.Interaction):
-        return interaction.message.id == msg.id and interaction.component_type == discord.ComponentType.button
+        return interaction.message.id == msg.id and interaction.data.get("component_type") == discord.ComponentType.button.value
     
     await bot.wait_for("interaction", check=check)
 
