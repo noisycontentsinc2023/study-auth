@@ -95,46 +95,40 @@ async def Register(ctx):
     await ctx.send(embed=embed)
 
 class RandomMissionView(View):
-    def __init__(self, ctx: Context):
+    def __init__(self, ctx: commands.Context, message: discord.Message):
         super().__init__(timeout=None)
         self.ctx = ctx
-        self.button_disabled = False # 수정된 부분
+        self.message = message
 
-    @discord.ui.button(label='랜덤미션 다시 뽑기', disabled=False) # 수정된 부분
+    @discord.ui.button(label='다시 뽑기', style=discord.ButtonStyle.secondary)
     async def random_mission_button(self, button: Button, interaction: discord.Interaction):
-        if not self.button_disabled: # 수정된 부분
-            await self.lottery()
-            self.button_disabled = True # 수정된 부분
-            button.disabled = True # 수정된 부분
-        else: # 수정된 부분
-            embed = discord.Embed(description="다시뽑기는 1회만 가능합니다.", color=0xff0000)
-            message = await self.ctx.send(embed=embed)
-            await asyncio.sleep(3)
-            await message.delete()
+        # 재뽑기 버튼 클릭시 동작할 함수
+        await self.message.edit(content="다시 뽑는 중...")
+        await asyncio.sleep(1)
 
-    async def lottery(self):
         choices = [('Mission 1', '★'), ('Mission 2', '★★'),
                    ('Mission 3', '★★★'),
                    ('Mission 4', '★★'), ('Mission Pass!', '★'), ('Mission 6', '★★'), ('Mission 7', '★★★'), ('Mission 8', '★★'),
                    ('Mission 9', '★★★'), ('Mission 10', '★★')]
 
-        embed = discord.Embed(title=f"{self.ctx.author.name}님의 오늘의 미션입니다", color=0xff0000)
-        message = await self.ctx.send(embed=embed)
+        embed = discord.Embed(title=f"{self.ctx.author.name}님의 오늘의 미션입니다!", color=0xff0000)
         selected_choices = random.sample(choices, 10)
 
         for i, (choice, difficulty) in enumerate(selected_choices):
             embed.clear_fields()
             embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
             embed.add_field(name='난이도', value=difficulty, inline=True)
-            await message.edit(embed=embed)
+            await self.message.edit(embed=embed)
             await asyncio.sleep(0.2)
 
         result, difficulty = random.choice(selected_choices)
         embed.clear_fields()
         embed.add_field(name='난이도', value=difficulty, inline=False)
         embed.set_footer(text='오늘의 미션입니다!')
-        view = RandomMissionView(self.ctx)
-        await message.edit(embed=embed, view=view)
+        view = RandomMissionView(self.ctx, self.message)
+        await self.message.edit(embed=embed, view=view)
+        await button.disable() # 버튼 비활성화
+        await self.message.channel.send(f"{self.ctx.author.mention}, 미션을 다시 뽑았습니다!")
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
@@ -175,6 +169,7 @@ async def lottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     view = RandomMissionView(ctx)
     await message.edit(embed=embed, view=view)
+
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
