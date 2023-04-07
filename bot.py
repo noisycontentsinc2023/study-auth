@@ -179,23 +179,27 @@ rows = sheet3.get_all_values()
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     username = ctx.author.name
-    # check if the user has already authenticated today
+    # Check if the user has already authenticated today
     today = datetime.datetime.now().strftime('%m%d')
-    if sheet3.cell(sheet3.find(username).row, 1).value != username:
-        # if the username is not in the spreadsheet, send an error message
+    try:
+        user_row = sheet3.find(username).row
+    except gspread.exceptions.CellNotFound:
         embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
         await ctx.send(embed=embed)
-    elif sheet3.cell(sheet3.find(username).row, sheet3.find(today).col).value == '1':
-        # if the user has already authenticated today, send an error message
+        return
+
+    if sheet3.cell(user_row, sheet3.find(today).col).value == '1':
+        # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
     else:
-        # if the user has not authenticated today, send an authentication window
-        embed = discord.Embed(title='Authentication', description=f'{username}\'s authentication for today.')
+        # If the user has not authenticated today, send an authentication window
+        embed = discord.Embed(title='Authentication', description=f'{username}\'s authentication for today. 미션 인증 대기 중')
         view = discord.ui.View()
         button = AuthButton(ctx, username, today)
         view.add_item(button)
         await ctx.send(embed=embed, view=view)
+
 
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, username, today):
@@ -206,19 +210,19 @@ class AuthButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
-            # if the user doesn't have the required role, send an error message
-            embed = discord.Embed(title='Error', description='You do not have permission to authenticate.')
+            # If the user doesn't have the required role, send an error message
+            embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
             await interaction.message.edit(embed=embed, view=None)
             return
 
-        # authenticate the user in the spreadsheet
+        # Authenticate the user in the spreadsheet
         user_row = sheet3.find(self.username).row
         today_col = sheet3.find(self.today).col
         sheet3.update_cell(user_row, today_col, '1')
 
-        # send a success message
-        embed = discord.Embed(title='Success', description=f'{self.username} has been authenticated.')
-        await interaction.message.edit(embed=embed, view=None) 
+        # Send a success message
+        embed = discord.Embed(title='Success', description=f'{self.username}님 정상적으로 인증되셨습니다')
+        await interaction.message.edit(embed=embed, view=None)
 #------------------------------------------------#
 # Set up Google Sheets worksheet
 sheet2 = client.open('서버기록').worksheet('일취월장')
