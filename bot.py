@@ -15,7 +15,6 @@ import pytz
 import gspread
 
 from google.oauth2 import service_account
-from google.oauth2.service_account import Credentials
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.ext.commands import Context
@@ -51,6 +50,9 @@ creds_info = {
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/noisycontents%40thematic-bounty-382700.iam.gserviceaccount.com"
 }
 creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
+# Set up Google Sheets worksheet
+sheet2 = client.open('서버기록').worksheet('일취월장')
+rows = sheet2.get_all_values()
 
 async def generate_response(prompt):
     response = openai.Completion.create(
@@ -74,6 +76,9 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
+# Set up Google Sheets worksheet
+sheet2 = client.open('서버기록').worksheet('랜덤미션')
+rows = sheet2.get_all_values()
 
 @bot.command(name='등록')
 async def Register(ctx):
