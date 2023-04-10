@@ -248,9 +248,12 @@ class AuthButton2(discord.ui.Button):
         
         # Set the auth_event to stop the loop
         self.auth_event.set()
-
+        
+        # Remove the button from the view
+        self.view.clear_items()
+        
         # Send a success message
-        embed = discord.Embed(title='Success', description=f'{self.username}님, 정상적으로 인증되셨습니다')
+        embed = discord.Embed(title='인증완료!', description=f'{self.username}님, 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
         
 @bot.command(name='누적')
