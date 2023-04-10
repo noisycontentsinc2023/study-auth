@@ -75,20 +75,24 @@ async def gpt(ctx, *, message):
 #------------------------------------------------#
 async with agcm.authorize() as client:
     workbook = await client.open("서버기록")
-    sheet2 = await workbook.get_worksheet(1)
+    sheet3 = await workbook.get_worksheet(3)
 rows = sheet3.get_all_values()
 
 @bot.command(name='등록')
 async def Register(ctx):
     username = str(ctx.message.author)
     
-    # Find the first empty row in column A
-    row = 2
-    while sheet3.cell(row, 1).value:
-        row += 1
+    async with gspread_asyncio.AsyncioGspreadClientManager(agcm.authorize) as agclient:
+        workbook = await agclient.open("서버기록")
+        sheet3 = await workbook.get_worksheet(3)
 
-    # Append the username to the first empty row in column A
-    sheet3.update_cell(row, 1, username)
+        # Find the first empty row in column A
+        row = 2
+        while await sheet3.acell(f'A{row}'):
+            row += 1
+
+        # Append the username to the first empty row in column A
+        await sheet3.update_cell(row, 1, username)
 
     role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
     await ctx.author.add_roles(role)
@@ -258,23 +262,29 @@ class AuthButton2(discord.ui.Button):
         await interaction.message.edit(embed=embed, view=None)
         
 @bot.command(name='누적')
-async def mission_count(ctx):
+async def mission_count(ctx, agclient):
     username = str(ctx.message.author)
-    
+
     # Find the user's row in the Google Sheet
     user_row = None
-    for row in sheet3.get_all_values():
-        if username in row:
-            user_row = row
-            break
+    async with agclient.authorize() as client:
+        workbook = await client.open("서버기록")
+        sheet3 = await workbook.get_worksheet(3)
+        sheet3_values = await sheet3.get_all_values()
+
+        for row in sheet3_values:
+            if username in row:
+                user_row = row
+                break
 
     if user_row is None:
         embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
         await ctx.send(embed=embed)
         return
 
-    user_cell = sheet3.find(username)
-    count = int(sheet3.cell(user_cell.row, 9).value)  # Column I is the 9th column
+    async with agclient.authorize() as client:
+        user_cell = await sheet3.find(username)
+        count = int(await sheet3.cell(user_cell.row, 9).value)  # Column I is the 9th column
 
     # Send the embed message with the user's authentication count
     embed = discord.Embed(description=f"{ctx.author.mention}님은 {count} 회 인증하셨어요!", color=0x00FF00)
