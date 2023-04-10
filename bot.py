@@ -201,14 +201,32 @@ async def random_mission_auth(ctx):
         view = discord.ui.View()
         button = AuthButton2(ctx, username, today)
         view.add_item(button)
-        await ctx.send(embed=embed, view=view)
+        message = await ctx.send(embed=embed, view=view)
+
+        # Start a background task to refresh the button every minute
+        asyncio.create_task(refresh_button(ctx, message, button, username, today))
         
+async def refresh_button(ctx, message, button, username, today):
+    auth_event = button.auth_event
+
+    while not auth_event.is_set():
+        # Wait for 1 minute
+        await asyncio.sleep(60)
+
+        # If the button was not clicked, refresh it
+        if not auth_event.is_set():
+            view = discord.ui.View()
+            new_button = AuthButton2(ctx, username, today)
+            view.add_item(new_button)
+            await message.edit(view=view)
+            
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today):
         super().__init__(style=discord.ButtonStyle.green, label="인증대기")
         self.ctx = ctx
         self.username = username
         self.today = today
+        self.auth_event = asyncio.Event()
 
     async def callback(self, interaction: discord.Interaction):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
@@ -227,6 +245,9 @@ class AuthButton2(discord.ui.Button):
         # Authenticate the user in the spreadsheet
         today_col = sheet3.find(self.today).col
         sheet3.update_cell(user_row, today_col, '1')
+        
+        # Set the auth_event to stop the loop
+        self.auth_event.set()
 
         # Send a success message
         embed = discord.Embed(title='Success', description=f'{self.username}님, 정상적으로 인증되셨습니다')
