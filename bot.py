@@ -50,9 +50,7 @@ creds_info = {
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/noisycontents%40thematic-bounty-382700.iam.gserviceaccount.com"
 }
 creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
-# Set up Google Sheets worksheet
-sheet2 = client.open('서버기록').worksheet('일취월장')
-rows = sheet2.get_all_values()
+client = gspread.authorize(creds)
 
 async def generate_response(prompt):
     response = openai.Completion.create(
