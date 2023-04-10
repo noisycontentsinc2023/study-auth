@@ -76,7 +76,7 @@ async def gpt(ctx, *, message):
 #------------------------------------------------#
 # Set up Google Sheets worksheet
 sheet3 = client.open('서버기록').worksheet('랜덤미션')
-rows = sheet2.get_all_values()
+rows = sheet3.get_all_values()
 
 @bot.command(name='등록')
 async def Register(ctx):
