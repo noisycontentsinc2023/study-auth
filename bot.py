@@ -12,7 +12,7 @@ import json.decoder
 import gspread.exceptions
 import re
 import pytz
-import gspread_asyncio
+import gspread
 
 from google.oauth2 import service_account
 from google.oauth2.service_account import Credentials
@@ -51,7 +51,6 @@ creds_info = {
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/noisycontents%40thematic-bounty-382700.iam.gserviceaccount.com"
 }
 creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
-agcm = gspread_asyncio.AsyncioGspreadClientManager(lambda: creds)
 
 async def generate_response(prompt):
     response = openai.Completion.create(
@@ -80,17 +79,13 @@ async def gpt(ctx, *, message):
 async def Register(ctx):
     username = str(ctx.message.author)
     
-    agclient = await agcm.authorize()
-    workbook = await agclient.open("서버기록")
-    sheet3 = await workbook.get_worksheet(3)
-    
     # Find the first empty row in column A
     row = 2
-    while await sheet3.acell(f'A{row}'):
+    while sheet3.cell(row, 1).value:
         row += 1
 
     # Append the username to the first empty row in column A
-    await sheet3.update_cell(row, 1, username)
+    sheet3.update_cell(row, 1, username)
 
     role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
     await ctx.author.add_roles(role)
@@ -179,17 +174,11 @@ async def Relottery(ctx):
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     username = str(ctx.message.author)
+    # Check if the user has already authenticated today
     today = datetime.datetime.now().strftime('%m%d')
-
-    # Initialize the Google Sheets client
-    agclient = await agcm.authorize()
-    workbook = await agclient.open("서버기록")
-    sheet3 = await workbook.get_worksheet(3)
     
     user_row = None
-    sheet3_values = await sheet3.get_all_values()
-    
-    for row in sheet3_values:
+    for row in sheet3.get_all_values():
         if username in row:
             user_row = row
             break
@@ -199,8 +188,8 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
         return
 
-    user_cell = await sheet3.find(username)
-    if await sheet3.cell(user_cell.row, await sheet3.find(today).col).value == '1':
+    user_cell = sheet3.find(username)
+    if sheet3.cell(user_cell.row, sheet3.find(today).col).value == '1':
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
@@ -208,7 +197,7 @@ async def random_mission_auth(ctx):
         # If the user has not authenticated today, send an authentication window
         embed = discord.Embed(title='Authentication', description=f'{username}님의 미션 인증 대기 중')
         view = discord.ui.View()
-        button = AuthButton2(ctx, username, today, agclient)
+        button = AuthButton2(ctx, username, today)
         view.add_item(button)
         message = await ctx.send(embed=embed, view=view)
 
@@ -219,21 +208,22 @@ async def refresh_button(ctx, message, button, username, today):
     auth_event = button.auth_event
 
     while not auth_event.is_set():
+        # Wait for 1 minute
         await asyncio.sleep(60)
 
+        # If the button was not clicked, refresh it
         if not auth_event.is_set():
             view = discord.ui.View()
-            new_button = AuthButton2(ctx, username, today, button.agclient)
+            new_button = AuthButton2(ctx, username, today)
             view.add_item(new_button)
             await message.edit(view=view)
             
 class AuthButton2(discord.ui.Button):
-    def __init__(self, ctx, username, today, agclient):
+    def __init__(self, ctx, username, today):
         super().__init__(style=discord.ButtonStyle.green, label="인증대기")
         self.ctx = ctx
         self.username = username
         self.today = today
-        self.agclient = agclient
         self.auth_event = asyncio.Event()
 
     async def callback(self, interaction: discord.Interaction):
@@ -243,20 +233,21 @@ class AuthButton2(discord.ui.Button):
             await interaction.message.edit(embed=embed, view=None)
             return
 
-        workbook = await self.agclient.open("서버기록")
-        sheet3 = await workbook.get_worksheet(3)
-        
         try:
-            user_row = (await sheet3.find(self.username)).row
+            user_row = sheet3.find(self.username).row
         except gspread.exceptions.CellNotFound:
             embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
             await interaction.message.edit(embed=embed, view=None)
             return
 
-        today_col = (await sheet3.find(self.today)).col
-        await sheet3.update_cell(user_row, today_col, '1')
-
+        # Authenticate the user in the spreadsheet
+        today_col = sheet3.find(self.today).col
+        sheet3.update_cell(user_row, today_col, '1')
+        
+        # Set the auth_event to stop the loop
         self.auth_event.set()
+        
+        # Remove the button from the view
         self.view.clear_items()
         
         # Send a success message
@@ -264,29 +255,23 @@ class AuthButton2(discord.ui.Button):
         await interaction.message.edit(embed=embed, view=None)
         
 @bot.command(name='누적')
-async def mission_count(ctx, agclient):
+async def mission_count(ctx):
     username = str(ctx.message.author)
-
+    
     # Find the user's row in the Google Sheet
     user_row = None
-    async with agclient.authorize() as client:
-        workbook = await client.open("서버기록")
-        sheet3 = await workbook.get_worksheet(3)
-        sheet3_values = await sheet3.get_all_values()
-
-        for row in sheet3_values:
-            if username in row:
-                user_row = row
-                break
+    for row in sheet3.get_all_values():
+        if username in row:
+            user_row = row
+            break
 
     if user_row is None:
         embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
         await ctx.send(embed=embed)
         return
 
-    async with agclient.authorize() as client:
-        user_cell = await sheet3.find(username)
-        count = int(await sheet3.cell(user_cell.row, 9).value)  # Column I is the 9th column
+    user_cell = sheet3.find(username)
+    count = int(sheet3.cell(user_cell.row, 9).value)  # Column I is the 9th column
 
     # Send the embed message with the user's authentication count
     embed = discord.Embed(description=f"{ctx.author.mention}님은 {count} 회 인증하셨어요!", color=0x00FF00)
@@ -298,6 +283,7 @@ async def mission_count(ctx, agclient):
         await ctx.author.add_roles(role)
         embed = discord.Embed(description="완주를 축하드립니다! 완주자 롤을 받으셨어요!", color=0x00FF00)
         await ctx.send(embed=embed)
+
         
 #------------------------------------------------#
 
