@@ -73,7 +73,6 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
-rows = sheet3.get_all_values()
 
 @bot.command(name='등록')
 async def Register(ctx):
