@@ -78,6 +78,9 @@ async def gpt(ctx, *, message):
 sheet3 = client.open('서버기록').worksheet('랜덤미션')
 rows = sheet3.get_all_values()
 
+kst = pytz.timezone('Asia/Seoul')
+now = datetime.datetime.now(kst)
+
 @bot.command(name='등록')
 async def Register(ctx):
     username = str(ctx.message.author)
@@ -178,7 +181,7 @@ async def Relottery(ctx):
 async def random_mission_auth(ctx):
     username = str(ctx.message.author)
     # Check if the user has already authenticated today
-    today = datetime.datetime.now().strftime('%m%d')
+    today = now.strftime('%m%d')
     
     user_row = None
     for row in sheet3.get_all_values():
