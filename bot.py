@@ -73,9 +73,6 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
-async with agcm.authorize() as client:
-    workbook = await client.open("서버기록")
-    sheet3 = await workbook.get_worksheet(3)
 rows = sheet3.get_all_values()
 
 @bot.command(name='등록')
@@ -240,16 +237,20 @@ class AuthButton2(discord.ui.Button):
             await interaction.message.edit(embed=embed, view=None)
             return
 
-        try:
-            user_row = sheet3.find(self.username).row
-        except gspread.exceptions.CellNotFound:
-            embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
-            await interaction.message.edit(embed=embed, view=None)
-            return
+        async with self.agclient.authorize() as client:
+            workbook = await client.open("서버기록")
+            sheet3 = await workbook.get_worksheet(3)
 
-        # Authenticate the user in the spreadsheet
-        today_col = sheet3.find(self.today).col
-        sheet3.update_cell(user_row, today_col, '1')
+            try:
+                user_row = (await sheet3.find(self.username)).row
+            except gspread.exceptions.CellNotFound:
+                embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
+                await interaction.message.edit(embed=embed, view=None)
+                return
+
+            # Authenticate the user in the spreadsheet
+            today_col = (await sheet3.find(self.today)).col
+            await sheet3.update_cell(user_row, today_col, '1')
         
         # Set the auth_event to stop the loop
         self.auth_event.set()
