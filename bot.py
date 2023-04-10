@@ -14,6 +14,7 @@ import re
 import pytz
 import gspread_asyncio
 
+from google.oauth2 import service_account
 from google.oauth2.service_account import Credentials
 from discord import Embed
 from discord.ext import tasks, commands
