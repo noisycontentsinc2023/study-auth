@@ -3,7 +3,7 @@ discord.py==2.2.2
 beautifulsoup4
 requests
 openai==0.27.2
-gspread
+gspread_asyncio
 google-auth
 google-auth-oauthlib
 pytz
