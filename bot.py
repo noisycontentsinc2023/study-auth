@@ -9,12 +9,12 @@ import datetime
 import random
 import json
 import json.decoder
-import gspread
 import gspread.exceptions
 import re
 import pytz
+import gspread_asyncio
 
-from google.oauth2 import service_account
+from google.oauth2.service_account import Credentials
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.ext.commands import Context
@@ -49,8 +49,7 @@ creds_info = {
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/noisycontents%40thematic-bounty-382700.iam.gserviceaccount.com"
 }
-creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
-client = gspread.authorize(creds)
+agcm = gspread_asyncio.AsyncioGspreadClientManager(lambda: creds)
 
 async def generate_response(prompt):
     response = openai.Completion.create(
@@ -74,7 +73,9 @@ async def gpt(ctx, *, message):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#
-sheet3 = client.open('서버기록').worksheet('랜덤미션')
+async with agcm.authorize() as client:
+    workbook = await client.open("서버기록")
+    sheet2 = await workbook.get_worksheet(1)
 rows = sheet3.get_all_values()
 
 @bot.command(name='등록')
