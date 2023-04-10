@@ -75,7 +75,7 @@ async def gpt(ctx, *, message):
 #------------------------------------------------#
 
 @bot.command(name='등록')
-async def Register(ctx, member: discord.Member):
+async def Register(ctx):
     username = str(ctx.message.author)
     
     agclient = await agcm.authorize()
