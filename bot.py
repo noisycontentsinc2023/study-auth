@@ -266,6 +266,16 @@ async def mission_count(ctx):
 # Set up Google Sheets worksheet
 sheet2 = client.open('서버기록').worksheet('일취월장')
 rows = sheet2.get_all_values()
+
+class CancelButton(discord.ui.Button):
+    def __init__(self, ctx):
+        super().__init__(style=discord.ButtonStyle.red, label="취소")
+        self.ctx = ctx
+    
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user == self.ctx.author:
+            await interaction.message.delete()
+            
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, user, date):
         super().__init__(style=discord.ButtonStyle.green, label="확인 ")
@@ -323,6 +333,7 @@ async def Authentication(ctx, date):
     view = discord.ui.View()
     button = AuthButton(ctx, ctx.author, date)
     view.add_item(button)
+    view.add_item(CancelButton(ctx))  # Add the CancelButton to the view
     msg = await ctx.send(embed=embed, view=view)
 
     def check(interaction: discord.Interaction):
