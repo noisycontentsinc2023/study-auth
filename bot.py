@@ -241,14 +241,14 @@ class AuthButton2(discord.ui.Button):
             return
 
         try:
-            user_cell = await find_user(self.username, self.sheet3)
+            user_row = (await self.sheet3.find(self.username)).row
         except gspread.exceptions.CellNotFound:
             embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
         # Authenticate the user in the spreadsheet
-        today_col = self.sheet3.find(self.today).col
+        today_col = (await self.sheet3.find(self.today)).col
         self.sheet3.update_cell(user_row, today_col, '1')
 
         # Set the auth_event to stop the loop
