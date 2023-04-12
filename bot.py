@@ -164,12 +164,13 @@ async def Relottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
-async def find_user(user, worksheet):
-    try:
-        cell = worksheet.find(user)
-        return cell
-    except gspread.exceptions.CellNotFound:
-        return None
+async def get_sheet3():  # 수정
+    client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
+    client = await client_manager.authorize()
+    spreadsheet = await client.open('서버기록')  # await 키워드를 추가했습니다.
+    sheet3 = await spreadsheet.worksheet('랜덤미션')
+    rows = await sheet3.get_all_values()
+    return sheet3, rows
 
 async def find_user(user):
     try:
