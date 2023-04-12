@@ -301,12 +301,37 @@ async def show_roles(ctx):
 #------------------------------------------------#    
 class ChannelSelect(discord.ui.Select):
     def __init__(self, ctx, options):
-        super().__init__(placeholder='채널 선택', options=options)
+        super().__init__(placeholder='채널 선택', options=options[:25]) # 한 페이지에 25개의 옵션 표시
         self.ctx = ctx
+        self.current_page = 0
+        self.total_pages = len(options) // 25 + 1 if len(options) % 25 != 0 else len(options) // 25 # 전체 페이지 수 계산
 
     async def callback(self, interaction: discord.Interaction):
         selected_channel = self.bot.get_channel(int(self.values[0]))
         await self.ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
+
+    async def update_options(self):
+        start_index = self.current_page * 25
+        end_index = start_index + 25
+        options = self.options[start_index:end_index]
+        self.clear_options()
+        for option in options:
+            self.add_option(option)
+
+        self.placeholder = f'총 {len(self.options)}개의 채널 중 {start_index+1}-{end_index if end_index <= len(self.options) else len(self.options)}번째 채널 선택'
+        self.disabled = False
+
+    async def move_to_page(self, page_number):
+        self.current_page = page_number
+        await self.update_options()
+
+    async def on_select(self, interaction: discord.Interaction, data):
+        if data['custom_id'] == 'prev_page':
+            if self.current_page > 0:
+                await self.move_to_page(self.current_page-1)
+        elif data['custom_id'] == 'next_page':
+            if self.current_page < self.total_pages - 1:
+                await self.move_to_page(self.current_page+1)
 
 @bot.command(name='채널')
 async def select_channel(ctx):
@@ -323,13 +348,47 @@ async def select_channel(ctx):
     select = ChannelSelect(ctx, options=options)
     view = discord.ui.View()
     view.add_item(select)
-    message = await ctx.send('어떤 채널을 선택하시겠습니까?', view=view)
 
+    # 이전 페이지로 이동하는 버튼
+    prev_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label='◀️')
+    prev_button.custom_id = 'prev_page'
+    prev_button.disabled = True
+
+    # 다음 페이지로 이동하는 버튼
+    next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label='▶️')
+    next_button.custom_id = 'next_page'
+    next_button.disabled = True
+
+    view.add_item(prev_button)
+    view.add_item(next_button)
+
+    message = await ctx.send('어떤 채널을 선택하시겠습니까?', view=view)
+    
     try:
         interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == message.id, timeout=30)
         await select.callback(interaction)
     except asyncio.TimeoutError:
         await message.edit(content='시간이 초과되었습니다.', view=None)
         return
+
+    prev_button.disabled = False if select.current_page > 0 else True
+    next_button.disabled = False if select.current_page < select.total_pages-1 else True
+
+    while True:
+        try:
+            interaction = await bot.wait_for('button', check=lambda i: i.user.id == ctx.author.id and i.message.id == message.id, timeout=30)
+        except asyncio.TimeoutError:
+            await message.edit(view=view)
+            break
+
+        if interaction.custom_id == 'prev_page':
+            await select.move_to_page(select.current_page-1)
+        elif interaction.custom_id == 'next_page':
+            await select.move_to_page(select.current_page+1)
+
+        prev_button.disabled = False if select.current_page > 0 else True
+        next_button.disabled = False if select.current_page < select.total_pages-1 else True
+        await message.edit(view=view)
+        
 #Run the bot
 bot.run(TOKEN)
