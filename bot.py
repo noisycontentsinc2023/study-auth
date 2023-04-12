@@ -297,5 +297,39 @@ async def show_roles(ctx):
     roles = [role.name for role in ctx.author.roles]
     embed = discord.Embed(title=f"{ctx.author.name}님의 역할", description=", ".join(roles), color=0x00ff00)
     await ctx.send(embed=embed)
+    
+#------------------------------------------------#    
+class ChannelSelect(discord.ui.Select):
+    def __init__(self, ctx, options):
+        super().__init__(placeholder='채널 선택', options=options)
+        self.ctx = ctx
+
+    async def callback(self, interaction: discord.Interaction):
+        selected_channel = self.bot.get_channel(int(self.values[0]))
+        await self.ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
+
+@bot.command(name='채널')
+async def select_channel(ctx):
+    options = []
+    for channel in ctx.guild.channels:
+        if channel.permissions_for(ctx.author).read_messages:
+            option = discord.SelectOption(label=channel.name, value=str(channel.id))
+            options.append(option)
+
+    if not options:
+        await ctx.send('접근 가능한 채널이 없습니다.')
+        return
+
+    select = ChannelSelect(ctx, options=options)
+    view = discord.ui.View()
+    view.add_item(select)
+    message = await ctx.send('어떤 채널을 선택하시겠습니까?', view=view)
+
+    try:
+        interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == message.id, timeout=30)
+        await select.callback(interaction)
+    except asyncio.TimeoutError:
+        await message.edit(content='시간이 초과되었습니다.', view=None)
+        return
 #Run the bot
 bot.run(TOKEN)
