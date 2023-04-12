@@ -58,7 +58,8 @@ aio_creds = credentials
 async def get_sheet3():  # 수정
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
-    sheet3 = await client.open('서버기록').worksheet('랜덤미션')
+    spreadsheet = await client.open('서버기록')  # await 키워드를 추가했습니다.
+    sheet3 = await spreadsheet.worksheet('랜덤미션')
     rows = await sheet3.get_all_values()
     return sheet3, rows
 
