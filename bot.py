@@ -15,7 +15,6 @@ import pytz
 import gspread_asyncio
 import asyncio
 import discord.ui as ui
-import Register
 
 from google.oauth2.service_account import Credentials
 from discord import Embed
@@ -25,6 +24,7 @@ from discord.ext.commands import Context
 from discord.utils import get
 from urllib.request import Request
 from discord.ui import Select, Button, View
+from Register import Register
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
@@ -36,8 +36,8 @@ intents.members = True
 intents.typing = False
 intents.presences = False
 
-bot.load_extension("Register")
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+bot.add_cog(Register(bot))
 
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds_info = {
