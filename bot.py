@@ -167,9 +167,14 @@ async def Relottery(ctx):
 
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
-    username = str(ctx.message.author)
-    # Check if the user has already authenticated today
-    today = now.strftime('%m%d')
+    user = ctx.author
+    today = datetime.date.today().strftime("%Y/%-m/%-d")  # 날짜를 yyyy/m/d 형식으로 변환
+    user_cell = await find_user(user, sheet3)
+    today_col = await sheet3.find(today)  # 날짜의 열 번호를 가져옴
+    if (await sheet3.cell(user_cell.row, today_col.col)).value == '1':
+        await ctx.send(f"{user.mention} 미션인증 성공!")
+    else:
+        await ctx.send(f"{user.mention} 미션인증 실패!") 
 
     sheet3, _ = await get_sheet3()
 
