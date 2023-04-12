@@ -184,8 +184,11 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
         return
 
-    user_cell = await sheet3.find(username)
-    if (await sheet3.cell(user_cell.row, await sheet3.find(today)).value) == '1':
+    user_cell = sheet3.find(username)
+    today_col_coro = sheet3.find(today)  # 코루틴 객체
+    today_col = await asyncio.ensure_future(today_col_coro)  # awaitable 객체로 변경
+
+    if (await sheet3.cell(user_cell.row, today_col.col)).value == '1':  # 결과를 가져오기 위해 다시 await 사용
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
