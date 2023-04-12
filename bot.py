@@ -171,7 +171,7 @@ async def random_mission_auth(ctx):
     
     user_row = None
     sheet3, rows = await get_sheet3()
-    for row in sheet3.get_all_values():
+    for row in await sheet3.get_all_values():
         if username in row:
             user_row = row
             break
