@@ -13,6 +13,7 @@ import gspread.exceptions
 import re
 import pytz
 import gspread.asyncio
+import asyncio
 
 from google.oauth2.service_account import Credentials
 from discord import Embed
@@ -61,17 +62,16 @@ async def get_sheet3():
 kst = pytz.timezone('Asia/Seoul')
 now = datetime.datetime.now(kst)
 
-sheet3, rows = await get_sheet3()
 @bot.command(name='등록')
 async def Register(ctx):
     username = str(ctx.message.author)
     
-    # Find the first empty row in column A
+    sheet3, rows = await get_sheet3()
+
     row = 2
-    while sheet3.cell(row, 1).value:
+    while (await sheet3.cell(row, 1)).value:
         row += 1
 
-    # Append the username to the first empty row in column A
     await sheet3.update_cell(row, 1, username)
 
     role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
@@ -158,7 +158,7 @@ async def Relottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
-sheet3, rows = await get_sheet3()
+
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     username = str(ctx.message.author)
@@ -166,6 +166,7 @@ async def random_mission_auth(ctx):
     today = now.strftime('%m%d')
     
     user_row = None
+    sheet3, rows = await get_sheet3()
     for row in sheet3.get_all_values():
         if username in row:
             user_row = row
@@ -215,6 +216,7 @@ class AuthButton2(discord.ui.Button):
         self.auth_event = asyncio.Event()
 
     async def callback(self, interaction: discord.Interaction):
+        sheet3, rows = await get_sheet3()
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             # If the user doesn't have the required role, send an error message
             embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
@@ -242,10 +244,10 @@ class AuthButton2(discord.ui.Button):
         embed = discord.Embed(title='인증완료!', description=f'{self.username}님, 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
 
-sheet3, rows = await get_sheet3()
 @bot.command(name='누적')
 async def mission_count(ctx):
     username = str(ctx.message.author)
+    sheet3, rows = await get_sheet3()
     
     # Find the user's row in the Google Sheet
     user_row = None
