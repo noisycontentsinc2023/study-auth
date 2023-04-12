@@ -309,15 +309,12 @@ class ChannelSelect(discord.ui.Select):
         await self.ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
 
 @bot.command(name='채널')
-async def select_channel(ctx, bot):
+async def select_channel(ctx):
     # 유저가 접근 가능한 카테고리 찾기
     accessible_categories = []
     for category in ctx.guild.categories:
-        if ctx.author in category.members:
-            for channel in category.channels:
-                if channel.permissions_for(ctx.author).read_messages:
-                    accessible_categories.append(category)
-                    break  # 하나 이상의 채널에 접근 가능한 경우 다음 카테고리를 확인하지 않습니다.
+        if ctx.author in category.members and len(category.channels) > 0:
+            accessible_categories.append(category)
 
     if not accessible_categories:
         await ctx.send('접근 가능한 카테고리가 없습니다.')
@@ -330,7 +327,7 @@ async def select_channel(ctx, bot):
         options.append(option)
 
     # 옵션을 포함한 ChannelSelect 클래스 생성하기
-    select_category = ChannelSelect(ctx, options=options, bot=bot)
+    select_category = ChannelSelect(ctx, options=options)
 
     # ChannelSelect 클래스를 포함한 discord.ui.View 객체 생성하기
     category_view = discord.ui.View()
@@ -360,7 +357,6 @@ async def select_channel(ctx, bot):
         interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == channel_message.id, timeout=30)
         selected_channel = ctx.guild.get_channel(int(interaction.values[0]))
         await ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
-        
     except asyncio.TimeoutError:
         await ctx.send('시간이 초과되었습니다.')
     except Exception as e:
