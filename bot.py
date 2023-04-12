@@ -299,97 +299,55 @@ async def show_roles(ctx):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#    
-class ChannelSelect(discord.ui.Select):
-    def __init__(self, ctx, options, bot):
-        super().__init__(placeholder='채널 선택', options=options[:25]) # 한 페이지에 25개의 옵션 표시
-        self.ctx = ctx
-        self.current_page = 0
-        self.total_pages = len(options) // 25 + 1 if len(options) % 25 != 0 else len(options) // 25 # 전체 페이지 수 계산
-
-    async def callback(self, interaction: discord.Interaction):
-        selected_channel = self.bot.get_channel(int(self.values[0]))
-        await self.ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
-
-    async def update_options(self):
-        start_index = self.current_page * 25
-        end_index = start_index + 25
-        options = self.options[start_index:end_index]
-        self.clear_options()
-        for option in options:
-            self.add_option(option)
-
-        self.placeholder = f'총 {len(self.options)}개의 채널 중 {start_index+1}-{end_index if end_index <= len(self.options) else len(self.options)}번째 채널 선택'
-        self.disabled = False
-
-    async def move_to_page(self, page_number):
-        self.current_page = page_number
-        await self.update_options()
-
-    async def on_select(self, interaction: discord.Interaction, data):
-        if data['custom_id'] == 'prev_page':
-            if self.current_page > 0:
-                await self.move_to_page(self.current_page-1)
-        elif data['custom_id'] == 'next_page':
-            if self.current_page < self.total_pages - 1:
-                await self.move_to_page(self.current_page+1)
-
 @bot.command(name='채널')
 async def select_channel(ctx):
+    # 유저가 접근 가능한 카테고리 찾기
+    accessible_categories = []
+    for category in ctx.guild.categories:
+        if ctx.author in category.members and len(category.channels) > 0:
+            accessible_categories.append(category)
+
+    if not accessible_categories:
+        await ctx.send('접근 가능한 카테고리가 없습니다.')
+        return
+
+    # 셀렉트 메뉴에 보여줄 옵션 생성하기
     options = []
-    for channel in ctx.guild.channels:
-        if channel.permissions_for(ctx.author).read_messages:
-            option = discord.SelectOption(label=channel.name, value=str(channel.id))
-            options.append(option)
+    for category in accessible_categories:
+        option = discord.SelectOption(label=category.name, value=str(category.id))
+        options.append(option)
 
-    if not options:
-        await ctx.send('접근 가능한 채널이 없습니다.')
-        return
+    # 옵션을 포함한 ChannelSelect 클래스 생성하기
+    select_category = ChannelSelect(ctx, options=options)
 
-    select = ChannelSelect(ctx, options=options, bot=bot)
-    view = discord.ui.View()
-    view.add_item(select)
+    # ChannelSelect 클래스를 포함한 discord.ui.View 객체 생성하기
+    category_view = discord.ui.View()
+    category_view.add_item(select_category)
+    category_message = await ctx.send('어떤 카테고리를 선택하시겠습니까?', view=category_view)
 
-    # 이전 페이지로 이동하는 버튼
-    prev_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label='◀️')
-    prev_button.custom_id = 'prev_page'
-    prev_button.disabled = True
-
-    # 다음 페이지로 이동하는 버튼
-    next_button = discord.ui.Button(style=discord.ButtonStyle.secondary, label='▶️')
-    next_button.custom_id = 'next_page'
-    next_button.disabled = True
-
-    view.add_item(prev_button)
-    view.add_item(next_button)
-
-    message = await ctx.send('어떤 채널을 선택하시겠습니까?', view=view)
-    
+    # 카테고리 선택을 기다린 후 선택된 카테고리의 채널을 보여주기
     try:
-        interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == message.id, timeout=30)
-        await select.callback(interaction)
-    except asyncio.TimeoutError:
-        await message.edit(content='시간이 초과되었습니다.', view=None)
-        return
+        interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == category_message.id, timeout=30)
+        selected_category = ctx.guild.get_channel(int(interaction.values[0]))
 
-    prev_button.disabled = False if select.current_page > 0 else True
-    next_button.disabled = False if select.current_page < select.total_pages-1 else True
+        channel_options = []
+        for channel in selected_category.channels:
+            if channel.permissions_for(ctx.author).read_messages:
+                option = discord.SelectOption(label=channel.name, value=str(channel.id))
+                channel_options.append(option)
 
-    while True:
-        try:
-            interaction = await bot.wait_for('button', check=lambda i: i.user.id == ctx.author.id and i.message.id == message.id, timeout=30)
-        except asyncio.TimeoutError:
-            await message.edit(view=view)
-            break
+        if not channel_options:
+            await ctx.send('해당 카테고리에 접근 가능한 채널이 없습니다.')
+            return
 
-        if interaction.custom_id == 'prev_page':
-            await select.move_to_page(select.current_page-1)
-        elif interaction.custom_id == 'next_page':
-            await select.move_to_page(select.current_page+1)
+        select_channel = ChannelSelect(ctx, options=channel_options)
+        channel_view = discord.ui.View()
+        channel_view.add_item(select_channel)
+        channel_message = await ctx.send('어떤 채널을 선택하시겠습니까?', view=channel_view)
 
-        prev_button.disabled = False if select.current_page > 0 else True
-        next_button.disabled = False if select.current_page < select.total_pages-1 else True
-        await message.edit(view=view)
-        
+        interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == channel_message.id, timeout=30)
+        selected_channel = ctx.guild.get_channel(int(interaction.values[0]))
+        await ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
         
 #Run the bot
 bot.run(TOKEN)
