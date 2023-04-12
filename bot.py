@@ -170,26 +170,21 @@ async def find_user(user, worksheet):
         return cell
     except gspread.exceptions.CellNotFound:
         return None
+
+async def find_user(user):
+    try:
+        cell = await sheet3.find(user)
+        return cell
+    except gspread.exceptions.CellNotFound:
+        return None
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
-    user = ctx.author.name
-    today = datetime.date.today().strftime("%m/%d/%Y")  # 날짜를 가져옴
-    try:
-        user_cell = await find_user(user, sheet3)
-        if user_cell is None:
-            await ctx.send("해당하는 유저가 인증현황 시트에 없습니다.")
-            return
-        today_col = await worksheet.find(today)  # 오늘 날짜가 있는 컬럼 가져옴
-        if (await worksheet.cell(user_cell.row, today_col.col)).value == '1':  # 결과를 가져오기 위해 다시 await 사용
-            await ctx.send("오늘 이미 미션 인증을 완료하였습니다.")
-        else:
-            await worksheet.update_cell(user_cell.row, today_col.col, "1")
-            await ctx.send("미션인증이 완료되었습니다.")
-    except Exception as e:
-        await ctx.send(f"인증 처리 중 오류가 발생하였습니다. 관리자에게 문의해주세요. \nError message: {e}")
+    await get_sheet3()  # 시트 로드
 
-    sheet3, _ = await get_sheet3()
+    username = str(ctx.message.author)
+    # Check if the user has already authenticated today
+    today = now.strftime('%m%d')
 
     user_row = None
     for row in await sheet3.get_all_values():
@@ -202,35 +197,32 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
         return
 
-    user_cell = await sheet3.find(username)
-    if (await sheet3.cell(user_cell.row, today_col)).value == '1':
-        # If the user has already authenticated today, send an error message
-        embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
+    user_cell = await find_user(username)
+
+    if user_cell is None:
+        embed = discord.Embed(title='Error', description='서버 기록 시트에 멤버가 등록되어 있지 않습니다')
         await ctx.send(embed=embed)
-    else:
-        # If the user has not authenticated today, send an authentication window
-        embed = discord.Embed(title='Authentication', description=f'{username}님의 미션 인증 대기 중')
-        view = discord.ui.View()
-        button = AuthButton2(ctx, username, today)
-        view.add_item(button)
-        message = await ctx.send(embed=embed, view=view)
+        return
 
-        # Start a background task to refresh the button every minute
-        asyncio.create_task(refresh_button(ctx, message, button, username, today, sheet3))
-        
-async def refresh_button(ctx, message, button, username, today, sheet3):
-    auth_event = button.auth_event
+    today_col = None
+    for i, col in enumerate(await sheet3.row_values(1)):
+        if today in col:
+            today_col = i + 1
+            break
 
-    while not auth_event.is_set():
-        # Wait for 1 minute
-        await asyncio.sleep(60)
+    if today_col is None:
+        embed = discord.Embed(title='Error', description='오늘의 미션 열을 찾을 수 없습니다')
+        await ctx.send(embed=embed)
+        return
 
-        # If the button was not clicked, refresh it
-        if not auth_event.is_set():
-            view = discord.ui.View()
-            new_button = AuthButton2(ctx, username, today, sheet3)
-            view.add_item(new_button)
-            await message.edit(view=view)
+    if (await sheet3.cell(user_cell.row, today_col)).value == '1':
+        embed = discord.Embed(title='Error', description='이미 오늘의 미션 인증을 하셨습니다')
+        await ctx.send(embed=embed)
+        return
+
+    await sheet3.update_cell(user_cell.row, today_col, '1')
+    embed = discord.Embed(title='Success', description='미션 인증이 완료되었습니다')
+    await ctx.send(embed=embed)
             
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3):
