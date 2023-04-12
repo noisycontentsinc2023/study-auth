@@ -300,80 +300,13 @@ async def show_roles(ctx):
     # Add each role and its icon to the embed's description
     for role in roles:
         embed.description = f"{embed.description}\n{role.mention} {role.name}"
-        if role.icon_url:
-            embed.description = f"{embed.description} {role.icon_url}"
+        if role.icon:
+            embed.set_thumbnail(url=role.icon.url)
             
     await ctx.send(embed=embed)
     
 #------------------------------------------------#    
-class ChannelSelect(discord.ui.Select):
-    def __init__(self, ctx, options):
-        super().__init__(placeholder='채널 선택', options=options)
-        self.ctx = ctx
 
-    async def callback(self, interaction: discord.Interaction):
-        selected_channel = self.ctx.guild.get_channel(int(self.values[0]))
-        await self.ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
-
-@bot.command(name='채널')
-async def select_channel(ctx):
-    # 유저가 접근 가능한 카테고리 찾기
-    accessible_categories = []
-    for category in ctx.guild.categories:
-        if ctx.author in category.members:
-            channel_access = False
-            for channel in category.channels:
-                if channel.permissions_for(ctx.author).read_messages:
-                    channel_access = True
-                    break
-            if channel_access:
-                accessible_categories.append(category)
-
-    if not accessible_categories:
-        await ctx.send('접근 가능한 카테고리가 없습니다.')
-        return
-
-    # 셀렉트 메뉴에 보여줄 옵션 생성하기
-    options = []
-    for category in accessible_categories:
-        option = discord.SelectOption(label=category.name, value=str(category.id))
-        options.append(option)
-
-    # 옵션을 포함한 ChannelSelect 클래스 생성하기
-    select_category = ChannelSelect(ctx, options=options)
-
-    # ChannelSelect 클래스를 포함한 discord.ui.View 객체 생성하기
-    category_view = discord.ui.View()
-    category_view.add_item(select_category)
-    category_message = await ctx.send('어떤 카테고리를 선택하시겠습니까?', view=category_view)
-
-    # 카테고리 선택을 기다린 후 선택된 카테고리의 채널을 보여주기
-    try:
-        interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == category_message.id, timeout=30)
-        selected_category = ctx.guild.get_channel(int(interaction.values[0]))
-
-        channel_options = []
-        for channel in selected_category.channels:
-            if channel.permissions_for(ctx.author).read_messages:
-                option = discord.SelectOption(label=channel.name, value=str(channel.id))
-                channel_options.append(option)
-
-        if not channel_options:
-            await ctx.send('해당 카테고리에 접근 가능한 채널이 없습니다.')
-            return
-
-        select_channel = ChannelSelect(ctx, options=channel_options)
-        channel_view = discord.ui.View()
-        channel_view.add_item(select_channel)
-        channel_message = await ctx.send('어떤 채널을 선택하시겠습니까?', view=channel_view)
-
-        interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == channel_message.id, timeout=30)
-        selected_channel = ctx.guild.get_channel(int(interaction.values[0]))
-        await ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
-    except asyncio.TimeoutError:
-        await ctx.send('시간이 초과되었습니다.')
-    except Exception as e:
-        await ctx.send(f'에러가 발생했습니다: {e}')
         
 #Run the bot
 bot.run(TOKEN)
