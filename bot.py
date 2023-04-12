@@ -49,7 +49,9 @@ creds_info = {
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/noisycontents%40thematic-bounty-382700.iam.gserviceaccount.com"
 }
-aio_creds = gspread_asyncio.AsyncioGoogleCredentials.from_service_account_info(creds_info, scopes=scope)
+
+credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
+aio_creds = credentials
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
