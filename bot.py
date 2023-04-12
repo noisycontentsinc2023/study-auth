@@ -53,10 +53,10 @@ credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
-async def get_sheet3():  # 수정: gspread.asyncio를 사용하기 위한 별도의 async 함수를 생성했습니다.
-    async with gspread.authorize(credentials) as client:
-        sheet3 = await client.open('서버기록').worksheet('랜덤미션')
-        rows = await sheet3.get_all_values()
+async def get_sheet3():  # 수정: gspread async client를 사용하는 방법으로 변경했습니다.
+    client = gspread.authorize(credentials)
+    sheet3 = await client.open('서버기록').worksheet('랜덤미션')
+    rows = await sheet3.get_all_values()
     return sheet3, rows
 
 kst = pytz.timezone('Asia/Seoul')
