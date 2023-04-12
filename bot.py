@@ -65,12 +65,15 @@ async def get_sheet3():  # 수정
     rows = await sheet3.get_all_values()
     return sheet3, rows 
 
-async def find_user(user, worksheet):
+async def find_user(username, sheet):
+    cell = None
     try:
-        cell = await worksheet.find(user)
-        return cell
-    except gspread.exceptions.CellNotFound:
-        return None
+        cells = await sheet.findall(username)
+        if cells:
+            cell = cells[0]
+    except gspread.exceptions.APIError as e:
+        print(f'find_user error: {e}')
+    return cell
 
 kst = pytz.timezone('Asia/Seoul')
 now = datetime.datetime.now(kst)
@@ -238,7 +241,7 @@ class AuthButton2(discord.ui.Button):
             return
 
         try:
-            user_row = self.sheet3.find(self.username).row
+            user_cell = await find_user(self.username, self.sheet3)
         except gspread.exceptions.CellNotFound:
             embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
             await interaction.response.edit_message(embed=embed, view=None)
