@@ -5,7 +5,7 @@ class Register(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-    @commands.command(name='등록')
+    @bot.command(name='등록')
     async def Register(ctx):
         username = str(ctx.message.author)
     
