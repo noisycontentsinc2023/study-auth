@@ -24,7 +24,6 @@ from discord.ext.commands import Context
 from discord.utils import get
 from urllib.request import Request
 from discord.ui import Select, Button, View
-from Register import Register
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
@@ -36,8 +35,8 @@ intents.members = True
 intents.typing = False
 intents.presences = False
 
+
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
-bot.add_cog(Register(bot))
 
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds_info = {
@@ -79,6 +78,25 @@ async def find_user(username, sheet):
 kst = pytz.timezone('Asia/Seoul')
 now = datetime.datetime.now(kst)
 
+@bot.command(name='등록')
+async def Register(ctx):
+    username = str(ctx.message.author)
+    
+    sheet3, rows = await get_sheet3()
+
+    row = 2
+    while (await sheet3.cell(row, 1)).value:
+        row += 1
+
+    await sheet3.update_cell(row, 1, username)
+
+    role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
+    await ctx.author.add_roles(role)
+
+    embed = discord.Embed(description=f"{ctx.author.mention}님, 랜덤미션스터디에 정상적으로 등록됐습니다!",
+                          color=0x00FF00)
+    await ctx.send(embed=embed)
+    
 class RandomMissionView(View):
     def __init__(self, ctx: Context, message: discord.Message):
         super().__init__(timeout=None)
