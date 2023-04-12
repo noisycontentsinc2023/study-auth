@@ -300,11 +300,10 @@ async def show_roles(ctx):
     
 #------------------------------------------------#    
 class ChannelSelect(discord.ui.Select):
-    def __init__(self, ctx, options):
-        super().__init__(placeholder='채널 선택', options=options[:25]) # 한 페이지에 25개의 옵션 표시
+    def __init__(self, ctx, options, bot):
+        super().__init__(placeholder='채널 선택', options=options)
         self.ctx = ctx
-        self.current_page = 0
-        self.total_pages = len(options) // 25 + 1 if len(options) % 25 != 0 else len(options) // 25 # 전체 페이지 수 계산
+        self.bot = bot
 
     async def callback(self, interaction: discord.Interaction):
         selected_channel = self.bot.get_channel(int(self.values[0]))
@@ -345,7 +344,7 @@ async def select_channel(ctx):
         await ctx.send('접근 가능한 채널이 없습니다.')
         return
 
-    select = ChannelSelect(ctx, options=options)
+    select = ChannelSelect(ctx, options=options, bot=bot)
     view = discord.ui.View()
     view.add_item(select)
 
