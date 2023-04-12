@@ -87,15 +87,14 @@ async def Register(ctx):
     # Check if the user is already registered
     registered = False
     row = 2
-    while (cell_value := await sheet3.cell(row, 1)).value:
+    while (cell_value := (await sheet3.cell(row, 1)).value):
         if cell_value == username:
             registered = True
             break
         row += 1
 
     if registered:
-        embed = discord.Embed(description=f"{ctx.author.mention}님, 이미 등록하셨어요!",
-                              color=0xFF0000)
+        embed = discord.Embed(description=f"{ctx.author.mention}님, 이미 등록하셨어요!", color=0xFF0000)
         await ctx.send(embed=embed)
     else:
         await sheet3.update_cell(row, 1, username)
