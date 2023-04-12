@@ -55,10 +55,11 @@ aio_creds = credentials
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
-async def get_sheet3():  # 수정: gspread_asyncio 사용
-    async with gspread_asyncio.AsyncioGspreadClientManager(aio_creds) as client:
-        sheet3 = await client.open('서버기록').worksheet('랜덤미션')
-        rows = await sheet3.get_all_values()
+async def get_sheet3():  # 수정
+    client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
+    client = await client_manager.authorize()
+    sheet3 = await client.open('서버기록').worksheet('랜덤미션')
+    rows = await sheet3.get_all_values()
     return sheet3, rows
 
 kst = pytz.timezone('Asia/Seoul')
