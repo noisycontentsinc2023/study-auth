@@ -215,21 +215,21 @@ async def refresh_button(ctx, message, button, username, today):
             view.add_item(new_button)
             await message.edit(view=view)
             
-class AuthButton2(discord.ui.Button):
-    def __init__(self, ctx, username, today):
-        super().__init__(style=discord.ButtonStyle.green, label="인증대기")
-        self.ctx = ctx
+class AuthButton2(ui.Button):
+    def __init__(self, username: str, today: str):
         self.username = username
         self.today = today
-        self.auth_event = asyncio.Event()
+        super().__init__(style=ButtonStyle.success, label="인증대기")
 
-    async def callback(self, interaction: discord.Interaction):
-        sheet3, rows = await get_sheet3()
-        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
-            # If the user doesn't have the required role, send an error message
-            embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
-            await interaction.message.edit(embed=embed, view=None)
-            return
+    async def callback(self, interaction: Interaction):
+        await interaction.response.send_message("인증이 완료되었습니다!", ephemeral=True)
+        self.style = ButtonStyle.disabled
+        self.label = "인증완료"
+        self.disabled = True
+        await interaction.message.edit(embed=interaction.message.embeds[0], view=self.view)
+        
+        user_cell = await sheet3.find(self.username)
+        today_cell = await sheet3.find(self.today)
 
         try:
             user_cell = await sheet3.find(self.username)
