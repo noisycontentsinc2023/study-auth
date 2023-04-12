@@ -58,6 +58,7 @@ aio_creds = credentials
 #------------------------------------------------#
 # Set up Google Sheets worksheet
 async def get_sheet3():  # 수정
+    client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
     spreadsheet = await client.open('서버기록')
     sheet3 = await spreadsheet.worksheet('랜덤미션')
