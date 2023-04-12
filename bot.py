@@ -84,18 +84,28 @@ async def Register(ctx):
     
     sheet3, rows = await get_sheet3()
 
+    # Check if the user is already registered
+    registered = False
     row = 2
-    while (await sheet3.cell(row, 1)).value:
+    while (cell_value := await sheet3.cell(row, 1)).value:
+        if cell_value == username:
+            registered = True
+            break
         row += 1
 
-    await sheet3.update_cell(row, 1, username)
+    if registered:
+        embed = discord.Embed(description=f"{ctx.author.mention}님, 이미 등록하셨어요!",
+                              color=0xFF0000)
+        await ctx.send(embed=embed)
+    else:
+        await sheet3.update_cell(row, 1, username)
 
-    role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
-    await ctx.author.add_roles(role)
+        role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
+        await ctx.author.add_roles(role)
 
-    embed = discord.Embed(description=f"{ctx.author.mention}님, 랜덤미션스터디에 정상적으로 등록됐습니다!",
-                          color=0x00FF00)
-    await ctx.send(embed=embed)
+        embed = discord.Embed(description=f"{ctx.author.mention}님, 랜덤미션스터디에 정상적으로 등록됐습니다!",
+                              color=0x00FF00)
+        await ctx.send(embed=embed)
     
 class RandomMissionView(View):
     def __init__(self, ctx: Context, message: discord.Message):
