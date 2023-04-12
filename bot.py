@@ -309,7 +309,7 @@ class ChannelSelect(discord.ui.Select):
         await self.ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
 
 @bot.command(name='채널')
-async def select_channel(ctx):
+async def select_channel(ctx, bot):
     # 유저가 접근 가능한 카테고리 찾기
     accessible_categories = []
     for category in ctx.guild.categories:
@@ -330,7 +330,7 @@ async def select_channel(ctx):
         options.append(option)
 
     # 옵션을 포함한 ChannelSelect 클래스 생성하기
-    select_category = ChannelSelect(ctx, options=options)
+    select_category = ChannelSelect(ctx, options=options, bot=bot)
 
     # ChannelSelect 클래스를 포함한 discord.ui.View 객체 생성하기
     category_view = discord.ui.View()
