@@ -170,9 +170,10 @@ async def random_mission_auth(ctx):
     username = str(ctx.message.author)
     # Check if the user has already authenticated today
     today = now.strftime('%m%d')
-    
+
+    sheet3, _ = await get_sheet3()
+
     user_row = None
-    sheet3, rows = await get_sheet3()
     for row in await sheet3.get_all_values():
         if username in row:
             user_row = row
@@ -183,12 +184,8 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
         return
 
-    user_cell = sheet3.find(username)
-    user_cell = await user_cell
-    today_cell = await sheet3.find(today)
-    mission_cell = await sheet3.cell(user_cell.row, today_cell.col)
-
-    if mission_cell.value == '1':
+    user_cell = await sheet3.find(username)
+    if (await sheet3.cell(user_cell.row, await sheet3.find(today)).value) == '1':
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
@@ -196,7 +193,7 @@ async def random_mission_auth(ctx):
         # If the user has not authenticated today, send an authentication window
         embed = discord.Embed(title='Authentication', description=f'{username}님의 미션 인증 대기 중')
         view = discord.ui.View()
-        button = AuthButton2(ctx, username, today)
+        button = AuthButton2(ctx, username, today, sheet3)
         view.add_item(button)
         message = await ctx.send(embed=embed, view=view)
 
@@ -217,42 +214,39 @@ async def refresh_button(ctx, message, button, username, today):
             view.add_item(new_button)
             await message.edit(view=view)
             
-class AuthButton2(Button):
-    def __init__(self, username: str, today: str):
+class AuthButton2(discord.ui.Button):
+    def __init__(self, ctx, username, today, sheet3):
         super().__init__(style=discord.ButtonStyle.green, label="인증대기")
         self.ctx = ctx
         self.username = username
         self.today = today
+        self.sheet3 = sheet3
         self.auth_event = asyncio.Event()
 
-    async def callback(self, interaction: Interaction):
-        await interaction.response.send_message("인증이 완료되었습니다!", ephemeral=True)
-        self.style = ButtonStyle.disabled
-        self.label = "인증완료"
-        self.disabled = True
-        await interaction.message.edit(embed=interaction.message.embeds[0], view=self.view)
-        
-        user_cell = await sheet3.find(self.username)
-        today_cell = await sheet3.find(self.today)
+    async def callback(self, interaction: discord.Interaction):
+        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
+            # If the user doesn't have the required role, send an error message
+            embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
+            await interaction.message.edit(embed=embed, view=None)
+            return
 
         try:
-            user_cell = await sheet3.find(self.username)
-            user_row = user_cell.row
+            user_row = self.sheet3.find(self.username).row
         except gspread.exceptions.CellNotFound:
             embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
             await interaction.message.edit(embed=embed, view=None)
             return
 
         # Authenticate the user in the spreadsheet
-        today_col = sheet3.find(self.today).col
-        await sheet3.update_cell(user_row, today_col, '1')
-        
+        today_col = self.sheet3.find(self.today).col
+        self.sheet3.update_cell(user_row, today_col, '1')
+
         # Set the auth_event to stop the loop
         self.auth_event.set()
-        
+
         # Remove the button from the view
         self.view.clear_items()
-        
+
         # Send a success message
         embed = discord.Embed(title='인증완료!', description=f'{self.username}님, 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
