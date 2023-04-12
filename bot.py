@@ -313,9 +313,9 @@ async def select_channel(ctx):
     # 유저가 접근 가능한 카테고리 찾기
     accessible_categories = []
     for category in ctx.guild.categories:
-        member = await ctx.guild.fetch_member(ctx.author.id)  # 유저의 멤버 객체 가져오기
-        if member in category.members and len(category.channels) > 0:
-            accessible_categories.append(category)
+        for member in category.members:
+            if member == ctx.guild.get_member(ctx.author.id) and len(category.channels) > 0:
+                accessible_categories.append(category)
 
     if not accessible_categories:
         await ctx.send('접근 가능한 카테고리가 없습니다.')
@@ -360,8 +360,7 @@ async def select_channel(ctx):
         await ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
         
     except asyncio.TimeoutError:
-        await message.edit(content='시간이 초과되었습니다.', view=None)
-        return
+        await ctx.send('시간이 초과되었습니다. 명령어를 다시 입력해주세요.')
         
 #Run the bot
 bot.run(TOKEN)
