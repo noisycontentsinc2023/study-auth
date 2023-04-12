@@ -176,9 +176,7 @@ async def random_mission_auth(ctx):
     user = ctx.author.name
     today = datetime.date.today().strftime("%m/%d/%Y")  # 날짜를 가져옴
     try:
-        gc = await AsyncioGspreadClientManager.get_instance().authorize(TOKEN)
-        worksheet = await gc.open("서버기록").worksheet("랜덤미션")  # 시트 오픈
-        user_cell = await find_user(user, worksheet)
+        user_cell = await find_user(user, sheet3)
         if user_cell is None:
             await ctx.send("해당하는 유저가 인증현황 시트에 없습니다.")
             return
