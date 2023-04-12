@@ -292,6 +292,10 @@ async def mission_count(ctx):
 
         
 #------------------------------------------------#
-
+@bot.command(name="역할")
+async def show_roles(ctx):
+    roles = [role.name for role in ctx.author.roles]
+    embed = discord.Embed(title=f"{ctx.author.name}님의 역할", description=", ".join(roles), color=0x00ff00)
+    await ctx.send(embed=embed)
 #Run the bot
 bot.run(TOKEN)
