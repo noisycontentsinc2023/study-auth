@@ -248,8 +248,8 @@ class AuthButton2(discord.ui.Button):
             return
 
         # Authenticate the user in the spreadsheet
-        today_col = (await self.sheet3.find(self.today)).col
-        self.sheet3.update_cell(user_row, today_col, '1')
+        today_col = (await self.sheet3.find(self.today)).col  # 수정된 부분
+        await self.sheet3.update_cell(user_row, today_col, '1')  # 수정된 부분
 
         # Set the auth_event to stop the loop
         self.auth_event.set()
