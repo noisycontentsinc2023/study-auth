@@ -313,8 +313,14 @@ async def select_channel(ctx):
     # 유저가 접근 가능한 카테고리 찾기
     accessible_categories = []
     for category in ctx.guild.categories:
-        if ctx.author in category.members and len(category.channels) > 0:
-            accessible_categories.append(category)
+        if ctx.author in category.members:
+            channel_access = False
+            for channel in category.channels:
+                if channel.permissions_for(ctx.author).read_messages:
+                    channel_access = True
+                    break
+            if channel_access:
+                accessible_categories.append(category)
 
     if not accessible_categories:
         await ctx.send('접근 가능한 카테고리가 없습니다.')
