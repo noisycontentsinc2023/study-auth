@@ -24,7 +24,6 @@ from discord.ext.commands import Context
 from discord.utils import get
 from urllib.request import Request
 from discord.ui import Select, Button, View
-from utils import find_user
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
@@ -165,7 +164,13 @@ async def Relottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
-
+async def find_user(user, worksheet):
+    try:
+        cell = worksheet.find(user)
+        return cell
+    except gspread.exceptions.CellNotFound:
+        return None
+      
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     user = ctx.author
