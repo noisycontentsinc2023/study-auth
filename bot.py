@@ -213,14 +213,17 @@ async def random_mission_auth(ctx):
         embed = discord.Embed(title='Error', description='이미 오늘의 미션 인증을 하셨습니다')
         await ctx.send(embed=embed)
         return
-
-    await sheet3.update_cell(user_cell.row, today_col, '1')
-    embed = discord.Embed(title='Success', description='미션 인증이 완료되었습니다')
-    await ctx.send(embed=embed)
-            
+      
+    # create and send the message with the button
+    embed = discord.Embed(title="미션 인증", description="버튼을 눌러 미션 인증을 완료하세요!")
+    button = AuthButton2(ctx, username, today, sheet3)
+    view = discord.ui.View()
+    view.add_item(button)
+    await ctx.send(embed=embed, view=view)
+        
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3):
-        super().__init__(style=discord.ButtonStyle.green, label="인증대기")
+        super().__init__(style=discord.ButtonStyle.green, label="미션인증")
         self.ctx = ctx
         self.username = username
         self.today = today
@@ -228,17 +231,17 @@ class AuthButton2(discord.ui.Button):
         self.auth_event = asyncio.Event()
 
     async def callback(self, interaction: discord.Interaction):
-        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
+        if not any(role.id == 922400231549722664 for role in interaction.user.roles):
             # If the user doesn't have the required role, send an error message
             embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
-            await interaction.message.edit(embed=embed, view=None)
+            await interaction.response.edit_message(embed=embed, view=None)
             return
 
         try:
             user_row = self.sheet3.find(self.username).row
         except gspread.exceptions.CellNotFound:
             embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
-            await interaction.message.edit(embed=embed, view=None)
+            await interaction.response.edit_message(embed=embed, view=None)
             return
 
         # Authenticate the user in the spreadsheet
@@ -253,7 +256,7 @@ class AuthButton2(discord.ui.Button):
 
         # Send a success message
         embed = discord.Embed(title='인증완료!', description=f'{self.username}님, 정상적으로 인증되셨습니다')
-        await interaction.message.edit(embed=embed, view=None)
+        await interaction.response.edit_message(embed=embed, view=None)
 
 @bot.command(name='누적')
 async def mission_count(ctx):
