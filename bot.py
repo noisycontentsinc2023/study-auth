@@ -196,7 +196,7 @@ async def random_mission_auth(ctx):
         # If the user has not authenticated today, send an authentication window
         embed = discord.Embed(title='Authentication', description=f'{username}님의 미션 인증 대기 중')
         view = discord.ui.View()
-        button = AuthButton2(ctx, username, today)
+        button = AuthButton2(username, today)
         view.add_item(button)
         message = await ctx.send(embed=embed, view=view)
 
@@ -217,11 +217,11 @@ async def refresh_button(ctx, message, button, username, today):
             view.add_item(new_button)
             await message.edit(view=view)
             
-class AuthButton2(ui.Button):
+class AuthButton2(Button):
     def __init__(self, username: str, today: str):
         self.username = username
         self.today = today
-        super().__init__(style=ButtonStyle.success, label="인증대기")
+        super().__init__(style=ButtonStyle.success, label='인증대기', emoji=None, row=None)
 
     async def callback(self, interaction: Interaction):
         await interaction.response.send_message("인증이 완료되었습니다!", ephemeral=True)
