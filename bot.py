@@ -232,7 +232,8 @@ class AuthButton2(discord.ui.Button):
             return
 
         try:
-            user_row = sheet3.find(self.username).row
+            user_cell = await sheet3.find(self.username)
+            user_row = user_cell.row
         except gspread.exceptions.CellNotFound:
             embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
             await interaction.message.edit(embed=embed, view=None)
