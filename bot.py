@@ -219,9 +219,11 @@ async def refresh_button(ctx, message, button, username, today):
             
 class AuthButton2(Button):
     def __init__(self, username: str, today: str):
+        super().__init__(style=discord.ButtonStyle.green, label="인증대기")
+        self.ctx = ctx
         self.username = username
         self.today = today
-        super().__init__(style=ButtonStyle.success, label='인증대기', emoji=None, row=None)
+        self.auth_event = asyncio.Event()
 
     async def callback(self, interaction: Interaction):
         await interaction.response.send_message("인증이 완료되었습니다!", ephemeral=True)
