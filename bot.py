@@ -268,7 +268,7 @@ async def mission_count(ctx):
     
     # Find the user's row in the Google Sheet
     user_row = None
-    for row in sheet3.get_all_values():
+    for row in await sheet3.get_all_values():
         if username in row:
             user_row = row
             break
@@ -278,7 +278,7 @@ async def mission_count(ctx):
         await ctx.send(embed=embed)
         return
 
-    user_cell = sheet3.find(username)
+    user_cell = await sheet3.find(username)
     count = int((await sheet3.cell(user_cell.row, 9)).value)  # Column I is the 9th column
 
     # Send the embed message with the user's authentication count
