@@ -18,11 +18,12 @@ import discord.ui as ui
 
 from google.oauth2.service_account import Credentials
 from discord import Embed
+from discord import Interaction
 from discord.ext import tasks, commands
 from discord.ext.commands import Context
 from discord.utils import get
 from urllib.request import Request
-from discord.ui import Select, Button, View, Interacion, ButtonStyle
+from discord.ui import Select, Button, View, ButtonStyle
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
