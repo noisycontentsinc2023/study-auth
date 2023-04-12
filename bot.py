@@ -299,6 +299,15 @@ async def show_roles(ctx):
     await ctx.send(embed=embed)
     
 #------------------------------------------------#    
+class ChannelSelect(discord.ui.Select):
+    def __init__(self, ctx, options):
+        super().__init__(placeholder='채널 선택', options=options)
+        self.ctx = ctx
+
+    async def callback(self, interaction: discord.Interaction):
+        selected_channel = self.ctx.guild.get_channel(int(self.values[0]))
+        await self.ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
+
 @bot.command(name='채널')
 async def select_channel(ctx):
     # 유저가 접근 가능한 카테고리 찾기
@@ -348,6 +357,10 @@ async def select_channel(ctx):
         interaction = await bot.wait_for('select_option', check=lambda i: i.user.id == ctx.author.id and i.message.id == channel_message.id, timeout=30)
         selected_channel = ctx.guild.get_channel(int(interaction.values[0]))
         await ctx.send(f'{selected_channel.mention} 채널이 선택되었습니다.')
+        
+    except asyncio.TimeoutError:
+        await message.edit(content='시간이 초과되었습니다.', view=None)
+        return
         
 #Run the bot
 bot.run(TOKEN)
