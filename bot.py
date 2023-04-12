@@ -175,8 +175,7 @@ async def Relottery(ctx):
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
-    await get_sheet3()  # 시트 로드
-
+    sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
     # Check if the user has already authenticated today
     today = now.strftime('%m%d')
