@@ -6,7 +6,7 @@ class Register(commands.Cog):
         self.bot = bot
         
     @commands.command(name='등록')
-    async def Register(ctx):
+    async def Register(self, ctx):
         username = str(ctx.message.author)
     
         sheet3, rows = await get_sheet3()
