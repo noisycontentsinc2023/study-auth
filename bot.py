@@ -313,9 +313,14 @@ async def select_channel(ctx):
     # 유저가 접근 가능한 카테고리 찾기
     accessible_categories = []
     for category in ctx.guild.categories:
-        for member in category.members:
-            if member == ctx.guild.get_member(ctx.author.id) and len(category.channels) > 0:
+        # 해당 카테고리에 속한 채널 중 유저가 읽을 권한을 가진 채널이 있는지 확인합니다.
+        for channel in category.channels:
+            if channel.permissions_for(ctx.author).read_messages:
                 accessible_categories.append(category)
+                break  # 하나 이상의 채널에 접근 가능한 경우 해당 카테고리를 추가합니다.
+    else:
+        continue  # 하나 이상의 채널에 접근 불가능한 경우 다음 카테고리를 확인합니다.
+    break  # 하나 이상의 채널에 접근 가능한 경우 해당 카테고리를 선택하므로 반복문을 종료합니다.
 
     if not accessible_categories:
         await ctx.send('접근 가능한 카테고리가 없습니다.')
