@@ -182,7 +182,11 @@ async def random_mission_auth(ctx):
         return
 
     user_cell = sheet3.find(username)
-    if (await sheet3.cell(user_cell.row, (await sheet3.find(today)).col)).value == '1':
+    user_cell = await user_cell
+    today_cell = await sheet3.find(today)
+    mission_cell = await sheet3.cell(user_cell.row, today_cell.col)
+
+    if mission_cell.value == '1':
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
