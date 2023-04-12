@@ -184,11 +184,8 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
         return
 
-    user_cell = sheet3.find(username)
-    today_col_coro = sheet3.find(today)  # 코루틴 객체
-    today_col = await asyncio.ensure_future(today_col_coro)  # awaitable 객체로 변경
-
-    if (await sheet3.cell(user_cell.row, today_col.col)).value == '1':  # 결과를 가져오기 위해 다시 await 사용
+    user_cell = await sheet3.find(username)
+    if (await sheet3.cell(user_cell.row, today_col)).value == '1':
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
@@ -196,14 +193,14 @@ async def random_mission_auth(ctx):
         # If the user has not authenticated today, send an authentication window
         embed = discord.Embed(title='Authentication', description=f'{username}님의 미션 인증 대기 중')
         view = discord.ui.View()
-        button = AuthButton2(ctx, username, today, sheet3)
+        button = AuthButton2(ctx, username, today)
         view.add_item(button)
         message = await ctx.send(embed=embed, view=view)
 
         # Start a background task to refresh the button every minute
-        asyncio.create_task(refresh_button(ctx, message, button, username, today))
+        asyncio.create_task(refresh_button(ctx, message, button, username, today, sheet3))
         
-async def refresh_button(ctx, message, button, username, today):
+async def refresh_button(ctx, message, button, username, today, sheet3):
     auth_event = button.auth_event
 
     while not auth_event.is_set():
@@ -213,7 +210,7 @@ async def refresh_button(ctx, message, button, username, today):
         # If the button was not clicked, refresh it
         if not auth_event.is_set():
             view = discord.ui.View()
-            new_button = AuthButton2(ctx, username, today)
+            new_button = AuthButton2(ctx, username, today, sheet3)
             view.add_item(new_button)
             await message.edit(view=view)
             
