@@ -191,7 +191,7 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
         return
 
-    user_cell = await find_user(username)
+    user_cell = await find_user(username, sheet3)
 
     if user_cell is None:
         embed = discord.Embed(title='Error', description='서버 기록 시트에 멤버가 등록되어 있지 않습니다')
