@@ -12,9 +12,9 @@ import json.decoder
 import gspread.exceptions
 import re
 import pytz
-import gspread
+import gspread.asyncio
 
-from google.oauth2 import service_account
+from google.oauth2.service_account import Credentials
 from discord import Embed
 from discord.ext import tasks, commands
 from discord.ext.commands import Context
@@ -34,7 +34,6 @@ intents.presences = False
 
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
-openai.api_key = OPENAI
 
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds_info = {
@@ -49,38 +48,20 @@ creds_info = {
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/noisycontents%40thematic-bounty-382700.iam.gserviceaccount.com"
 }
-creds = service_account.Credentials.from_service_account_info(info=creds_info, scopes=scope)
-client = gspread.authorize(creds)
-
-async def generate_response(prompt):
-    response = openai.Completion.create(
-        engine="gpt-3.5-turbo",
-        prompt=prompt,
-        max_tokens=300,
-        n=1,
-        stop=None,
-        temperature=0.8,
-    )
-
-    message = response.choices[0].text.strip()
-    return message
-
-@bot.command(name="gpt")
-async def gpt(ctx, *, message):
-    prompt = f"{ctx.author.name}: {message}"
-    response = await generate_response(prompt)
-
-    embed = discord.Embed(title="답변", description=response, color=discord.Color.blue())
-    await ctx.send(embed=embed)
+credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
-sheet3 = client.open('서버기록').worksheet('랜덤미션')
-rows = sheet3.get_all_values()
+async def get_sheet3():
+    async with gspread.asyncio.authorize(credentials) as client:
+        sheet3 = await client.open('서버기록').worksheet('랜덤미션')
+        rows = await sheet3.get_all_values()
+    return sheet3, rows
 
 kst = pytz.timezone('Asia/Seoul')
 now = datetime.datetime.now(kst)
 
+sheet3, rows = await get_sheet3()
 @bot.command(name='등록')
 async def Register(ctx):
     username = str(ctx.message.author)
@@ -91,7 +72,7 @@ async def Register(ctx):
         row += 1
 
     # Append the username to the first empty row in column A
-    sheet3.update_cell(row, 1, username)
+    await sheet3.update_cell(row, 1, username)
 
     role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
     await ctx.author.add_roles(role)
@@ -177,6 +158,7 @@ async def Relottery(ctx):
     embed.set_footer(text='오늘의 미션입니다!')
     await message.edit(embed=embed, view=view)
 
+sheet3, rows = await get_sheet3()
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     username = str(ctx.message.author)
@@ -195,7 +177,7 @@ async def random_mission_auth(ctx):
         return
 
     user_cell = sheet3.find(username)
-    if sheet3.cell(user_cell.row, sheet3.find(today).col).value == '1':
+    if (await sheet3.cell(user_cell.row, (await sheet3.find(today)).col)).value == '1':
         # If the user has already authenticated today, send an error message
         embed = discord.Embed(title='', description='오늘 이미 인증하셨어요!')
         await ctx.send(embed=embed)
@@ -248,7 +230,7 @@ class AuthButton2(discord.ui.Button):
 
         # Authenticate the user in the spreadsheet
         today_col = sheet3.find(self.today).col
-        sheet3.update_cell(user_row, today_col, '1')
+        await sheet3.update_cell(user_row, today_col, '1')
         
         # Set the auth_event to stop the loop
         self.auth_event.set()
@@ -259,7 +241,8 @@ class AuthButton2(discord.ui.Button):
         # Send a success message
         embed = discord.Embed(title='인증완료!', description=f'{self.username}님, 정상적으로 인증되셨습니다')
         await interaction.message.edit(embed=embed, view=None)
-        
+
+sheet3, rows = await get_sheet3()
 @bot.command(name='누적')
 async def mission_count(ctx):
     username = str(ctx.message.author)
@@ -277,7 +260,7 @@ async def mission_count(ctx):
         return
 
     user_cell = sheet3.find(username)
-    count = int(sheet3.cell(user_cell.row, 9).value)  # Column I is the 9th column
+    count = int((await sheet3.cell(user_cell.row, 9)).value)  # Column I is the 9th column
 
     # Send the embed message with the user's authentication count
     embed = discord.Embed(description=f"{ctx.author.mention}님은 {count} 회 인증하셨어요!", color=0x00FF00)
