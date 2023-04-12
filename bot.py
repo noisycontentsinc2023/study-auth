@@ -173,14 +173,23 @@ async def find_user(user, worksheet):
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
-    user = ctx.author
-    today = datetime.date.today().strftime("%Y/%-m/%-d")  # 날짜를 yyyy/m/d 형식으로 변환
-    user_cell = await find_user(user, sheet3)
-    today_col = await sheet3.find(today)  # 날짜의 열 번호를 가져옴
-    if (await sheet3.cell(user_cell.row, today_col.col)).value == '1':
-        await ctx.send(f"{user.mention} 미션인증 성공!")
-    else:
-        await ctx.send(f"{user.mention} 미션인증 실패!") 
+    user = ctx.author.name
+    today = datetime.date.today().strftime("%m/%d/%Y")  # 날짜를 가져옴
+    try:
+        gc = await AsyncioGspreadClientManager.get_instance().authorize(TOKEN)
+        worksheet = await gc.open("서버기록").worksheet("랜덤미션")  # 시트 오픈
+        user_cell = await find_user(user, worksheet)
+        if user_cell is None:
+            await ctx.send("해당하는 유저가 인증현황 시트에 없습니다.")
+            return
+        today_col = await worksheet.find(today)  # 오늘 날짜가 있는 컬럼 가져옴
+        if (await worksheet.cell(user_cell.row, today_col.col)).value == '1':  # 결과를 가져오기 위해 다시 await 사용
+            await ctx.send("오늘 이미 미션 인증을 완료하였습니다.")
+        else:
+            await worksheet.update_cell(user_cell.row, today_col.col, "1")
+            await ctx.send("미션인증이 완료되었습니다.")
+    except Exception as e:
+        await ctx.send(f"인증 처리 중 오류가 발생하였습니다. 관리자에게 문의해주세요. \nError message: {e}")
 
     sheet3, _ = await get_sheet3()
 
