@@ -12,7 +12,7 @@ import json.decoder
 import gspread.exceptions
 import re
 import pytz
-import gspread.asyncio
+import gspread
 import asyncio
 
 from google.oauth2.service_account import Credentials
@@ -53,8 +53,8 @@ credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
-async def get_sheet3():
-    async with gspread.asyncio.authorize(credentials) as client:
+async def get_sheet3():  # 수정: gspread.asyncio를 사용하기 위한 별도의 async 함수를 생성했습니다.
+    async with gspread.authorize(credentials) as client:
         sheet3 = await client.open('서버기록').worksheet('랜덤미션')
         rows = await sheet3.get_all_values()
     return sheet3, rows
