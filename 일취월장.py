@@ -51,7 +51,7 @@ aio_creds = credentials
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
-async def get_sheet2():  # 수정
+async def get_sheet2():
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
     spreadsheet = await client.open('서버기록')
@@ -68,19 +68,7 @@ async def find_user(username, sheet):
     except gspread.exceptions.APIError as e:
         print(f'find_user error: {e}')
     return cell
-  
-  # Set up Google Sheets worksheet
 
-class CancelButton(discord.ui.Button):
-    def __init__(self, ctx):
-        super().__init__(style=discord.ButtonStyle.red, label="취소")
-        self.ctx = ctx
-    
-    async def callback(self, interaction: discord.Interaction):
-        if interaction.user == self.ctx.author:
-            interaction.message.deleted = True  # Set the deleted flag
-            await interaction.message.delete()
-            
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, user, date):
         super().__init__(style=discord.ButtonStyle.green, label="확인 ")
@@ -92,75 +80,75 @@ class AuthButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             return
-        existing_users = sheet2.col_values(1)
+        existing_users = await sheet2.col_values(1)
         if str(self.user) not in existing_users:
             empty_row = len(existing_users) + 1
-            sheet2.update_cell(empty_row, 1, str(self.user))
-            existing_dates = sheet2.row_values(1)
+            await sheet2.update_cell(empty_row, 1, str(self.user))
+            existing_dates = await sheet2.row_values(1)
             if self.date not in existing_dates:
                 empty_col = len(existing_dates) + 1
-                sheet2.update_cell(1, empty_col, self.date)
-                sheet2.update_cell(empty_row, empty_col, "1")
+                await sheet2.update_cell(1, empty_col, self.date)
+                await sheet2.update_cell(empty_row, empty_col, "1")
             else:
                 col = existing_dates.index(self.date) + 1
-                sheet2.update_cell(empty_row, col, "1")
+                await sheet2.update_cell(empty_row, col, "1")
         else:
             index = existing_users.index(str(self.user)) + 1
-            existing_dates = sheet2.row_values(1)
+            existing_dates = await sheet2.row_values(1)
             if self.date not in existing_dates:
                 empty_col = len(existing_dates) + 1
-                sheet2.update_cell(1, empty_col, self.date)
-                sheet2.update_cell(index, empty_col, "1")
+                await sheet2.update_cell(1, empty_col, self.date)
+                await sheet2.update_cell(index, empty_col, "1")
             else:
                 col = existing_dates.index(self.date) + 1
-                sheet2.update_cell(index, col, "1")
+                await sheet2.update_cell(index, col, "1")
         await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장을 인증했습니다"), view=None)
-        self.stop_loop = True  # Set stop_loop to True after editing the message
-        
+        self.stop_loop = True
+
 async def update_embed(ctx, date, msg):
-    button = AuthButton(ctx, ctx.author, date)  # Move button creation outside of the loop
+    button = AuthButton(ctx, ctx.author, date) # Move button creation outside of the loop
     while True:
         try:
-            if button.stop_loop:  # Check if stop_loop is True before updating the message
+            if button.stop_loop: # Check if stop_loop is True before updating the message
                 break
 
             view = discord.ui.View(timeout=None)
             view.add_item(button)
             view.add_item(CancelButton(ctx))
 
-            embed = discord.Embed(title="인증상황", description=f"{ctx.author.mention}의 {date} 일취월장 인증입니다")
+            embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니")
             await msg.edit(embed=embed, view=view)
             await asyncio.sleep(60)
-        except NotFound:
+        except discord.errors.NotFound:
             break
         
 @bot.command(name='인증')
 async def Authentication(ctx, date):
     
     # Validate the input date
-    if not re.match(r'^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$', date):
-        await ctx.send("정확한 날짜를 입력해주세요! 날짜는 네 자리 숫자로 작성해주세요. 1월 1일을 입력하시려면 0101을 입력해주세요.")
+    if not re.match(r'^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$', date ):
+        await ctx.send("정확한 네자리 숫자를 입력해주세요! 1월1일 인증을 하시려면 0101을 입력하시면 됩니다 :)")
         return
       
-    existing_users = sheet2.col_values(1)
+    existing_users = await sheet2.col_values(1)
     if str(ctx.author) in existing_users:
         user_index = existing_users.index(str(ctx.author)) + 1
-        existing_dates = sheet2.row_values(1)
+        existing_dates = await sheet2.row_values(1)
         if date in existing_dates:
             date_index = existing_dates.index(date) + 1
-            cell_value = sheet2.cell(user_index, date_index).value
+            cell_value = await sheet2.cell(user_index, date_index).value
             if cell_value == "1":
-                await ctx.send(embed=discord.Embed(title="인증상황", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
+                await ctx.send(embed=discord.Embed(title="Authorization Status", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
                 return
 
-    embed = discord.Embed(title="인증상황", description=f"{ctx.author.mention}의 {date} 일취월장 인증입니다")
+    embed = discord.Embed(title="인증상태", description=f"{ctx.author.mention}님의 {date} 일취월장 인증 요청입니다")
     view = discord.ui.View()
     button = AuthButton(ctx, ctx.author, date)
     view.add_item(button)
-    view.add_item(CancelButton(ctx))  # Add the CancelButton to the view
+    view.add_item(CancelButton(ctx)) # Add the CancelButton to the view
     msg = await ctx.send(embed=embed, view=view)
     
-    asyncio.create_task(update_embed(ctx, date, msg))  
+    asyncio.create_task(update_embed(ctx, date, msg))
 
     def check(interaction: discord.Interaction):
         return interaction.message.id == msg.id and interaction.data.get("component_type") == discord.ComponentType.button.value
