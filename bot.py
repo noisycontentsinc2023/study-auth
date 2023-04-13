@@ -255,6 +255,28 @@ class RandomMissionView(View):
         await self.message.delete()
         await self.ctx.invoke(self.ctx.bot.get_command('再次'))
 
+# Set the last mission time to None initially
+last_mission_time = None
+
+# Define the "!Mission" command
+def mission():
+    global last_mission_time
+    
+    # Get the current time in Korean time zone
+    korean_time = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
+    
+    # Check if the last mission time is None or it was before today
+    if last_mission_time is None or last_mission_time.date() < korean_time.date():
+        
+        # Run the mission
+        print("랜덤 미션 뽑는 중")
+        
+        # Update the last mission time to the current time
+        last_mission_time = korean_time
+    
+    # If the last mission time was today, inform the user they cannot run the mission again
+    else:
+        print("오늘의 미션을 이미 받으셨어요!")
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
@@ -304,7 +326,7 @@ async def lottery(ctx):
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='오늘의 미션입니다!')
+    embed.set_footer(text='1회에 한해 다시 뽑기를 할 수 있어요!')
     view = RandomMissionView(ctx, message)
     await message.edit(embed=embed, view=view)  
 
