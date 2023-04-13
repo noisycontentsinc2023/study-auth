@@ -265,18 +265,24 @@ def mission():
     # Get the current time in Korean time zone
     korean_time = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
     
+    # Get the date of the last mission time in Korean time zone
+    if last_mission_time is not None:
+        last_mission_date = last_mission_time.astimezone(datetime.timezone(datetime.timedelta(hours=9))).date()
+    else:
+        last_mission_date = None
+    
     # Check if the last mission time is None or it was before today
-    if last_mission_time is None or last_mission_time.date() < korean_time.date():
+    if last_mission_date is None or last_mission_date < korean_time.date():
         
         # Run the mission
-        print("랜덤미션 뽑는 중!")
+        print("랜덤 미션 뽑는 중")
         
         # Update the last mission time to the current time
         last_mission_time = korean_time
     
     # If the last mission time was today, inform the user they cannot run the mission again
     else:
-        print("이미 오늘의 미션을 받으셨어요!")
+        print("오늘의 미션을 이미 받으셨어요!")
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
