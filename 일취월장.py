@@ -140,8 +140,8 @@ async def Authentication(ctx, date):
         existing_dates = await sheet2.row_values(1)
         if date in existing_dates:
             date_index = existing_dates.index(date) + 1
-            cell_value = await sheet2.cell(user_index, date_index).value
-            if cell_value == "1":
+            cell_value = await sheet2.cell(user_index, date_index)
+            if cell_value.value == "1":
                 await ctx.send(embed=discord.Embed(title="Authorization Status", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
                 return
 
