@@ -78,6 +78,9 @@ class AuthButton(discord.ui.Button):
         self.stop_loop = False  # Add the stop_loop attribute
     
     async def callback(self, interaction: discord.Interaction):
+        
+        sheet2, rows = await get_sheet2()
+        
         if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             return
         existing_users = await sheet2.col_values(1)
@@ -129,7 +132,8 @@ async def Authentication(ctx, date):
     if not re.match(r'^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$', date ):
         await ctx.send("정확한 네자리 숫자를 입력해주세요! 1월1일 인증을 하시려면 0101을 입력하시면 됩니다 :)")
         return
-      
+    
+    sheet2, rows = await get_sheet2()
     existing_users = await sheet2.col_values(1)
     if str(ctx.author) in existing_users:
         user_index = existing_users.index(str(ctx.author)) + 1
