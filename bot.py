@@ -269,14 +269,14 @@ def mission():
     if last_mission_time is None or last_mission_time.date() < korean_time.date():
         
         # Run the mission
-        print("랜덤 미션 뽑는 중")
+        print("랜덤미션 뽑는 중!")
         
         # Update the last mission time to the current time
         last_mission_time = korean_time
     
     # If the last mission time was today, inform the user they cannot run the mission again
     else:
-        print("오늘의 미션을 이미 받으셨어요!")
+        print("이미 오늘의 미션을 받으셨어요!")
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
@@ -284,13 +284,18 @@ async def Random_Mission(ctx):
     required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
     if required_role in ctx.author.roles:
         if str(ctx.channel.id) == "1093780375890825246":
-            await lottery(ctx)
+            # Check if the user has run the mission command today
+            if last_mission_time is None or last_mission_time.date() < (datetime.datetime.utcnow() + datetime.timedelta(hours=9)).date():
+                await lottery(ctx)
+            else:
+                await ctx.send("오늘의 미션을 이미 받으셨어요!")
         else:
-            await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
+            await ctx.send("해당 명령어는 이 채널에서 사용할 수 없어요 :(")
     else:
         # Send the message if the user does not have the required role
-        embed = discord.Embed(description="랜덤미션스터디 참여자만 !미션 명령어를 사용할 수 있어요", color=0xff0000)
+        embed = discord.Embed(description="랜덤미션스터디 참여자만 해당 명령어를 사용할 수 있어요", color=0xff0000)
         await ctx.send(embed=embed)
+
 
 
 async def lottery(ctx):
