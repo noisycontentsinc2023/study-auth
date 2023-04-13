@@ -124,6 +124,32 @@ async def update_embed(ctx, date, msg):
             await asyncio.sleep(60)
         except discord.errors.NotFound:
             break
+class CancelButton(discord.ui.Button):
+    def __init__(self, ctx):
+        super().__init__(style=discord.ButtonStyle.red, label="취소 ")
+        self.ctx = ctx
+        self.stop_loop = False  # Add the stop_loop attribute
+    
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.message.delete()
+        self.stop_loop = True
+
+async def update_embed(ctx, date, msg):
+    button = AuthButton(ctx, ctx.author, date) # Move button creation outside of the loop
+    cancel = CancelButton(ctx)  # Create a CancelButton instance
+    while True:
+        try:
+            if button.stop_loop or cancel.stop_loop: # Check if any button's stop_loop is True before updating the message
+                break
+
+            view = discord.ui.View(timeout=None)
+            view.add_item(button)
+            view.add_item(cancel)  # Add the CancelButton to the view
+
+            embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
+            await msg.edit(embed=embed, view=view)
+            await asyncio.sleep(60)
+        except disco
         
 @bot.command(name='인증')
 async def Authentication(ctx, date):
