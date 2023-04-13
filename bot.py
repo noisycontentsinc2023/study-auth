@@ -294,7 +294,7 @@ async def lottery(ctx):
 
     for i, (choice, difficulty) in enumerate(selected_choices):
         embed.clear_fields()
-        embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
+        embed.add_field(name=f'미션', value=choice, inline=True)
         embed.add_field(name='난이도', value=difficulty, inline=True)
         await message.edit(embed=embed)
         await asyncio.sleep(0.2)
@@ -331,7 +331,7 @@ async def Relottery(ctx):
 
     for i, (choice, difficulty) in enumerate(selected_choices):
         embed.clear_fields()
-        embed.add_field(name=f'{i + 1} 미션', value=choice, inline=True)
+        embed.add_field(name=f'미션', value=choice, inline=True)
         embed.add_field(name='난이도', value=difficulty, inline=True)
         await message.edit(embed=embed)
         await asyncio.sleep(0.2)
