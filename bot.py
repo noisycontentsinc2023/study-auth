@@ -175,10 +175,10 @@ async def Authentication(ctx, date):
             date_index = existing_dates.index(date) + 1
             cell_value = await sheet2.cell(user_index, date_index)
             if cell_value.value == "1":
-                await ctx.send(embed=discord.Embed(title="Authorization Status", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
+                await ctx.send(embed=discord.Embed(title="인증상태", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
                 return
 
-    embed = discord.Embed(title="인증상태", description=f"{ctx.author.mention}님의 {date} 일취월장 인증 요청입니다")
+    embed = discord.Embed(title="인증요청", description=f"{ctx.author.mention}님의 {date} 일취월장 인증 요청입니다")
     view = discord.ui.View()
     button = AuthButton(ctx, ctx.author, date)
     view.add_item(button)
