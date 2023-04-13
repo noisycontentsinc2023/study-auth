@@ -51,13 +51,13 @@ aio_creds = credentials
     
 #------------------------------------------------#
 # Set up Google Sheets worksheet
-async def get_sheet3():  # 수정
+async def get_sheet2():  # 수정
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
     spreadsheet = await client.open('서버기록')
-    sheet3 = await spreadsheet.worksheet('랜덤미션')
-    rows = await sheet3.get_all_values()
-    return sheet3, rows 
+    sheet2 = await spreadsheet.worksheet('일취월장')
+    rows = await sheet2.get_all_values()
+    return sheet2, rows 
 
 async def find_user(username, sheet):
     cell = None
@@ -168,3 +168,6 @@ async def Authentication(ctx, date):
         return interaction.message.id == msg.id and interaction.data.get("component_type") == discord.ComponentType.button.value
 
     await bot.wait_for("interaction", check=check)
+    
+    #Run the bot
+bot.run(TOKEN)
