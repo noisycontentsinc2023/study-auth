@@ -70,8 +70,6 @@ async def find_user(username, sheet):
     return cell
   
   # Set up Google Sheets worksheet
-sheet2 = client.open('서버기록').worksheet('일취월장')
-rows = sheet2.get_all_values()
 
 class CancelButton(discord.ui.Button):
     def __init__(self, ctx):
