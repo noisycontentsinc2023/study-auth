@@ -303,7 +303,7 @@ async def lottery(ctx):
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='오늘의 미션입니다!')
+    await message.edit(embed=embed)
 
 @bot.command(name='再次')
 async def Relottery(ctx):
@@ -339,8 +339,7 @@ async def Relottery(ctx):
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='오늘의 미션입니다!')
-
+    await message.edit(embed=embed)
 
       
 @bot.command(name='미션인증')
