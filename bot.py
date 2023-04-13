@@ -255,34 +255,6 @@ class RandomMissionView(View):
         await self.message.delete()
         await self.ctx.invoke(self.ctx.bot.get_command('再次'))
 
-# Set the last mission time to None initially
-last_mission_time = None
-
-# Define the "!Mission" command
-def mission():
-    global last_mission_time
-    
-    # Get the current time in Korean time zone
-    korean_time = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
-    
-    # Get the date of the last mission time in Korean time zone
-    if last_mission_time is not None:
-        last_mission_date = last_mission_time.astimezone(datetime.timezone(datetime.timedelta(hours=9))).date()
-    else:
-        last_mission_date = None
-    
-    # Check if the last mission time is None or it was before today
-    if last_mission_date is None or last_mission_date < korean_time.date():
-        
-        # Run the mission
-        print("랜덤 미션 뽑는 중")
-        
-        # Update the last mission time to the current time
-        last_mission_time = korean_time
-    
-    # If the last mission time was today, inform the user they cannot run the mission again
-    else:
-        print("오늘의 미션을 이미 받으셨어요!")
 
 @bot.command(name='미션')
 async def Random_Mission(ctx):
@@ -290,18 +262,13 @@ async def Random_Mission(ctx):
     required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
     if required_role in ctx.author.roles:
         if str(ctx.channel.id) == "1093780375890825246":
-            # Check if the user has run the mission command today
-            if last_mission_time is None or last_mission_time.date() < (datetime.datetime.utcnow() + datetime.timedelta(hours=9)).date():
-                await lottery(ctx)
-            else:
-                await ctx.send("오늘의 미션을 이미 받으셨어요!")
+            await lottery(ctx)
         else:
-            await ctx.send("해당 명령어는 이 채널에서 사용할 수 없어요 :(")
+            await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
     else:
         # Send the message if the user does not have the required role
-        embed = discord.Embed(description="랜덤미션스터디 참여자만 해당 명령어를 사용할 수 있어요", color=0xff0000)
+        embed = discord.Embed(description="랜덤미션스터디 참여자만 !미션 명령어를 사용할 수 있어요", color=0xff0000)
         await ctx.send(embed=embed)
-
 
 
 async def lottery(ctx):
@@ -320,7 +287,7 @@ async def lottery(ctx):
                ('!가위 / !바위 / !보 중 하나를 입력해서 테이망령 이기기', '★'), ('!공부 입력해보기', '★'), ('일취월장 채널의 다른 학습자 인증에 격려 댓글 남겨주기', '★★★★'),
                ('일취월장 채널의 다른 학습자 인증에 이모티콘 남겨주기', '★'), ('트립위드미 채널의 다른학습자 글에 이모티콘 남겨주기', '★'), ('조용한 독서실 / 보이는 독서실 한 시간 이상 참여 후 커피 교환하기! 이미 받으신 분도 가능! 참여 방법이 궁금하시다면 물어봐 주세요!', '★')]
 
-    embed = discord.Embed(title=f"{ctx.author.name}님의 오늘의 미션입니다!", color=0xff0000)
+    embed = discord.Embed(title=f"{ctx.author.name}님의 미션을 뽑는 중입니다", color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
@@ -335,9 +302,10 @@ async def lottery(ctx):
     result, difficulty = random.choice(selected_choices)
     result = result  # 선택된 미션 내용을 result에 대입
     embed.clear_fields()
+    embed = discord.Embed(title=f"{ctx.author.name}님의 오늘의 미션입니다!", color=0xff0000)
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='1회에 한해 다시 뽑기를 할 수 있어요!')
+    embed.set_footer(text='한 번 더 뽑아보시겠어요?')
     view = RandomMissionView(ctx, message)
     await message.edit(embed=embed, view=view)  
 
@@ -359,7 +327,7 @@ async def Relottery(ctx):
                ('일취월장 채널의 다른 학습자 인증에 이모티콘 남겨주기', '★'), ('트립위드미 채널의 다른학습자 글에 이모티콘 남겨주기', '★'), ('조용한 독서실 / 보이는 독서실 한 시간 이상 참여 후 커피 교환하기! 이미 받으신 분도 가능! 참여 방법이 궁금하시다면 물어봐 주세요!', '★')]
 
 
-    embed = discord.Embed(title=f"{ctx.author.name}님의 다시 뽑기 결과입니다!", color=0xff0000)
+    embed = discord.Embed(title=f"{ctx.author.name}님의 미션을 뽑는 중입니다", color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
@@ -373,6 +341,7 @@ async def Relottery(ctx):
 
     result, difficulty = random.choice(selected_choices)
     result = result  # 선택된 미션 내용을 result에 대입
+    embed = discord.Embed(title=f"{ctx.author.name}님의 다시 뽑기 결과입니다!", color=0xff0000)
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
