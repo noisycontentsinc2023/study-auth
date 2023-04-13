@@ -297,7 +297,7 @@ async def lottery(ctx):
         embed.add_field(name=f'미션', value=choice, inline=True)
         embed.add_field(name='난이도', value=difficulty, inline=True)
         await message.edit(embed=embed)
-        await asyncio.sleep(0.2)
+        await asyncio.sleep(0.4)
 
     result, difficulty = random.choice(selected_choices)
     result = result  # 선택된 미션 내용을 result에 대입
@@ -305,6 +305,8 @@ async def lottery(ctx):
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
+    view = RandomMissionView(ctx, message)
+    await message.edit(embed=embed, view=view)  
 
 @bot.command(name='再次')
 async def Relottery(ctx):
