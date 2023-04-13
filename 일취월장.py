@@ -149,7 +149,8 @@ async def update_embed(ctx, date, msg):
             embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
             await msg.edit(embed=embed, view=view)
             await asyncio.sleep(60)
-        except disco
+        except discord.errors.NotFound:
+            break
         
 @bot.command(name='인증')
 async def Authentication(ctx, date):
