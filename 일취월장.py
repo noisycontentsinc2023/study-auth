@@ -68,3 +68,5 @@ async def find_user(username, sheet):
     except gspread.exceptions.APIError as e:
         print(f'find_user error: {e}')
     return cell
+  
+  
