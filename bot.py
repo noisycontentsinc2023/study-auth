@@ -269,8 +269,9 @@ async def Random_Mission(ctx):
         cooldowns[user_id] = time.time() + cooldown_time
 
         required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
+        allowed_channel_ids = ["1093780375890825246", "922426434633478194"]
         if required_role in ctx.author.roles:
-            if str(ctx.channel.id) == "1093780375890825246":
+            if str(ctx.channel.id) in allowed_channel_ids:
                 await lottery(ctx)
             else:
                 await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
