@@ -343,7 +343,7 @@ async def Relottery(ctx):
                ('일취월장 채널의 다른 학습자 인증에 이모티콘 남겨주기', '★'), ('트립위드미 채널의 다른학습자 글에 이모티콘 남겨주기', '★'), ('조용한 독서실 / 보이는 독서실 한 시간 이상 참여 후 커피 교환하기! 이미 받으신 분도 가능! 참여 방법이 궁금하시다면 물어봐 주세요!', '★')]
 
 
-    embed = discord.Embed(title=f"{ctx.author.name}님의 미션을 뽑는 중입니다", color=0xff0000)
+    embed = discord.Embed(title=f"{ctx.author.name}님의 미션을 다시 뽑는 중입니다", color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
@@ -357,13 +357,13 @@ async def Relottery(ctx):
 
     result, difficulty = random.choice(selected_choices)
     result = result  # 선택된 미션 내용을 result에 대입
-    embed = discord.Embed(title=f"{ctx.author.name}님의 다시 뽑기 결과입니다!", color=0xff0000)
+    
+    embed.title = f"{ctx.author.name}님의 오늘의 미션입니다!"  # Update the title
     embed.clear_fields()
 
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
-
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
