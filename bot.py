@@ -316,13 +316,14 @@ async def lottery(ctx):
 
     result, difficulty = random.choice(selected_choices)
     result = result  # 선택된 미션 내용을 result에 대입
+    
+    embed.title = f"{ctx.author.name}님의 오늘의 미션입니다!"  # Update the title
     embed.clear_fields()
-    embed = discord.Embed(title=f"{ctx.author.name}님의 오늘의 미션입니다!", color=0xff0000)
+
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='한 번 더 뽑아보시겠어요?')
     view = RandomMissionView(ctx, message)
-    await message.edit(embed=embed, view=view)  
 
 @bot.command(name='再次')
 async def Relottery(ctx):
@@ -356,8 +357,9 @@ async def Relottery(ctx):
 
     result, difficulty = random.choice(selected_choices)
     result = result  # 선택된 미션 내용을 result에 대입
-    embed.clear_fields()
     embed = discord.Embed(title=f"{ctx.author.name}님의 다시 뽑기 결과입니다!", color=0xff0000)
+    embed.clear_fields()
+
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
