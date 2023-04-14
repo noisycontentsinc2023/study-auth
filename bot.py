@@ -259,7 +259,7 @@ class RandomMissionView(View):
 
 cooldowns = {}  # Create a dictionary to store cooldowns
 
-@bot.command(name='미션')
+@bot.command(name='')
 async def Random_Mission(ctx):
     user_id = ctx.author.id
     cooldown_time = 3600  # One hour in seconds
@@ -365,7 +365,7 @@ async def Relottery(ctx):
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
       
-@bot.command(name='미션인증')
+@bot.command(name='')
 async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
@@ -451,7 +451,7 @@ class AuthButton2(discord.ui.Button):
         embed = discord.Embed(title='인증완료!', description=f'{ctx.author.mention}님, 정상적으로 인증되셨습니다')
         await interaction.response.edit_message(embed=embed, view=None)
 
-@bot.command(name='누적')
+@bot.command(name='')
 async def mission_count(ctx):
     username = str(ctx.message.author)
     sheet3, rows = await get_sheet3()
