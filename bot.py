@@ -256,18 +256,32 @@ class RandomMissionView(View):
         await self.ctx.invoke(self.ctx.bot.get_command('再次'))
 
 
+cooldowns = {}  # Create a dictionary to store cooldowns
+
 @bot.command(name='미션')
 async def Random_Mission(ctx):
-    # Check if the user has the required role
-    required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
-    if required_role in ctx.author.roles:
-        if str(ctx.channel.id) == "1093780375890825246":
-            await lottery(ctx)
+    user_id = ctx.author.id
+    cooldown_time = 3600  # One hour in seconds
+
+    # Check if the user is not in cooldowns or their cooldown has expired
+    if user_id not in cooldowns or cooldowns[user_id] < time.time():
+        cooldowns[user_id] = time.time() + cooldown_time
+
+        required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
+        if required_role in ctx.author.roles:
+            if str(ctx.channel.id) == "1093780375890825246":
+                await lottery(ctx)
+            else:
+                await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
         else:
-            await ctx.send("이 채널에서는 사용할 수 없는 명령입니다")
+            embed = discord.Embed(description="랜덤미션스터디 참여자만 !미션 명령어를 사용할 수 있어요", color=0xff0000)
+            await ctx.send(embed=embed)
+
+        await asyncio.sleep(cooldown_time)  # Add a delay between command uses
+
     else:
-        # Send the message if the user does not have the required role
-        embed = discord.Embed(description="랜덤미션스터디 참여자만 !미션 명령어를 사용할 수 있어요", color=0xff0000)
+        # Send the message if the user is still in cooldown
+        embed = discord.Embed(description="해당 명령어는 한 시간에 한 번만 쓸 수 있어요!", color=0xff0000)
         await ctx.send(embed=embed)
 
 
@@ -406,9 +420,10 @@ class AuthButton2(discord.ui.Button):
         self.auth_event = asyncio.Event()
 
     async def callback(self, interaction: discord.Interaction):
-        if not any(role.id == 922400231549722664 for role in interaction.user.roles):
-            # If the user doesn't have the required role, send an error message
-            embed = discord.Embed(title='Error', description='권한이 없습니다 :(')
+        
+        if interaction.user == self.ctx.author:
+            # If the user is the button creator, send an error message
+            embed = discord.Embed(title='Error', description='자신이 생성한 버튼은 사용할 수 없습니다 :(')
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
