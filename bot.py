@@ -259,8 +259,8 @@ class RandomMissionView(View):
 
 cooldowns = {}  # Create a dictionary to store cooldowns
 
-@bot.command(name='')
-async def Random_Mission(ctx):
+@bot.command(name='뽑기')
+async def R_Mission(ctx):
     user_id = ctx.author.id
     cooldown_time = 3600  # One hour in seconds
 
