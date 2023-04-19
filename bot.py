@@ -553,10 +553,10 @@ def has_specific_roles(allowed_role_ids):
 allowed_role_ids = [1019164281696174180, 922400231549722664]    
     
 # 스프레드시트에서 초기 고정 메시지를 가져옵니다.
-async def refresh_sticky_messages(sheet4):
+async def refresh_sticky_messages(sheet1):
     global sticky_messages
     global last_sticky_messages
-    sheet4_values = await sheet4.get_all_values()
+    sheet1_values = await sheet1.get_all_values()
 
     new_sticky_messages = {}
     for row in sheet1_values:
@@ -585,17 +585,17 @@ async def sticky(ctx, *, message):
     sticky_messages[channel_id] = message
 
     # 스프레드시트에 고정 메시지를 저장합니다.
-    sheet4, _ = await get_sheet1()
+    sheet1, _ = await get_sheet1()
     if str(channel_id) in await sheet1.col_values(1):
         row_num = (await sheet4.col_values(1)).index(str(channel_id)) + 1
     else:
-        row_num = len(await sheet4.col_values(1)) + 1
+        row_num = len(await sheet1.col_values(1)) + 1
 
     await sheet1.update_cell(row_num, 1, str(channel_id))
     await sheet1.update_cell(row_num, 2, message)
 
     # 스프레드시트에 저장된 내용을 업데이트합니다.
-    await refresh_sticky_messages(sheet4)
+    await refresh_sticky_messages(sheet1)
 
     await ctx.send(f'메시지가 고정됐습니다!')
 
@@ -609,12 +609,12 @@ async def unsticky(ctx):
         del sticky_messages[channel_id]
 
         # 스프레드시트에서 고정 메시지를 삭제합니다.
-        sheet4, _ = await get_sheet1()
+        sheet1, _ = await get_sheet1()
         row_num = (await sheet4.col_values(1)).index(str(channel_id)) + 1
         await sheet1.delete_row(row_num)
 
         # 스프레드시트에 저장된 내용을 업데이트합니다.
-        await refresh_sticky_messages(sheet4)
+        await refresh_sticky_messages(sheet1)
 
         await ctx.send('고정이 해제됐어요!')
     else:
