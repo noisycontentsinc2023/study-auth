@@ -532,6 +532,116 @@ async def mission_count(ctx):
         
 #------------------------------------------------#
 
+# Set up Google Sheets worksheet
+async def get_sheet1():
+    client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
+    client = await client_manager.authorize()
+    spreadsheet = await client.open('서버기록')
+    sheet1 = await spreadsheet.worksheet('고정')
+    rows = await sheet1.get_all_values()
+    return sheet1, rows 
+  
+sticky_messages = {}
+    
+def has_specific_roles(allowed_role_ids):
+    async def predicate(ctx):
+        allowed_roles = [ctx.guild.get_role(role_id) for role_id in allowed_role_ids]
+        return any(role in ctx.author.roles for role in allowed_roles)
+
+    return commands.check(predicate)
+
+allowed_role_ids = [1019164281696174180, 922400231549722664]    
+    
+# 스프레드시트에서 초기 고정 메시지를 가져옵니다.
+async def refresh_sticky_messages(sheet4):
+    global sticky_messages
+    global last_sticky_messages
+    sheet4_values = await sheet4.get_all_values()
+
+    new_sticky_messages = {}
+    for row in sheet1_values:
+        if len(row) == 2 and row[0].isdigit():
+            channel_id = int(row[0])
+            message = row[1]
+            new_sticky_messages[channel_id] = message
+
+    deleted_channel_ids = set(sticky_messages.keys()) - set(new_sticky_messages.keys())
+    for channel_id in deleted_channel_ids:
+        if channel_id in last_sticky_messages:
+            old_message = last_sticky_messages[channel_id]
+            try:
+                asyncio.create_task(old_message.delete())
+            except discord.NotFound:
+                pass
+
+    sticky_messages = new_sticky_messages
+    last_sticky_messages = {}
+    
+@bot.command(name='고정')
+@has_specific_roles(allowed_role_ids)
+async def sticky(ctx, *, message):
+    global sticky_messages
+    channel_id = ctx.channel.id
+    sticky_messages[channel_id] = message
+
+    # 스프레드시트에 고정 메시지를 저장합니다.
+    sheet4, _ = await get_sheet1()
+    if str(channel_id) in await sheet1.col_values(1):
+        row_num = (await sheet4.col_values(1)).index(str(channel_id)) + 1
+    else:
+        row_num = len(await sheet4.col_values(1)) + 1
+
+    await sheet1.update_cell(row_num, 1, str(channel_id))
+    await sheet1.update_cell(row_num, 2, message)
+
+    # 스프레드시트에 저장된 내용을 업데이트합니다.
+    await refresh_sticky_messages(sheet4)
+
+    await ctx.send(f'메시지가 고정됐습니다!')
+
+@bot.command(name='해제')
+@has_specific_roles(allowed_role_ids)
+async def unsticky(ctx):
+    global sticky_messages
+    channel_id = ctx.channel.id
+
+    if channel_id in sticky_messages:
+        del sticky_messages[channel_id]
+
+        # 스프레드시트에서 고정 메시지를 삭제합니다.
+        sheet4, _ = await get_sheet1()
+        row_num = (await sheet4.col_values(1)).index(str(channel_id)) + 1
+        await sheet1.delete_row(row_num)
+
+        # 스프레드시트에 저장된 내용을 업데이트합니다.
+        await refresh_sticky_messages(sheet4)
+
+        await ctx.send('고정이 해제됐어요!')
+    else:
+        await ctx.send('이 채널에는 고정된 메시지가 없어요')
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+
+    await bot.process_commands(message)
+
+    global sticky_messages
+    global last_sticky_messages
+
+    channel_id = message.channel.id
+
+    if channel_id in sticky_messages:
+        if channel_id in last_sticky_messages:
+            old_message = last_sticky_messages[channel_id]
+            try:
+                await old_message.delete()
+            except discord.NotFound:
+                pass
+
+        new_message = await message.channel.send(sticky_messages[message.channel.id])
+        last_sticky_messages[message.channel.id] = new_message
     
 #------------------------------------------------#    
 
