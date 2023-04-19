@@ -194,14 +194,14 @@ async def Authentication(ctx, date):
         return interaction.message.id == msg.id and interaction.data.get("component_type") == discord.ComponentType.button.value
 
     await bot.wait_for("interaction", check=check)
+   
     
-    
-def get_week_range():
-    today = date.today()
-    monday = today - timedelta(days=today.weekday())
+def get_week_range(): 
+    today = date.today() # 오늘 날짜 
+    monday = today - timedelta(days=today.weekday()) #현재 날짜에서 오늘만큼의 요일을 빼서 월요일 날짜 득획득
     sunday = monday + timedelta(days=6)
     return monday, sunday
-    #Run the bot
+
     
 @bot.command(name='누적')
 async def accumulated_auth(ctx):
