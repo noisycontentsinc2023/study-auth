@@ -18,6 +18,7 @@ import discord.ui as ui
 import time
 
 from google.oauth2.service_account import Credentials
+from datetime import date, timedelta
 from discord import Embed
 from discord import Interaction
 from discord.ext import tasks, commands
@@ -113,7 +114,7 @@ class AuthButton(discord.ui.Button):
             else:
                 col = existing_dates.index(self.date) + 1
                 await sheet2.update_cell(index, col, "1")
-        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장을 인증했습니다"), view=None)
+        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장을 인증했습니다🥳"), view=None)
         self.stop_loop = True
 
 async def update_embed(ctx, date, msg):
@@ -127,7 +128,7 @@ async def update_embed(ctx, date, msg):
             view.add_item(button)
             view.add_item(CancelButton(ctx))
 
-            embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
+            embed = discord.Embed(title="인증요청", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
             await msg.edit(embed=embed, view=view)
             await asyncio.sleep(60)
         except discord.errors.NotFound:
@@ -154,7 +155,7 @@ async def update_embed(ctx, date, msg):
             view.add_item(button)
             view.add_item(cancel)  # Add the CancelButton to the view
 
-            embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
+            embed = discord.Embed(title="인증요청", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
             await msg.edit(embed=embed, view=view)
             await asyncio.sleep(60)
         except discord.errors.NotFound:
