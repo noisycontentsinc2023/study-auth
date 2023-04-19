@@ -28,7 +28,7 @@ from discord.ui import Select, Button, View
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
-OPENAI = os.environ['OPENAI']
+
 
 intents = discord.Intents.default()
 intents.message_content = True
