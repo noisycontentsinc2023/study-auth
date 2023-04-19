@@ -206,25 +206,39 @@ def get_week_range():
 @bot.command(name='누적')
 async def accumulated_auth(ctx):
     sheet2, rows = await get_sheet2()
-    user_cell = await find_user(str(ctx.author), sheet2)
-    if not user_cell:
-        await ctx.send(embed=discord.Embed(title="누적 인증 확인", description=f"{ctx.author.mention}님, 아직 인증이 없습니다."))
+    existing_users = await sheet2.col_values(1)
+    
+    if str(ctx.author) not in existing_users:
+        await ctx.send(f"{ctx.author.mention}님, 스프레드시트에 데이터가 없습니다.")
         return
-    
-    user_row = user_cell.row
-    monday, sunday = get_week_range()
-    date_range = [f"{monday.month:02d}{day:02d}" for day in range(monday.day, sunday.day + 1)]
 
-    existing_dates = await sheet2.row_values(1)
+    user_index = existing_users.index(str(ctx.author)) + 1
     total = 0
-    for date_str in date_range:
-        if date_str in existing_dates:
-            col = existing_dates.index(date_str) + 1
-            cell_value = await sheet2.cell(user_row, col)
-            total += int(cell_value.value or 0)
-
-    await ctx.send(embed=discord.Embed(title="누적 인증 확인", description=f"{ctx.author.mention}님, 이번 주({monday.strftime('%m%d')}~{sunday.strftime('%m%d')}) 누적 인증은 {total}회 입니다."))
+    monday, sunday = get_week_range()
+    existing_dates = await sheet2.row_values(1)
+    for date in existing_dates:
+        if date and monday.strftime('%m%d') <= date <= sunday.strftime('%m%d'):
+            date_index = existing_dates.index(date) + 1
+            cell_value = await sheet2.cell(user_index, date_index)
+            if cell_value.value:
+                total += int(cell_value.value)
     
+    overall_ranking = await sheet2.cell(user_index, 2) # Read the value of column B
+    overall_ranking_value = int(overall_ranking.value)
+    
+    embed = discord.Embed(title="누적 인증 현황", description=f"{ctx.author.mention}님, 이번 주({monday.strftime('%m%d')}~{sunday.strftime('%m%d')}) 누적 인증은 {total}회 입니다.\n전체 랭킹 누적은 {overall_ranking_value}회 입니다.")
+    
+    if overall_ranking_value >= 10 and not discord.utils.get(ctx.author.roles, id=1040094410488172574):
+        role = ctx.guild.get_role(1040094410488172574)
+        await ctx.author.add_roles(role)
+        embed.add_field(name="축하합니다!", value=f"축하합니다! {role.mention} 롤을 획득하셨습니다!")
+
+    if overall_ranking_value >= 30 and not discord.utils.get(ctx.author.roles, id=1040094943722606602):
+        role = ctx.guild.get_role(1040094943722606602)
+        await ctx.author.add_roles(role)
+        embed.add_field(name="축하합니다!", value=f"축하합니다! {role.mention} 롤을 획득하셨습니다!")
+
+    await ctx.send(embed=embed)
 
 #------------------------------------------------#
 # Set up Google Sheets worksheet
