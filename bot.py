@@ -90,7 +90,7 @@ class AuthButton(discord.ui.Button):
         
         sheet2, rows = await get_sheet2()
         
-        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
+        if interaction.user == self.ctx.author:
             return
         existing_users = await sheet2.col_values(1)
         if str(self.user) not in existing_users:
