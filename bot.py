@@ -58,6 +58,7 @@ aio_creds = credentials
 
 #------------------------------------------------#
 
+# Set up Google Sheets worksheet
 async def get_sheet2():
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
@@ -88,7 +89,7 @@ class AuthButton(discord.ui.Button):
         
         sheet2, rows = await get_sheet2()
         
-        if interaction.user == self.ctx.author:
+        if discord.utils.get(interaction.user.roles, id=922400231549722664) is None:
             return
         existing_users = await sheet2.col_values(1)
         if str(self.user) not in existing_users:
@@ -112,7 +113,7 @@ class AuthButton(discord.ui.Button):
             else:
                 col = existing_dates.index(self.date) + 1
                 await sheet2.update_cell(index, col, "1")
-        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장을 인증했습니다🥳"), view=None)
+        await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장을 인증했습니다"), view=None)
         self.stop_loop = True
 
 async def update_embed(ctx, date, msg):
@@ -126,7 +127,7 @@ async def update_embed(ctx, date, msg):
             view.add_item(button)
             view.add_item(CancelButton(ctx))
 
-            embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니")
+            embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
             await msg.edit(embed=embed, view=view)
             await asyncio.sleep(60)
         except discord.errors.NotFound:
@@ -153,7 +154,7 @@ async def update_embed(ctx, date, msg):
             view.add_item(button)
             view.add_item(cancel)  # Add the CancelButton to the view
 
-            embed = discord.Embed(title="인증요청", description=f"{ctx.author.mention}님의 {date} 일취월장 인증 요청입니다")
+            embed = discord.Embed(title="Authentication Status", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
             await msg.edit(embed=embed, view=view)
             await asyncio.sleep(60)
         except discord.errors.NotFound:
@@ -176,10 +177,10 @@ async def Authentication(ctx, date):
             date_index = existing_dates.index(date) + 1
             cell_value = await sheet2.cell(user_index, date_index)
             if cell_value.value == "1":
-                await ctx.send(embed=discord.Embed(title="인증상태", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
+                await ctx.send(embed=discord.Embed(title="Authorization Status", description=f"{ctx.author.mention}님, 해당 날짜는 이미 인증되었습니다!"))
                 return
 
-    embed = discord.Embed(title="인증요청", description=f"{ctx.author.mention}님의 {date} 일취월장 인증 요청입니다")
+    embed = discord.Embed(title="인증상태", description=f"{ctx.author.mention}님의 {date} 일취월장 인증 요청입니다")
     view = discord.ui.View()
     button = AuthButton(ctx, ctx.author, date)
     view.add_item(button)
@@ -192,6 +193,36 @@ async def Authentication(ctx, date):
         return interaction.message.id == msg.id and interaction.data.get("component_type") == discord.ComponentType.button.value
 
     await bot.wait_for("interaction", check=check)
+    
+    
+def get_week_range():
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    sunday = monday + timedelta(days=6)
+    return monday, sunday
+    #Run the bot
+    
+@bot.command(name='누적')
+async def accumulated_auth(ctx):
+    sheet2, rows = await get_sheet2()
+    user_cell = await find_user(str(ctx.author), sheet2)
+    if not user_cell:
+        await ctx.send(embed=discord.Embed(title="누적 인증 확인", description=f"{ctx.author.mention}님, 아직 인증이 없습니다."))
+        return
+    
+    user_row = user_cell.row
+    monday, sunday = get_week_range()
+    date_range = [f"{monday.month:02d}{day:02d}" for day in range(monday.day, sunday.day + 1)]
+
+    existing_dates = await sheet2.row_values(1)
+    total = 0
+    for date_str in date_range:
+        if date_str in existing_dates:
+            col = existing_dates.index(date_str) + 1
+            cell_value = await sheet2.cell(user_row, col)
+            total += int(cell_value.value or 0)
+
+    await ctx.send(embed=discord.Embed(title="누적 인증 확인", description=f"{ctx.author.mention}님, 이번 주({monday.strftime('%m%d')}~{sunday.strftime('%m%d')}) 누적 인증은 {total}회 입니다."))
     
 
 #------------------------------------------------#
