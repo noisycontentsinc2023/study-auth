@@ -308,7 +308,7 @@ cooldowns = {}  # Create a dictionary to store cooldowns
 @bot.command(name='뽑기')
 async def R_Mission(ctx):
     user_id = ctx.author.id
-    cooldown_time = 360  # One hour in seconds
+    cooldown_time = 60  # One hour in seconds
 
     # Check if the user is not in cooldowns or their cooldown has expired
     if user_id not in cooldowns or cooldowns[user_id] < time.time():
