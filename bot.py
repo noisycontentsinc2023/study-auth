@@ -358,6 +358,7 @@ async def lottery(ctx):
         embed.clear_fields()
         embed.add_field(name=f'미션', value=choice, inline=True)
         embed.add_field(name='난이도', value=difficulty, inline=True)
+        embed.add_field(name='미션수행장소', value=location, inline=True)
         await message.edit(embed=embed)
         await asyncio.sleep(0.4)
 
@@ -366,7 +367,7 @@ async def lottery(ctx):
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.add_field(name='미션수행장소', value=location, inline=True)
+    embed.add_field(name='미션수행장소', value=location, inline=False)
     embed.set_footer(text='한 번 더 뽑아보시겠어요?')
 
     view = RandomMissionView(ctx, message)
