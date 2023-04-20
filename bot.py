@@ -362,7 +362,7 @@ async def lottery(ctx):
         await message.edit(embed=embed)
         await asyncio.sleep(0.5)
 
-    result, difficulty = random.choice(selected_choices)
+    result, difficulty, location = random.choice(selected_choices)
     embed.title = f"{ctx.author.mention}님의 오늘의 미션입니다!"  # Update the title
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
