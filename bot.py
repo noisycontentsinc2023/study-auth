@@ -366,10 +366,6 @@ async def lottery(ctx):
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='한 번 더 뽑아보시겠어요?')
-    view = RandomMissionView(ctx, message)
-    message = await message.edit(embed=embed, view=view)
-    await view.start()
 
 @bot.command(name='再次')
 async def Relottery(ctx):
@@ -406,8 +402,9 @@ async def Relottery(ctx):
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='한 번 더 뽑아보시겠어요?')
-    view = RandomMissionView(ctx, message)  
+    view = RandomMissionView(ctx, message)
+    message = await message.edit(embed=embed, view=view)
+    await view.start()  
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
