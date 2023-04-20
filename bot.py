@@ -306,7 +306,7 @@ class RandomMissionView(View):
 cooldowns = {}  # Create a dictionary to store cooldowns
 
 @bot.command(name='뽑기')
-async def R_Mission(ctx):
+async def RandomMission(ctx):
     user_id = ctx.author.id
     cooldown_time = 60  # One hour in seconds
 
@@ -368,6 +368,8 @@ async def lottery(ctx):
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='한 번 더 뽑아보시겠어요?')
     view = RandomMissionView(ctx, message)
+    message = await message.edit(embed=embed, view=view)
+    await view.start()
 
 @bot.command(name='再次')
 async def Relottery(ctx):
