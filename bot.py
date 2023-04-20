@@ -315,7 +315,7 @@ async def R_Mission(ctx):
         cooldowns[user_id] = time.time() + cooldown_time
 
         required_role = discord.utils.get(ctx.guild.roles, id=1093781563508015105)
-        allowed_channel_ids = ["1093780375890825246", "922426434633478194"]
+        allowed_channel_ids = ["1093780375890825246", "922426434633478194", "1057267651405152256"]
         if required_role in ctx.author.roles:
             if str(ctx.channel.id) in allowed_channel_ids:
                 await lottery(ctx)
@@ -412,7 +412,7 @@ async def Relottery(ctx):
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.set_footer(text='오늘의 미션입니다!')
       
-@bot.command(name='')
+@bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
@@ -454,7 +454,7 @@ async def random_mission_auth(ctx):
         return
       
     # create and send the message with the button
-    embed = discord.Embed(title="미션 인증", description="버튼을 눌러 미션 인증을 완료하세요!")
+    embed = discord.Embed(title="미션 인증", description=f'확인 버튼을 눌러 {ctx.author.mention}님의요미션을 인증해주세요')
     button = AuthButton2(ctx, username, today, sheet3)
     view = discord.ui.View()
     view.add_item(button)
