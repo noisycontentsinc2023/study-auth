@@ -308,7 +308,7 @@ cooldowns = {}  # Create a dictionary to store cooldowns
 @bot.command(name='뽑기')
 async def R_Mission(ctx):
     user_id = ctx.author.id
-    cooldown_time = 3600  # One hour in seconds
+    cooldown_time = 360  # One hour in seconds
 
     # Check if the user is not in cooldowns or their cooldown has expired
     if user_id not in cooldowns or cooldowns[user_id] < time.time():
@@ -403,14 +403,12 @@ async def Relottery(ctx):
         await asyncio.sleep(0.4)
 
     result, difficulty = random.choice(selected_choices)
-    result = result  # 선택된 미션 내용을 result에 대입
-    
     embed.title = f"{ctx.author.name}님의 오늘의 미션입니다!"  # Update the title
     embed.clear_fields()
-
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    embed.set_footer(text='오늘의 미션입니다!')
+    embed.set_footer(text='한 번 더 뽑아보시겠어요?')
+    view = RandomMissionView(ctx, message)  
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
