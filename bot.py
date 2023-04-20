@@ -354,7 +354,7 @@ async def lottery(ctx):
     message_id = message.id
     selected_choices = random.sample(choices, 10)
 
-    for i, (choice, difficulty) in enumerate(selected_choices):
+    for i, (choice, difficulty, location) in enumerate(selected_choices):
         embed.clear_fields()
         embed.add_field(name=f'미션', value=choice, inline=True)
         embed.add_field(name='난이도', value=difficulty, inline=True)
