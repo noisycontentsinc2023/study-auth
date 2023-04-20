@@ -403,8 +403,7 @@ async def Relottery(ctx):
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
     view = RandomMissionView(ctx, message)
-    message = await message.edit(embed=embed, view=view)
-    await view.start()  
+    message = await message.edit(embed=embed, view=view) 
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
