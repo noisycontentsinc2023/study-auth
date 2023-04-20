@@ -349,7 +349,7 @@ async def lottery(ctx):
                ('학습중인 언어로 세 줄 일기 써서 공유하기', '★★★★', '<#1098477575778599022>'), ('!공부 입력해보기', '★', '<#1098477575778599022>'), ('일취월장 채널의 다른 학습자 인증에 격려 댓글 남겨주기', '★★★★', '<#978952156617007114>'),
                ('일취월장 채널의 다른 학습자 인증을 보고 격려 메시지 작성하기', '★★', '<#1098477575778599022>'), ('꼭 가보고 싶은 도시 학습하는 언어로 적어보기', '★', '<#1098477575778599022>'), ('조용한 독서실에서 한 시간 이상 참여 후 커피 교환하기! 이미 받으신 분도 가능! 참여 방법이 궁금하시다면 물어봐 주세요!', '★', '<#1014721717320560713>')]
 
-    embed = discord.Embed(title=f"{ctx.author.mention}님의 미션을 뽑는 중입니다", color=0xff0000)
+    embed = discord.Embed(description=f'{ctx.author.mention}님의 미션을 뽑는 중입니다', color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
@@ -363,7 +363,7 @@ async def lottery(ctx):
         await asyncio.sleep(0.5)
 
     result, difficulty, location = random.choice(selected_choices)
-    embed.title = f"{ctx.author.mention}님의 오늘의 미션입니다!"  # Update the title
+    embed.description = f"{ctx.author.mention}님의 오늘의 미션입니다!"
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
@@ -390,7 +390,7 @@ async def Relottery(ctx):
                ('학습중인 언어로 세 줄 일기 써서 공유하기', '★★★★', '<#1098477575778599022>'), ('!공부 입력해보기', '★', '<#1098477575778599022>'), ('일취월장 채널의 다른 학습자 인증에 격려 댓글 남겨주기', '★★★★', '<#978952156617007114>'),
                ('일취월장 채널의 다른 학습자 인증을 보고 격려 메시지 작성하기', '★★', '<#1098477575778599022>'), ('꼭 가보고 싶은 도시 학습하는 언어로 적어보기', '★', '<#1098477575778599022>'), ('조용한 독서실에서 한 시간 이상 참여 후 커피 교환하기! 이미 받으신 분도 가능! 참여 방법이 궁금하시다면 물어봐 주세요!', '★', '<#1014721717320560713>')]
 
-    embed = discord.Embed(title=f"{ctx.author.mention}님의 미션을 다시 뽑는 중입니다", color=0xff0000)
+    embed = discord.Embed(description=f'{ctx.author.mention}님의 미션을 뽑는 중입니다', color=0xff0000)
     message = await ctx.send(embed=embed)
     message_id = message.id
     selected_choices = random.sample(choices, 10)
@@ -404,7 +404,7 @@ async def Relottery(ctx):
         await asyncio.sleep(0.5)
 
     result, difficulty, location = random.choice(selected_choices)
-    embed.title = f"{ctx.author.mention}의 오늘의 임무입니다!"
+    embed.description = f"{ctx.author.mention}님의 오늘의 미션입니다!"
     embed.clear_fields()
     embed.add_field(name='오늘의 임무', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
