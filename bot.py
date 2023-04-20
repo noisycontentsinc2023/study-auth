@@ -393,12 +393,12 @@ async def Relottery(ctx):
     message_id = message.id
     selected_choices = random.sample(choices, 10)
 
-for i, (choice, difficulty) in enumerate(selected_choices):
-    print(f"{i+1}. {choice} - {difficulty}")
-    embed.add_field(name='미', value=choice, inline=True)
-    embed.add_field(name='난이도', value=difficulty, inline=True)
-    await message.edit(embed=embed)
-    await asyncio.sleep(0.4) # 각 순회 사이에 잠시 대기 추가
+    for i, (choice, difficulty) in enumerate(selected_choices):
+        embed.clear_fields()
+        embed.add_field(name=f'미션', value=choice, inline=True)
+        embed.add_field(name='난이도', value=difficulty, inline=True)
+        await message.edit(embed=embed)
+        await asyncio.sleep(0.4)
 
     result, difficulty = random.choice(selected_choices)
     embed.title = f"{ctx.author.name}의 오늘의 임무입니다!"
