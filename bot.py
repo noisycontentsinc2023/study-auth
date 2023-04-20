@@ -226,7 +226,7 @@ async def accumulated_auth(ctx):
     overall_ranking = await sheet2.cell(user_index, 2) # Read the value of column B
     overall_ranking_value = int(overall_ranking.value)
     
-    embed = discord.Embed(title="누적 인증 현황", description=f"{ctx.author.mention}님, 이번 주({monday.strftime('%m%d')}~{sunday.strftime('%m%d')}) 누적 인증은 {total}회 입니다.\n전체 랭킹 누적은 {overall_ranking_value}회 입니다.")
+    embed = discord.Embed(title="누적 인증 현황", description=f"{ctx.author.mention}님, 이번 주({monday.strftime('%m%d')}~{sunday.strftime('%m%d')}) 누적 인증은 {total}회 입니다.\n한 주에 5회 이상 인증하면 랭커로 등록됩니다!\n랭커 누적 횟수는 {overall_ranking_value}회 입니다.")
     
     if overall_ranking_value >= 10 and not discord.utils.get(ctx.author.roles, id=1040094410488172574):
         role = ctx.guild.get_role(1040094410488172574)
