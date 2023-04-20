@@ -395,9 +395,8 @@ async def Relottery(ctx):
     selected_choices = random.sample(choices, 10)
 
     for i, (choice, difficulty) in enumerate(selected_choices):
-        embed.clear_fields()
-        embed.add_field(name=f'미션', value=choice, inline=True)
-        embed.add_field(name='난이도', value=difficulty, inline=True)
+        embed.set_field_at(index=0, name=f'미션', value=choice, inline=True)
+        embed.set_field_at(index=1, name='난이도', value=difficulty, inline=True)
         await message.edit(embed=embed)
         await asyncio.sleep(0.4)
 
@@ -406,7 +405,7 @@ async def Relottery(ctx):
     embed.clear_fields()
     embed.add_field(name='오늘의 미션', value=result, inline=False)
     embed.add_field(name='난이도', value=difficulty, inline=False)
-    message = await message.edit(embed=embed, view=view) 
+    message = await message.edit(embed=embed, view=view)
       
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
