@@ -209,7 +209,7 @@ async def accumulated_auth(ctx):
     existing_users = await sheet2.col_values(1)
     
     if str(ctx.author) not in existing_users:
-        await ctx.send(f"{ctx.author.mention}님, 스프레드시트에 데이터가 없습니다.")
+        await ctx.send(f"{ctx.author.mention}님, 일취월장 기록이 없습니다")
         return
 
     user_index = existing_users.index(str(ctx.author)) + 1
@@ -432,7 +432,7 @@ async def random_mission_auth(ctx):
     user_cell = await find_user(username, sheet3)
 
     if user_cell is None:
-        embed = discord.Embed(title='Error', description='서버 기록 시트에 멤버가 등록되어 있지 않습니다')
+        embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
         await ctx.send(embed=embed)
         return
 
@@ -443,7 +443,7 @@ async def random_mission_auth(ctx):
             break
 
     if today_col is None:
-        embed = discord.Embed(title='Error', description='오늘의 미션 열을 찾을 수 없습니다')
+        embed = discord.Embed(title='Error', description='랜덤미션스터디 기간이 아닙니다')
         await ctx.send(embed=embed)
         return
 
