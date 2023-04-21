@@ -587,7 +587,7 @@ async def sticky(ctx, *, message):
     # 스프레드시트에 고정 메시지를 저장합니다.
     sheet1, _ = await get_sheet1()
     if str(channel_id) in await sheet1.col_values(1):
-        row_num = (await sheet4.col_values(1)).index(str(channel_id)) + 1
+        row_num = (await sheet1.col_values(1)).index(str(channel_id)) + 1
     else:
         row_num = len(await sheet1.col_values(1)) + 1
 
