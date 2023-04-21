@@ -459,7 +459,7 @@ async def random_mission_auth(ctx):
     view = discord.ui.View()
     view.add_item(button)
     await ctx.send(embed=embed, view=view)
-
+        
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3):
         super().__init__(style=discord.ButtonStyle.green, label="미션인증")
@@ -468,41 +468,38 @@ class AuthButton2(discord.ui.Button):
         self.today = today
         self.sheet3 = sheet3
         self.auth_event = asyncio.Event()
-        
-    async def callback(self, interaction: discord.Interaction):
 
-        if interaction.user.name == self.ctx.message.author.name:
+    async def callback(self, interaction: discord.Interaction):
+        if interaction.user == self.ctx.author:
             # If the user is the button creator, send an error message
-            # 버튼 생성자와 클릭한 사용자가 같으면 오류 메시지를 보냅니다.
             embed = discord.Embed(title='Error', description='자신이 생성한 버튼은 사용할 수 없습니다 :(')
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
         try:
-            user_row = (await self.sheet3.find(self.username)).row
+            user_cell = await find_user(self.username, self.sheet3)
+            if user_cell is None:
+                embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
+                await interaction.response.edit_message(embed=embed, view=None)
+                return
+            user_row = user_cell.row
         except gspread.exceptions.CellNotFound:
-            # If the user is not found, send an error message
-            # 사용자가 스프레드시트에서 찾을 수 없으면 오류 메시지를 보냅니다.
             embed = discord.Embed(title='Error', description='스라밸-랜덤미션스터디에 등록된 멤버가 아닙니다')
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
         # Authenticate the user in the spreadsheet
-        # 스프레드시트에서 사용자를 인증합니다.
         today_col = (await self.sheet3.find(self.today)).col
         await self.sheet3.update_cell(user_row, today_col, '1')
 
         # Set the auth_event to stop the loop
-        # 루프를 중지하기 위해 auth_event를 설정합니다.
         self.auth_event.set()
 
         # Remove the button from the view
-        # 뷰에서 버튼을 제거합니다.
         self.view.clear_items()
 
         # Send a success message
-        # 인증이 완료되었다는 메시지를 보냅니다.
-        embed = discord.Embed(title='인증완료!', description=f'{interaction.user.mention}님, 정상적으로 인증되셨습니다')
+        embed = discord.Embed(title='인증완료!', description=f'{ctx.author.mention}님, 정상적으로 인증되셨습니다')
         await interaction.response.edit_message(embed=embed, view=None)
 
 @bot.command(name='')
