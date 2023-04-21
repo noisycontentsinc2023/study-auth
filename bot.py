@@ -499,8 +499,7 @@ class AuthButton2(discord.ui.Button):
         self.view.clear_items()
 
         # Send a success message
-        embed = discord.Embed(title='인증완료!', description=f'{ctx.author.mention}님, 정상적으로 인증되셨습니다')
-        await interaction.response.edit_message(embed=embed, view=None)
+        await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
 
 @bot.command(name='')
 async def mission_count(ctx):
