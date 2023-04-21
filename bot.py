@@ -610,7 +610,7 @@ async def unsticky(ctx):
 
         # 스프레드시트에서 고정 메시지를 삭제합니다.
         sheet1, _ = await get_sheet1()
-        row_num = (await sheet4.col_values(1)).index(str(channel_id)) + 1
+        row_num = (await sheet1.col_values(1)).index(str(channel_id)) + 1
         await sheet1.delete_row(row_num)
 
         # 스프레드시트에 저장된 내용을 업데이트합니다.
