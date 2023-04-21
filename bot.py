@@ -140,8 +140,9 @@ class CancelButton(discord.ui.Button):
         self.stop_loop = False  # Add the stop_loop attribute
     
     async def callback(self, interaction: discord.Interaction):
-        await interaction.message.delete()
-        self.stop_loop = True
+        if interaction.author.id != self.ctx.author.id:
+            await interaction.message.delete()
+            self.stop_loop = True
 
 async def update_embed(ctx, date, msg):
     button = AuthButton(ctx, ctx.author, date) # Move button creation outside of the loop
