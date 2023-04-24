@@ -252,15 +252,12 @@ async def get_sheet3():  # 수정
     return sheet3, rows 
 
 async def find_user(username, sheet):
-    try:
-        cells = await sheet.findall(re.compile(re.escape(username)))
-    except gspread.exceptions.CellNotFound:
-        return None
-
-    if not cells:
-        return None
-
-    return cells[0]
+    records = await sheet.get_all_records()
+    for row, record in enumerate(records):
+        for col, value in enumerate(record.values()):
+            if re.match(re.escape(username), value):
+                return sheet.cell(row + 2, col + 1)
+    return None
 
 kst = pytz.timezone('Asia/Seoul')
 now = datetime.datetime.now(kst)
