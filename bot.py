@@ -460,14 +460,14 @@ async def random_mission_auth(ctx):
     view.add_item(button)
     await update_embed(ctx, username, today, sheet3)
         
-class AuthView(discord.ui.View):
+class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3):
-        super().__init__(timeout=None)
+        super().__init__(style=discord.ButtonStyle.green, label="미션인증")
         self.ctx = ctx
         self.username = username
         self.today = today
         self.sheet3 = sheet3
-        self.add_item(AuthButton2(ctx, username, today, sheet3))
+        self.stop_loop = False
 
     async def update_button(self):
         while True:
