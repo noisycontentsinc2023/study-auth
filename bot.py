@@ -252,11 +252,11 @@ async def get_sheet3():  # 수정
     return sheet3, rows 
 
 async def find_user(username, sheet):
-    records = await sheet.get_all_records()
-    for row, record in enumerate(records):
-        for col, value in enumerate(record.values()):
+    values = await sheet.get_all_values()
+    for row, record in enumerate(values):
+        for col, value in enumerate(record):
             if re.match(re.escape(username), value):
-                return sheet.cell(row + 2, col + 1)
+                return sheet.cell(row + 1, col + 1)
     return None
 
 kst = pytz.timezone('Asia/Seoul')
