@@ -455,10 +455,8 @@ async def random_mission_auth(ctx):
       
     # create and send the message with the button
     embed = discord.Embed(title="미션 인증", description=f'확인 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
-    button = AuthButton2(ctx, username, today, sheet3)
-    view = discord.ui.View()
-    view.add_item(button)
-    await ctx.send(embed=embed, view=view)
+    msg = await ctx.send(embed=embed)
+    await update_embed(ctx, today, msg, sheet3)
         
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3):
@@ -512,6 +510,9 @@ async def update_embed(ctx, date, msg, sheet3):  # sheet3 인자 추가
         embed = discord.Embed(title="미션인증", description=f"{ctx.author.mention}님의 랜덤미션을 인증해주세요!")
         await msg.edit(embed=embed, view=view)  # 메시지를 편집하여 새로운 embed와 view를 추가
         await asyncio.sleep(60)  # 1분 동안 대기
+
+        if button.auth_event.is_set():
+            break
 
     # 루프가 종료되면, 인증이 완료된 것이므로 버튼을 제거합니다.
     view.clear_items()
