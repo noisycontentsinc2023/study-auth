@@ -454,7 +454,7 @@ async def random_mission_auth(ctx):
         return
       
     # create and send the message with the button
-    embed = discord.Embed(title="미션 인증", description=f'확인 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
+    embed = discord.Embed(title="미션 인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
     button = AuthButton2(ctx, username, today, sheet3)
     view = discord.ui.View()
     view.add_item(button)
