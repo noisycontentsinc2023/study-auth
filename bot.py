@@ -309,7 +309,7 @@ cooldowns = {}  # Create a dictionary to store cooldowns
 @bot.command(name='뽑기')
 async def RandomMission(ctx):
     user_id = ctx.author.id
-    cooldown_time = 60  # One hour in seconds
+    cooldown_time = 3600  # One hour in seconds
 
     # Check if the user is not in cooldowns or their cooldown has expired
     if user_id not in cooldowns or cooldowns[user_id] < time.time():
@@ -501,7 +501,7 @@ class AuthButton2(discord.ui.Button):
         # Send a success message
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
 
-@bot.command(name='')
+@bot.command(name='미션누적')
 async def mission_count(ctx):
     username = str(ctx.message.author)
     sheet3, rows = await get_sheet3()
