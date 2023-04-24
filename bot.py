@@ -461,12 +461,13 @@ async def random_mission_auth(ctx):
     await ctx.send(embed=embed, view=view)
         
 class AuthButton2(discord.ui.Button):
-    def __init__(self, ctx, username, today, sheet3):
+    def __init__(self, ctx, username, today, sheet3, view):
         super().__init__(style=discord.ButtonStyle.green, label="미션인증")
         self.ctx = ctx
         self.username = username
         self.today = today
         self.sheet3 = sheet3
+        self.view = view
         self.stop_loop = False
 
     async def callback(self, interaction: discord.Interaction):
@@ -503,15 +504,16 @@ class AuthButton2(discord.ui.Button):
         self.stop_loop = True
         
 async def update_embed(ctx, username, today, sheet3):
-    button = AuthButton2(ctx, username, today, sheet3)
-    
-    while not button.stop_loop:
+    while True:
         view = discord.ui.View(timeout=None)
+        button = AuthButton2(ctx, username, today, sheet3, view)  # Pass the view instance to the button
         view.add_item(button)
 
         embed = discord.Embed(title="미션인증", description=f"{ctx.author.mention}님의 랜덤미션을 인증해주세요!")
         message = await ctx.send(embed=embed, view=view)
         await asyncio.sleep(60)
+        if button.stop_loop:
+            break
         await message.delete()
        
             
