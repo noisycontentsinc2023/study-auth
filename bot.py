@@ -252,12 +252,14 @@ async def get_sheet3():  # 수정
     return sheet3, rows 
 
 async def find_user(username, sheet):
-    values = await sheet.get_all_values()
-    for row, record in enumerate(values):
-        for col, value in enumerate(record):
-            if re.match(re.escape(username), value):
-                return sheet.cell(row + 1, col + 1)
-    return None
+    cell = None
+    try:
+        cells = await sheet.findall(username)
+        if cells:
+            cell = cells[0]
+    except gspread.exceptions.APIError as e:
+        print(f'find_user error: {e}')
+    return cell
 
 kst = pytz.timezone('Asia/Seoul')
 now = datetime.datetime.now(kst)
@@ -376,7 +378,7 @@ async def lottery(ctx):
 async def Relottery(ctx):
     choices = [('3일간 학습한 내용 요약정리하기', '★★★★★', '<#1098477575778599022>'), ('가장 어려웠던 문장 5번 써보기', '★★★', '<#1098477575778599022>'),
                ('가장 어려웠던 문장 4번 써보기', '★★', '<#1098477575778599022>'),
-               ('가장 어려웠던 문장 3번 써보기', '★★', '<#1098477575778599022>'), ('가장 어려웠던 문장 2번 써보기', '★', '<#1098477575778599022>'), ('가장 어려웠던 문장 1번 써보기', '★', '<#1098477575778599022>'), ('조용한 독서실에서 30분 학습하기', '★★★', '<#1014721717320560713>'), ('고독한 외국어방에 한 문장 남기기', '★', '<#1014721717320560713>'),
+               ('가장 어려웠던 문장 3번 써보기', '★★', '<#1098477575778599022>'), ('가장 어려웠던 문장 2번 써보기', '★', '<#1098477575778599022>'), ('가장 어려웠던 문장 1번 써보기', '★', '<#1098477575778599022>'), ('조용한 독서실에서 30분 학습하기', '★★★', '<#1014721717320560713>'), ('고독한 외국어방에 한 문장 남기기', '★', '<#1088639136048619580>'),
                ('고독한 외국어방에 국가 이모지 입력해서 번역기능 사용해보기', '★', '<#1088639136048619580>'), ('조용한 독서실에서 15분 학습하기', '★', '<#1014721717320560713>'), ('자유게시판 아무 게시판에 가서 댓글 남기기', '★', '<#1056759327668588625>'), 
                ('나만의 학습노트 공유하기 ', '★★★★★', '<#1098477575778599022>'), ('수다챗에 한마디 남기기', '★', '<#922501708175769640>'), ('!운세 입력해서 올해의 외국어 운세보기', '★', '<#1098477575778599022>'), ('학습중인 언어권 노래 하나 추천하기', '★★', '<#1098477575778599022>'), 
                ('학습하는 언어권 문화 한 개 찾아서 공유하기', '★', '<#1098477575778599022>'), ('오늘은 통과!', '★', '없음!'), ('오운완 인증 글 올리기', '★★★★★', '<#1034639972503928863>'), ('올해 외국어 학습목표 써보기', '★', '<#1098477575778599022>'), ('내 책상 위 물건 중 하나 외국어로 적어보기', '★★', '<#1098477575778599022>'),
@@ -453,8 +455,10 @@ async def random_mission_auth(ctx):
       
     # create and send the message with the button
     embed = discord.Embed(title="미션 인증", description=f'확인 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
-    msg = await ctx.send(embed=embed)
-    await update_embed(ctx, today, msg, sheet3)
+    button = AuthButton2(ctx, username, today, sheet3)
+    view = discord.ui.View()
+    view.add_item(button)
+    await ctx.send(embed=embed, view=view)
         
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3):
@@ -499,8 +503,8 @@ class AuthButton2(discord.ui.Button):
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
         self.stop_loop = True
         
-async def update_embed(ctx, date, msg, sheet3):  # sheet3 인자 추가
-    button = AuthButton2(ctx, ctx.author, date, sheet3)  # sheet3 전달
+async def update_embed(ctx, date, msg):
+    button = AuthButton2(ctx, ctx.author, date)  # 버튼 생성을 루프 밖으로 이동
     view = discord.ui.View()
     view.add_item(button)
 
@@ -508,9 +512,6 @@ async def update_embed(ctx, date, msg, sheet3):  # sheet3 인자 추가
         embed = discord.Embed(title="미션인증", description=f"{ctx.author.mention}님의 랜덤미션을 인증해주세요!")
         await msg.edit(embed=embed, view=view)  # 메시지를 편집하여 새로운 embed와 view를 추가
         await asyncio.sleep(60)  # 1분 동안 대기
-
-        if button.auth_event.is_set():
-            break
 
     # 루프가 종료되면, 인증이 완료된 것이므로 버튼을 제거합니다.
     view.clear_items()
@@ -546,6 +547,7 @@ async def mission_count(ctx):
         await ctx.author.add_roles(role)
         embed = discord.Embed(description="완주를 축하드립니다! 완주자 롤을 받으셨어요!", color=0x00FF00)
         await ctx.send(embed=embed)
+
 
         
 #------------------------------------------------#
