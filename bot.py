@@ -468,6 +468,7 @@ class AuthButton2(discord.ui.Button):
         self.today = today
         self.sheet3 = sheet3
         self.auth_event = asyncio.Event()
+        self.stop_loop = False  # 추가: stop_loop 속성 추가
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user == self.ctx.author:
@@ -500,7 +501,22 @@ class AuthButton2(discord.ui.Button):
 
         # Send a success message
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
+        self.stop_loop = True
+        
+async def update_embed(ctx, date, msg):
+    button = AuthButton2(ctx, ctx.author, date)  # 버튼 생성을 루프 밖으로 이동
+    view = discord.ui.View()
+    view.add_item(button)
 
+    while not button.stop_loop:  # stop_loop가 참이 될 때까지 반복
+        embed = discord.Embed(title="미션인증", description=f"{ctx.author.mention}님의 랜덤미션을 인증해주세요!")
+        await msg.edit(embed=embed, view=view)  # 메시지를 편집하여 새로운 embed와 view를 추가
+        await asyncio.sleep(60)  # 1분 동안 대기
+
+    # 루프가 종료되면, 인증이 완료된 것이므로 버튼을 제거합니다.
+    view.clear_items()
+    await msg.edit(view=view)
+            
 @bot.command(name='미션누적')
 async def mission_count(ctx):
     username = str(ctx.message.author)
