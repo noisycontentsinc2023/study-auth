@@ -458,7 +458,7 @@ async def random_mission_auth(ctx):
     button = AuthButton2(ctx, username, today, sheet3)
     view = discord.ui.View()
     view.add_item(button)
-    await ctx.send(embed=embed, view=view)
+    await update_embed(ctx, username, today, sheet3)
         
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3, view):
