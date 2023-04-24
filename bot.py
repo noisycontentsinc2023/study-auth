@@ -504,16 +504,15 @@ class AuthButton2(discord.ui.Button):
         self.stop_loop = True
         
 async def update_embed(ctx, username, today, sheet3):
-    while True:
-        view = discord.ui.View(timeout=None)
-        button = AuthButton2(ctx, username, today, sheet3, view)  # Pass the view instance to the button
-        view.add_item(button)
+    button = AuthButton2(ctx, username, today, sheet3)
 
+    view = discord.ui.View(timeout=None)
+    view.add_item(button)
+
+    while not button.stop_loop:
         embed = discord.Embed(title="미션인증", description=f"{ctx.author.mention}님의 랜덤미션을 인증해주세요!")
         message = await ctx.send(embed=embed, view=view)
         await asyncio.sleep(60)
-        if button.stop_loop:
-            break
         await message.delete()
        
             
