@@ -461,13 +461,12 @@ async def random_mission_auth(ctx):
     await update_embed(ctx, username, today, sheet3)
         
 class AuthButton2(discord.ui.Button):
-    def __init__(self, ctx, username, today, sheet3, view):
+    def __init__(self, ctx, username, today, sheet3):
         super().__init__(style=discord.ButtonStyle.green, label="미션인증")
         self.ctx = ctx
         self.username = username
         self.today = today
         self.sheet3 = sheet3
-        self.view = view
         self.stop_loop = False
 
     async def callback(self, interaction: discord.Interaction):
@@ -494,7 +493,7 @@ class AuthButton2(discord.ui.Button):
         await self.sheet3.update_cell(user_row, today_col, '1')
 
         # Set the auth_event to stop the loop
-        self.auth_event.set()
+        self.view.stop()
 
         # Remove the button from the view
         self.view.clear_items()
