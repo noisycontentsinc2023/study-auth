@@ -503,8 +503,8 @@ class AuthButton2(discord.ui.Button):
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
         self.stop_loop = True
         
-async def update_embed(ctx, date, msg):
-    button = AuthButton2(ctx, ctx.author, date)  # 버튼 생성을 루프 밖으로 이동
+async def update_embed(ctx, date, msg, sheet3):  # sheet3 인자 추가
+    button = AuthButton2(ctx, ctx.author, date, sheet3)  # sheet3 전달
     view = discord.ui.View()
     view.add_item(button)
 
