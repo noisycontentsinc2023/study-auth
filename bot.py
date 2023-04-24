@@ -460,14 +460,21 @@ async def random_mission_auth(ctx):
     view.add_item(button)
     await update_embed(ctx, username, today, sheet3)
         
-class AuthButton2(discord.ui.Button):
+class AuthView(discord.ui.View):
     def __init__(self, ctx, username, today, sheet3):
-        super().__init__(style=discord.ButtonStyle.green, label="미션인증")
+        super().__init__(timeout=None)
         self.ctx = ctx
         self.username = username
         self.today = today
         self.sheet3 = sheet3
-        self.stop_loop = False
+        self.add_item(AuthButton2(ctx, username, today, sheet3))
+
+    async def update_button(self):
+        while True:
+            await asyncio.sleep(60)  # Wait for 1 minute
+            self.clear_items()
+            self.add_item(AuthButton2(self.ctx, self.username, self.today, self.sheet3))
+            await self.message.edit(view=self)
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id == self.ctx.author.id:  # Check the user ID instead of the user object
@@ -503,16 +510,13 @@ class AuthButton2(discord.ui.Button):
         self.stop_loop = True
         
 async def update_embed(ctx, username, today, sheet3):
-    button = AuthButton2(ctx, username, today, sheet3)
+    view = AuthView(ctx, username, today, sheet3)
 
-    view = discord.ui.View(timeout=None)
-    view.add_item(button)
+    embed = discord.Embed(title="미션인증", description=f"{ctx.author.mention}님의 랜덤미션을 인증해주세요!")
+    message = await ctx.send(embed=embed, view=view)
+    view.message = message
 
-    while not button.stop_loop:
-        embed = discord.Embed(title="미션인증", description=f"{ctx.author.mention}님의 랜덤미션을 인증해주세요!")
-        message = await ctx.send(embed=embed, view=view)
-        await asyncio.sleep(60)
-        await message.delete()
+    await view.update_button()
        
             
 @bot.command(name='미션누적')
