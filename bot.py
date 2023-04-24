@@ -561,6 +561,7 @@ async def get_sheet1():
     return sheet1, rows 
   
 sticky_messages = {}
+last_sticky_messages = {} 
     
 def has_specific_roles(allowed_role_ids):
     async def predicate(ctx):
@@ -594,7 +595,6 @@ async def refresh_sticky_messages(sheet1):
                 pass
 
     sticky_messages = new_sticky_messages
-    last_sticky_messages = {}
     
 @bot.command(name='고정')
 @has_specific_roles(allowed_role_ids)
