@@ -442,7 +442,7 @@ async def random_mission_auth(ctx):
     button = AuthButton2(ctx, username, today, sheet3)
     view = discord.ui.View()
     view.add_item(button)
-    await ctx.send(embed=embed, view=view)
+    await update_embed_auth(ctx, username, today, sheet3) 
         
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today, sheet3):
@@ -452,7 +452,7 @@ class AuthButton2(discord.ui.Button):
         self.today = today
         self.sheet3 = sheet3
         self.auth_event = asyncio.Event()
-        self.stop_loop = False  # 추가: stop_loop 속성 추가
+        self.stop_loop = False
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user == self.ctx.author:
@@ -490,20 +490,19 @@ class AuthButton2(discord.ui.Button):
 async def update_embed_auth(ctx, username, today, sheet3):
     embed = discord.Embed(title="미션 인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
     button = AuthButton2(ctx, username, today, sheet3)
-    view = discord.ui.View()
+    view = discord.ui.View(timeout=None)  # MODIFIED: Set timeout to None to avoid interaction failures after 3 minutes
     view.add_item(button)
     message = await ctx.send(embed=embed, view=view)
 
-    while not button.stop_loop:  # stop_loop가 참이 될 때까지 반복
-        await asyncio.sleep(60)  # 1분 동안 대기
+    while not button.stop_loop:
+        await asyncio.sleep(60)
         if not button.stop_loop:
-            view = discord.ui.View()  # Create a new View instance
-            view.add_item(button)  # Add the button to the new View
-            await message.edit(embed=embed, view=view)  # 메시지를 편집하여 새로운 embed와 view를 추가
+            view = discord.ui.View(timeout=None)  # MODIFIED: Set timeout to None here as well
+            view.add_item(button)
+            await message.edit(embed=embed, view=view)
 
-    # 루프가 종료되면, 인증이 완료된 것이므로 버튼을 제거합니다.
     view.clear_items()
-    await msg.edit(view=view)
+    await message.edit(view=view)  # MODIFIED: Changed msg to message
             
 @bot.command(name='미션누적')
 async def mission_count(ctx):
