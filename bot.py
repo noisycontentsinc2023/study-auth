@@ -470,10 +470,10 @@ class AuthButton2(discord.ui.Button):
         self.stop_loop = False
 
     async def callback(self, interaction: discord.Interaction):
-        if interaction.user == self.ctx.author:
+        if interaction.user.id == self.ctx.author.id:  # Check the user ID instead of the user object
             # If the user is the button creator, send an error message
             embed = discord.Embed(title='Error', description='자신이 생성한 버튼은 사용할 수 없습니다 :(')
-            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.response.send_message(embed=embed, ephemeral=True)  # Use send_message instead of edit_message
             return
 
         try:
