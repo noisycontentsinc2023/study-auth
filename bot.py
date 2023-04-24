@@ -117,22 +117,6 @@ class AuthButton(discord.ui.Button):
         await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장을 인증했습니다🥳"), view=None)
         self.stop_loop = True
 
-async def update_embed(ctx, date, msg):
-    button = AuthButton(ctx, ctx.author, date) # Move button creation outside of the loop
-    while True:
-        try:
-            if button.stop_loop: # Check if stop_loop is True before updating the message
-                break
-
-            view = discord.ui.View(timeout=None)
-            view.add_item(button)
-            view.add_item(CancelButton(ctx))
-
-            embed = discord.Embed(title="인증요청", description=f"{ctx.author.mention}님의 {date} 일취월장 인증입니다")
-            await msg.edit(embed=embed, view=view)
-            await asyncio.sleep(60)
-        except discord.errors.NotFound:
-            break
 class CancelButton(discord.ui.Button):
     def __init__(self, ctx):
         super().__init__(style=discord.ButtonStyle.red, label="취소 ")
@@ -503,7 +487,7 @@ class AuthButton2(discord.ui.Button):
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
         self.stop_loop = True
         
-async def update_embed(ctx, username, today, sheet3):
+async def update_embed_auth(ctx, username, today, sheet3):
     embed = discord.Embed(title="미션 인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
     button = AuthButton2(ctx, username, today, sheet3)
     view = discord.ui.View()
