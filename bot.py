@@ -246,10 +246,6 @@ async def find_user(username, sheet):
         print(f'find_user error: {e}')
     return cell
 
-kst = pytz.timezone('Asia/Seoul')
-now = datetime.now(kst).replace(tzinfo=None)
-today = now.strftime('%m%d')
-
 @bot.command(name='등록')
 async def Register(ctx):
     username = str(ctx.message.author)
@@ -397,13 +393,17 @@ async def Relottery(ctx):
     embed.add_field(name='난이도', value=difficulty, inline=False)
     embed.add_field(name='미션수행장소', value=location, inline=False)
     message = await message.edit(embed=embed)
-      
+
+kst = pytz.timezone('Asia/Seoul')
+now = datetime.now(kst).replace(tzinfo=None)
+today1 = now.strftime('%m%d')    
+    
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
     # Check if the user has already authenticated today
-    today = now.strftime('%m%d')
+    today1 = now.strftime('%m%d')
 
     user_row = None
     for row in await sheet3.get_all_values():
@@ -423,35 +423,35 @@ async def random_mission_auth(ctx):
         await ctx.send(embed=embed)
         return
 
-    today_col = None
+    today1_col = None
     for i, col in enumerate(await sheet3.row_values(1)):
-        if today in col:
-            today_col = i + 1
+        if today1 in col:
+            today1_col = i + 1
             break
 
-    if today_col is None:
+    if today1_col is None:
         embed = discord.Embed(title='Error', description='랜덤미션스터디 기간이 아닙니다')
         await ctx.send(embed=embed)
         return
 
-    if (await sheet3.cell(user_cell.row, today_col)).value == '1':
+    if (await sheet3.cell(user_cell.row, today1_col)).value == '1':
         embed = discord.Embed(title='Error', description='이미 오늘의 미션 인증을 하셨습니다')
         await ctx.send(embed=embed)
         return
       
     # create and send the message with the button
     embed = discord.Embed(title="미션 인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
-    button = AuthButton2(ctx, username, today, sheet3)
+    button = AuthButton2(ctx, username, today1, sheet3)
     view = discord.ui.View()
     view.add_item(button)
-    await update_embed_auth(ctx, username, today, sheet3) 
+    await update_embed_auth(ctx, username, today1, sheet3) 
         
 class AuthButton2(discord.ui.Button):
-    def __init__(self, ctx, username, today, sheet3):
+    def __init__(self, ctx, username, today1, sheet3):
         super().__init__(style=discord.ButtonStyle.green, label="미션인증")
         self.ctx = ctx
         self.username = username
-        self.today = today
+        self.today = today1
         self.sheet3 = sheet3
         self.auth_event = asyncio.Event()
         self.stop_loop = False
@@ -489,9 +489,9 @@ class AuthButton2(discord.ui.Button):
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
         self.stop_loop = True
         
-async def update_embed_auth(ctx, username, today, sheet3):
+async def update_embed_auth(ctx, username, today1, sheet3):
     embed = discord.Embed(title="미션 인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
-    button = AuthButton2(ctx, username, today, sheet3)
+    button = AuthButton2(ctx, username, today1, sheet3)
     view = discord.ui.View(timeout=None)  # MODIFIED: Set timeout to None to avoid interaction failures after 3 minutes
     view.add_item(button)
     message = await ctx.send(embed=embed, view=view)
