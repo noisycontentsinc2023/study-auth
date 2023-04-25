@@ -246,7 +246,8 @@ async def find_user(username, sheet):
     return cell
 
 kst = pytz.timezone('Asia/Seoul')
-now = datetime.datetime.now(kst)
+now = datetime.now(kst)
+today = now.strftime('%m%d')
 
 @bot.command(name='등록')
 async def Register(ctx):
