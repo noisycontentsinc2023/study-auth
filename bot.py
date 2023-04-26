@@ -255,9 +255,9 @@ class CustomSelect(discord.ui.Select):
         if self.values[0] == "등록":
             await interaction.response.send_message("'!등록' 명령어를 통해 랜덤미션스터디에 등록할 수 있습니다 예시)!등록", ephemeral=True)
         elif self.values[0] == "뽑기":
-            await interaction.response.send_message("'!뽑기' 명령어를 통해 50가지 랜덤 미션 중 하나를 뽑을 수 있어요! 예시)!뽑기", ephemeral=True)
+            await interaction.response.send_message("'!뽑기' 명령어를 통해 50가지 랜덤 미션 중 하나를 뽑을 수 있어요 예시)!뽑기", ephemeral=True)
         elif self.values[0] == "미션누적":
-            await interaction.response.send_message("'미션누적' 명령어를 통해 랜덤미션을 몇 회 인증받았는지 확인할 수 있습니다! 6회 이상 인증 확인되면 완주자 역할을 소유하게 됩니다!! 예시)!미션누적", ephemeral=True)
+            await interaction.response.send_message("'미션누적' 명령어를 통해 랜덤미션을 몇 회 인증받았는지 확인할 수 있습니다! 6회 이상 인증 확인되면 완주자 역할을 소유하게 됩니다 예시)!미션누적", ephemeral=True)
             
 @bot.command(name="랜덤미션")
 async def one_per_day(ctx):
