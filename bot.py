@@ -79,9 +79,46 @@ async def find_user(username, sheet):
         print(f'find_user error: {e}')
     return cell
 
+class CustomSelect1(discord.ui.Select):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    async def callback(self, interaction: discord.Interaction):
+        if self.values[0] == "인증":
+            await interaction.response.send_message("'!인증 해당날짜' 명령어를 통해 해당날짜의 일취월장 인증을 할 수 있습니다 예시)!인증 0101", ephemeral=True)
+        elif self.values[0] == "누적":
+            await interaction.response.send_message("'누적' 명령어를 통해 일취월장 이번 주 인증횟수와 전체 랭킹 누적현황을 알 수 있습니다 예시)!누적", ephemeral=True)
+            
+@bot.command(name="일취월장")
+async def 1qu(ctx):
+    await ctx.message.delete()  # 명령어 삭제
+    
+    embed = discord.Embed(title="일취월장 명령어 모음집", description=f"{ctx.author.mention}님 원하시는 명령어를 아래에서 골라주세요")
+    embed.set_footer(text="이 창은 1분 후 자동 삭제됩니다")
+
+    message = await ctx.send(embed=embed, ephemeral=True)
+
+    select = CustomSelect(
+        options=[
+            discord.SelectOption(label="인증", value="인증"),
+            discord.SelectOption(label="누적", value="누적")
+        ],
+        placeholder="명령어를 선택하세요",
+        min_values=1,
+        max_values=1
+    )
+
+    select_container = discord.ui.View()
+    select_container.add_item(select)
+
+    message = await message.edit(embed=embed, view=select_container)
+
+    await asyncio.sleep(60)  # 1분 대기
+    await message.delete()  # 임베드 메시지와 셀렉트 메뉴 삭제
+    
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, user, date):
-        super().__init__(style=discord.ButtonStyle.green, label="확인 ")
+        super().__init__(style=discord.ButtonStyle.green, label="확인")
         self.ctx = ctx
         self.user = user
         self.date = date
