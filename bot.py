@@ -246,6 +246,47 @@ async def find_user(username, sheet):
         print(f'find_user error: {e}')
     return cell
 
+  
+class CustomSelect(discord.ui.Select):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    async def callback(self, interaction: discord.Interaction):
+        if self.values[0] == "등록":
+            await interaction.response.send_message("'!등록' 명령어를 통해 랜덤미션스터디에 등록할 수 있습니다 예시)!등록", ephemeral=True)
+        elif self.values[0] == "뽑기":
+            await interaction.response.send_message("'!뽑기' 명령어를 통해 50가지 랜덤 미션 중 하나를 뽑을 수 있어요! 예시)!뽑기", ephemeral=True)
+        elif self.values[0] == "누적현황":
+            await interaction.response.send_message("'미션누적' 명령어를 통해 랜덤미션을 몇 회 인증받았는지 확인할 수 있습니다! 6회 이상 인증 확인되면 완주자 역할을 소유하게 됩니다!! 예시)!미션누적", ephemeral=True)
+            
+@bot.command(name="랜덤미션")
+async def one_per_day(ctx):
+    await ctx.message.delete()  # 명령어 삭제
+    
+    embed = discord.Embed(title="랜덤미션스터디 명령어 모음집", description=f"{ctx.author.mention}님 원하시는 명령어를 아래에서 골라주세요")
+    embed.set_footer(text="이 창은 1분 후 자동 삭제됩니다")
+
+    message = await ctx.send(embed=embed, ephemeral=True)
+
+    select = CustomSelect(
+        options=[
+            discord.SelectOption(label="등록", value="등록"),
+            discord.SelectOption(label="뽑기", value="뽑기"),
+            discord.SelectOption(label="미션누적", value="미션누적")
+        ],
+        placeholder="명령어를 선택하세요",
+        min_values=1,
+        max_values=1
+    )
+
+    select_container = discord.ui.View()
+    select_container.add_item(select)
+
+    message = await message.edit(embed=embed, view=select_container)
+
+    await asyncio.sleep(60)  # 1분 대기
+    await message.delete()  # 임베드 메시지와 셀렉트 메뉴 삭제
+    
 @bot.command(name='등록')
 async def Register(ctx):
     username = str(ctx.message.author)
