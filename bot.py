@@ -90,7 +90,7 @@ class CustomSelect1(discord.ui.Select):
             await interaction.response.send_message("'누적' 명령어를 통해 일취월장 이번 주 인증횟수와 전체 랭킹 누적현황을 알 수 있습니다 예시)!누적", ephemeral=True)
             
 @bot.command(name="일취월장")
-async def 1qu(ctx):
+async def qu(ctx):
     await ctx.message.delete()  # 명령어 삭제
     
     embed = discord.Embed(title="일취월장 명령어 모음집", description=f"{ctx.author.mention}님 원하시는 명령어를 아래에서 골라주세요")
