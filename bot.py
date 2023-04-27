@@ -480,7 +480,8 @@ today1 = now.strftime('%m%d')
 async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
-    # 날짜 업데이트 코드 추가
+
+    # 날짜 업데이트 코드 수정
     now = datetime.now()
     today1 = now.strftime('%m%d')
 
