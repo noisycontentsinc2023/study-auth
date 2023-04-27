@@ -480,7 +480,8 @@ today1 = now.strftime('%m%d')
 async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
-    # Check if the user has already authenticated today
+    # 날짜 업데이트 코드 추가
+    now = datetime.datetime.now()
     today1 = now.strftime('%m%d')
 
     user_row = None
@@ -553,6 +554,8 @@ class AuthButton2(discord.ui.Button):
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
+        now = datetime.datetime.now()
+        self.today = now.strftime('%m%d')
         # Authenticate the user in the spreadsheet
         today1_col = (await self.sheet3.find(self.today)).col
         await self.sheet3.update_cell(user_row, today1_col, '1')
