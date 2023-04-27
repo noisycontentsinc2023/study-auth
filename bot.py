@@ -526,13 +526,14 @@ async def random_mission_auth(ctx):
     await update_embed_auth(ctx, username, today1, sheet3)
         
 class AuthButton2(discord.ui.Button):
-    def __init__(self, ctx, username, sheet3):
+    def __init__(self, ctx, username, today1, sheet3):
         super().__init__(style=discord.ButtonStyle.green, label="미션인증")
         self.ctx = ctx
         self.username = username
         self.sheet3 = sheet3
         self.auth_event = asyncio.Event()
         self.stop_loop = False
+        self.today1 = today1  # 인스턴스 변수로 today1 저장
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user == self.ctx.author:
@@ -570,9 +571,9 @@ class AuthButton2(discord.ui.Button):
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
         self.stop_loop = True
 
-async def update_embed_auth(ctx, username, sheet3):
+async def update_embed_auth(ctx, username, today1, sheet3):
     embed = discord.Embed(title="미션 인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
-    button = AuthButton2(ctx, username, sheet3)
+    button = AuthButton2(ctx, username, today1, sheet3)
     view = discord.ui.View(timeout=None)
     view.add_item(button)
     message = await ctx.send(embed=embed, view=view)
