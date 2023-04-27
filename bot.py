@@ -481,8 +481,7 @@ async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
 
-    # 날짜 업데이트 코드 수정
-    now = datetime.now()
+    now = datetime.now()  # 날짜 업데이트 코드 수정
     today1 = now.strftime('%m%d')
 
     user_row = None
@@ -524,7 +523,7 @@ async def random_mission_auth(ctx):
     button = AuthButton2(ctx, username, today1, sheet3)
     view = discord.ui.View()
     view.add_item(button)
-    await update_embed_auth(ctx, username, today1, sheet3) 
+    await update_embed_auth(ctx, username, today1, sheet3)
         
 class AuthButton2(discord.ui.Button):
     def __init__(self, ctx, username, today1, sheet3):
