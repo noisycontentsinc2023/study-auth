@@ -474,14 +474,14 @@ async def Relottery(ctx):
 
 kst = pytz.timezone('Asia/Seoul')
 now = datetime.now(kst).replace(tzinfo=None)
-today1 = now.strftime('%m%d')    
+today1 = now.strftime('%m%d')     
     
 @bot.command(name='미션인증')
 async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
 
-    now = datetime.now()  # 날짜 업데이트 코드 수정
+    now = datetime.now(kst).replace(tzinfo=None)  # 날짜 업데이트 코드 수정
     today1 = now.strftime('%m%d')
 
     user_row = None
@@ -554,7 +554,7 @@ class AuthButton2(discord.ui.Button):
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
-        now = datetime.now()
+        now = datetime.now(kst).replace(tzinfo=None)  # 날짜 업데이트 코드 수정
         self.today = now.strftime('%m%d')
 
         # Authenticate the user in the spreadsheet
@@ -580,7 +580,7 @@ async def update_embed_auth(ctx, username, today1, sheet3):
 
     while not button.stop_loop:
         await asyncio.sleep(60)
-        now = datetime.now()
+        now = datetime.now(kst).replace(tzinfo=None)  # 날짜 업데이트 코드 수정
         today1 = now.strftime('%m%d')
         if not button.stop_loop:
             view = discord.ui.View(timeout=None)
