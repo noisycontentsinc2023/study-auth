@@ -526,11 +526,10 @@ async def random_mission_auth(ctx):
     await update_embed_auth(ctx, username, today1, sheet3)
         
 class AuthButton2(discord.ui.Button):
-    def __init__(self, ctx, username, today1, sheet3):
+    def __init__(self, ctx, username, sheet3):
         super().__init__(style=discord.ButtonStyle.green, label="미션인증")
         self.ctx = ctx
         self.username = username
-        self.today = today1
         self.sheet3 = sheet3
         self.auth_event = asyncio.Event()
         self.stop_loop = False
@@ -556,6 +555,7 @@ class AuthButton2(discord.ui.Button):
 
         now = datetime.now()
         self.today = now.strftime('%m%d')
+
         # Authenticate the user in the spreadsheet
         today1_col = (await self.sheet3.find(self.today)).col
         await self.sheet3.update_cell(user_row, today1_col, '1')
@@ -569,23 +569,26 @@ class AuthButton2(discord.ui.Button):
         # Send a success message
         await interaction.message.edit(embed=discord.Embed(title="인증완료!", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 랜덤미션을 인증했습니다🥳"), view=None)
         self.stop_loop = True
-        
-async def update_embed_auth(ctx, username, today1, sheet3):
+
+async def update_embed_auth(ctx, username, sheet3):
     embed = discord.Embed(title="미션 인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 미션을 인증해주세요')
-    button = AuthButton2(ctx, username, today1, sheet3)
-    view = discord.ui.View(timeout=None)  # MODIFIED: Set timeout to None to avoid interaction failures after 3 minutes
+    button = AuthButton2(ctx, username, sheet3)
+    view = discord.ui.View(timeout=None)
     view.add_item(button)
     message = await ctx.send(embed=embed, view=view)
 
     while not button.stop_loop:
         await asyncio.sleep(60)
+        now = datetime.now()
+        today1 = now.strftime('%m%d')
         if not button.stop_loop:
-            view = discord.ui.View(timeout=None)  # MODIFIED: Set timeout to None here as well
+            view = discord.ui.View(timeout=None)
+            button = AuthButton2(ctx, username, sheet3)
             view.add_item(button)
             await message.edit(embed=embed, view=view)
 
     view.clear_items()
-    await message.edit(view=view)  # MODIFIED: Changed msg to message
+    await message.edit(view=view)
             
 @bot.command(name='미션누적')
 async def mission_count(ctx):
