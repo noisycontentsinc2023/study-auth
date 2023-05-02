@@ -296,7 +296,7 @@ class CustomSelect(discord.ui.Select):
         elif self.values[0] == "미션누적":
             await interaction.response.send_message("'미션누적' 명령어를 통해 랜덤미션을 몇 회 인증받았는지 확인할 수 있습니다! 6회 이상 인증 확인되면 완주자 역할을 소유하게 됩니다 예시)!미션누적", ephemeral=True)
             
-@bot.command(name="랜덤미션")
+@bot.command(name="")
 async def one_per_day(ctx):
     await ctx.message.delete()  # 명령어 삭제
     
@@ -324,7 +324,7 @@ async def one_per_day(ctx):
     await asyncio.sleep(60)  # 1분 대기
     await message.delete()  # 임베드 메시지와 셀렉트 메뉴 삭제
     
-@bot.command(name='등록')
+@bot.command(name='')
 async def Register(ctx):
     username = str(ctx.message.author)
     
@@ -366,7 +366,7 @@ class RandomMissionView(View):
 
 cooldowns = {}  # Create a dictionary to store cooldowns
 
-@bot.command(name='뽑기')
+@bot.command(name='')
 async def RandomMission(ctx):
     user_id = ctx.author.id
     cooldown_time = 3600  # One hour in seconds
@@ -476,7 +476,7 @@ kst = pytz.timezone('Asia/Seoul')
 now = datetime.now(kst).replace(tzinfo=None)
 today1 = now.strftime('%m%d')     
     
-@bot.command(name='미션인증')
+@bot.command(name='')
 async def random_mission_auth(ctx):
     sheet3, rows = await get_sheet3()  # get_sheet3 호출 결과값 받기
     username = str(ctx.message.author)
@@ -591,7 +591,7 @@ async def update_embed_auth(ctx, username, today1, sheet3):
     view.clear_items()
     await message.edit(view=view)
             
-@bot.command(name='미션누적')
+@bot.command(name='')
 async def mission_count(ctx):
     username = str(ctx.message.author)
     sheet3, rows = await get_sheet3()
