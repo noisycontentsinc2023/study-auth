@@ -117,10 +117,10 @@ async def qu(ctx):
     await message.delete()  # 임베드 메시지와 셀렉트 메뉴 삭제
 
 async def update_count(sheet2, user):
-    existing_users = await sheet2.col_values(2)
+    existing_users = await sheet2.col_values(1)
     if str(user) not in existing_users:
         empty_row = len(existing_users) + 1
-        await sheet2.update_cell(empty_row, 2, str(user))
+        await sheet2.update_cell(empty_row, 1, str(user))
         await sheet2.update_cell(empty_row, 3, "1")
     else:
         index = existing_users.index(str(user)) + 1
