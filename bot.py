@@ -125,7 +125,8 @@ async def update_count(sheet2, user):
     else:
         index = existing_users.index(str(user)) + 1
         current_count = await sheet2.cell(index, 3)
-        new_count = int(current_count.value) + 1
+        current_value = current_count.value if current_count.value is not None else 0
+        new_count = int(current_value) + 1
         await sheet2.update_cell(index, 3, str(new_count))
         
 class AuthButton(discord.ui.Button):
