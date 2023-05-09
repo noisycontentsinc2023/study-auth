@@ -115,7 +115,19 @@ async def qu(ctx):
 
     await asyncio.sleep(60)  # 1분 대기
     await message.delete()  # 임베드 메시지와 셀렉트 메뉴 삭제
-    
+
+async def update_count(sheet2, user):
+    existing_users = await sheet2.col_values(2)
+    if str(user) not in existing_users:
+        empty_row = len(existing_users) + 1
+        await sheet2.update_cell(empty_row, 2, str(user))
+        await sheet2.update_cell(empty_row, 3, "1")
+    else:
+        index = existing_users.index(str(user)) + 1
+        current_count = await sheet2.cell(index, 3)
+        new_count = int(current_count.value) + 1
+        await sheet2.update_cell(index, 3, str(new_count))
+        
 class AuthButton(discord.ui.Button):
     def __init__(self, ctx, user, date):
         super().__init__(style=discord.ButtonStyle.green, label="확인")
@@ -154,6 +166,7 @@ class AuthButton(discord.ui.Button):
                 await sheet2.update_cell(index, col, "1")
         await interaction.message.edit(embed=discord.Embed(title="인증상황", description=f"{interaction.user.mention}님이 {self.ctx.author.mention}의 {self.date} 일취월장을 인증했습니다🥳"), view=None)
         self.stop_loop = True
+        await update_count(sheet2, interaction.user)  # Update the count of the user who clicked the button
 
 class CancelButton(discord.ui.Button):
     def __init__(self, ctx):
