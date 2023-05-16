@@ -176,7 +176,7 @@ class CancelButton(discord.ui.Button):
         self.stop_loop = False  # Add the stop_loop attribute
     
     async def callback(self, interaction: discord.Interaction):
-        if interaction.author.id != self.ctx.author.id:
+        if interaction.user.id != self.ctx.author.id:
             await interaction.message.delete()
             self.stop_loop = True
 
