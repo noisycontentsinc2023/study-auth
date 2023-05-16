@@ -171,14 +171,16 @@ class AuthButton(discord.ui.Button):
 
 class CancelButton(discord.ui.Button):
     def __init__(self, ctx):
-        super().__init__(style=discord.ButtonStyle.red, label="취소 ")
+        super().__init__(style=discord.ButtonStyle.red, label="취소")
         self.ctx = ctx
         self.stop_loop = False  # Add the stop_loop attribute
     
     async def callback(self, interaction: discord.Interaction):
-        if interaction.user.id != self.ctx.author.id:
+        if interaction.user.id == self.ctx.author.id:
             await interaction.message.delete()
             self.stop_loop = True
+        else:
+            await interaction.response.send_message("글 작성자만 취소할 수 있습니다", ephemeral=True)
 
 async def update_embed(ctx, date, msg):
     button = AuthButton(ctx, ctx.author, date) # Move button creation outside of the loop
