@@ -202,7 +202,13 @@ async def update_embed(ctx, date, msg):
         
 @bot.command(name='인증')
 async def Authentication(ctx, date):
-    
+    target_channel_id = 978952156617007114
+
+    # If the command is not used in the target channel, ignore it
+    if ctx.channel.id != target_channel_id:
+        await ctx.send("해당 명령어는 일취월장 채널에서만 사용할 수 있어요")
+        return
+      
     # Validate the input date
     if not re.match(r'^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$', date ):
         await ctx.send("정확한 네자리 숫자를 입력해주세요! 1월1일 인증을 하시려면 0101을 입력하시면 됩니다 :)")
