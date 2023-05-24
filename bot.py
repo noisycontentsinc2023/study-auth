@@ -206,7 +206,7 @@ async def Authentication(ctx, date):
 
     # If the command is not used in the target channel, ignore it
     if ctx.channel.id != target_channel_id:
-        await ctx.send("해당 명령어는 일취월장 채널에서만 사용할 수 있어요")
+        await ctx.send("해당 명령어는 <#978952156617007114> 에서만 사용할 수 있어요")
         return
       
     # Validate the input date
