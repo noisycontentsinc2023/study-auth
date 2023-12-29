@@ -91,7 +91,7 @@ bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 
 #------------------------------------------------번역기------------------------------------------------------#
-
+@bot.event
 async def on_reaction_add(reaction, user):
   
     # Check if the reaction is a flag emoji
