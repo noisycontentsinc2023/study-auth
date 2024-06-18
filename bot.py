@@ -643,7 +643,7 @@ async def bixie_count(ctx):
             break
 
     if user_row is None:
-        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
+        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요! \n @1249933410240036925 역할이 없으시다면 스탭에게 문의해 주세요 :)')
         await ctx.send(embed=embed)
         return
 
