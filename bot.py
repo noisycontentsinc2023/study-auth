@@ -483,14 +483,14 @@ async def find_user(username, sheet):
     return cell
             
 def is_allowed_channel(channel_id):
-    allowed_channels = ["1020187965739253760", "1194273995319685120","1057267651405152256"]
+    allowed_channels = ["1020187965739253760", "1194273995319685120", "1057267651405152256"]
     return str(channel_id) in allowed_channels
   
 kst = pytz.timezone('Asia/Seoul') # 한국 시간대로 설정 
 now = datetime.now(kst).replace(tzinfo=None)
 today3 = now.strftime('%m%d') 
 
-@bot.command(name='필사클럽등록')
+@bot.command(name='필사등록')
 async def bixie_user(ctx):
     sheet11, rows = await get_sheet11()  # get_sheet11 호출 결과값 받기
     username = str(ctx.message.author)
@@ -509,9 +509,9 @@ async def bixie_user(ctx):
     embed = discord.Embed(title='등록 완료', description=f'{ctx.author.mention}님 2024 필사클럽-2기에 성공적으로 등록되었습니다')
     await ctx.send(embed=embed)
 
-@bot.command(name='필사클럽인증')
+@bot.command(name='필사인증')
 async def bixie_auth(ctx):
-    required_role = "1186236303365386262" 
+    required_role = "1249933410240036925" 
     role = discord.utils.get(ctx.guild.roles, id=int(required_role))
     
     if role is None or role not in ctx.author.roles:
