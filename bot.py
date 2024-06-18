@@ -468,7 +468,7 @@ async def get_sheet11():
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
     spreadsheet = await client.open('서버기록')
-    sheet11 = await spreadsheet.worksheet('2024북클럽2기')
+    sheet11 = await spreadsheet.worksheet('2024필사클럽럽2기')
     rows = await sheet11.get_all_values()
     return sheet11, rows 
 
@@ -627,7 +627,7 @@ async def update_embed_book_auth(ctx, username, today3, sheet11):
     view.clear_items()
     await message.edit(view=view)
             
-@bot.command(name='필사클럽누적')
+@bot.command(name='필사누적')
 async def bixie_count(ctx):
     if not is_allowed_channel(ctx.channel.id):
         await ctx.send("해당 명령어는 <#1194273995319685120>에서만 사용할 수 있어요")
