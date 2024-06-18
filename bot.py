@@ -515,7 +515,7 @@ async def bixie_auth(ctx):
     role = discord.utils.get(ctx.guild.roles, id=int(required_role))
     
     if role is None or role not in ctx.author.roles:
-        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
+        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
         await ctx.send(embed=embed)
         return
       
@@ -532,7 +532,7 @@ async def bixie_auth(ctx):
             break
 
     if user_row is None:
-        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
+        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
         await ctx.send(embed=embed)
         return
 
@@ -581,12 +581,12 @@ class AuthButton3(discord.ui.Button):
         try:
             user_cell = await find_user(self.username, self.sheet11)
             if user_cell is None:
-                embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
+                embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
                 await interaction.response.edit_message(embed=embed, view=None)
                 return
             user_row = user_cell.row
         except gspread.exceptions.CellNotFound:
-            embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
+            embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
@@ -608,7 +608,7 @@ class AuthButton3(discord.ui.Button):
         self.stop_loop = True
 
 async def update_embed_book_auth(ctx, username, today3, sheet11):
-    embed = discord.Embed(title="학습인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 {today3} 필사클럽럽을 인증해주세요')
+    embed = discord.Embed(title="학습인증", description=f' 버튼을 눌러 {ctx.author.mention}님의 {today3} 필사클럽을 인증해주세요')
     button = AuthButton3(ctx, username, today3, sheet11)
     view = discord.ui.View(timeout=None)
     view.add_item(button)
@@ -643,7 +643,7 @@ async def bixie_count(ctx):
             break
 
     if user_row is None:
-        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요! \n @1249933410240036925 역할이 없으시다면 스탭에게 문의해 주세요 :)')
+        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님은 2024 필사클럽-2기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
         await ctx.send(embed=embed)
         return
 
