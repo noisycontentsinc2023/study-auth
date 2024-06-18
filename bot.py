@@ -462,13 +462,13 @@ async def on_message(message):
         new_message = await message.channel.send(sticky_messages[message.channel.id])
         last_sticky_messages[message.channel.id] = new_message
     
-#---------------------북클럽2기------------------------#  
+#---------------------필사클럽2기------------------------#  
 #------------------------------------------------#    
 async def get_sheet11():  
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
     spreadsheet = await client.open('서버기록')
-    sheet11 = await spreadsheet.worksheet('2024필사클럽럽2기')
+    sheet11 = await spreadsheet.worksheet('2024필사클럽2기')
     rows = await sheet11.get_all_values()
     return sheet11, rows 
 
