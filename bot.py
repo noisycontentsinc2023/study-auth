@@ -45,11 +45,11 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 creds_info = {
   "type": "service_account",
-  "project_id": "server-439707",
-  "private_key_id": "7b8f6ea0e5cd1a14ebba41530c20843b5aef73bf",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCIqP3d/c3JM/Kw\nci2CDhGLAiBerVz67AFfG06PateCHQ2psp5RwFXATQBfIPCN+uqhWuSDX3vAlYT2\n4ckj2lNSfZMt/bxqzMMhxxyI/ULu7YrvLMoZJNRTGBNchDebsLpdImGZdtxtWcnj\nPeUMr5epusDvvvIgvQa1UENoURUe3tDlowgcXm8DwV7fIIZmDanzwUNjT4xksB59\n18JidbSmyGvkj6oIwrk9V6i2Q5vK7Bp8mbYD50D7QdpAVEF6Oe4d6gnc6/o74zcz\nAFB2zKVir9bVp0HdXPnLOpia6l+wwBFOCYMqyCecEW6Y4GYpwca/RjjpL7zIwq8b\nLJUqhHx3AgMBAAECggEAH3Ql2i5Mav7V4N6mssRiLUh0AtaMDAS93BIA5umEaKIf\nPuupnM9T7UrLxxlhxIv37ONqrQIRDaZcUCZvkRzzCI12jqNT9pDiaKfXXYBNI4jw\n7VO1wEvFwspLyoNz+RWYD0+WfyfoXBLKcM8SJPVVRu+A8K1WNUrMfHbYzO28mrn/\n3xPOQHo3C0G6A9fZfrZyZnynRCamo+Ow98AQRsHC9efKqKeB8P6j8GtsqlAFYDpL\ng3MVbk82aQVc3i2TkarWqGgzo9VH23irak51RaCDG5EIOznkbqKp60Sl/yn0NKNL\n0rbU33kJg9/C81MY8I0Ap1sCy6nYmugmEFtTzzkfoQKBgQDArU6fIqoAdVOBzstc\nH122HwbEDP1wWDoMiartQpwyB+xCfYi0OLHzQK8eIhuzxXYB5hv9s+igLuYJpqeK\nhdZ8zKRTRYc0sP2UQyIxkeHzg4QZLxzNXwRPjwFloO7sWrB5wlrBMjp/oczL1jed\nb4HirRqXvYPXekRkHCtBwGlY4wKBgQC1ksKROjBmlrK/KsbaMcd9fSvFLcKM1Trb\nyjQp70a14Wjy4cwO/XjCeQmIYHuMPAwyjwwhg05QjW6E+4aIZbfR7snR0DLyvgGx\nR0YP48zhUrYY0VdXogCJ9NTGBZd24+JfKmyTSzTpZ5yRmcHDB/JYFTsjmmIqmx/Y\nqqqhx7SmXQKBgDBhVASRZ66Fx1oo2tde6OD6GXDQ8jJrdOgBCXJZ726AnspzSwg1\n1DkIXPBsEBir1F3VseGacycFn618s0UNJjZgDEL8il6osoOv974Kq3nB5EGOmuTW\nnvZ7KhaiuluOyhFIxBEO07GIpyvntj9J6ItKfAruA1Tv1oxspk/0SH+RAoGAS1Yx\nVICIRIiSca8WAsJUu0SMPKvX5Qcz/K3RJvUYqa51FRGK0U1qJYaC5griODVR+khQ\nCDeq7tE/4f1avI03z+r74go4mW8s1Jl2AHHMOFFRLMrvKnUVNChZgDAhwDqdWk8H\n7bVupslOtTrOolVRwCpO916/DF6AwC1PzwBFfCECgYAGzaJ6lgGPNLLvRrp+FgcS\nrljx93BxoyM0IMCOBglpNczk7KI3NaFKkHTRVbsDuh1nhIG0uFz6nRVVkBPIPa9D\n0ADXxDfN1ym56fyC2ZeNsJUEDrpR+Or8SmS3YM3nlM19pLJA1D/PfJl8Wsp09sCy\nxr4B/aQwCvfhc9/0nXmjmA==\n-----END PRIVATE KEY-----\n",
-  "client_email": "server@server-439707.iam.gserviceaccount.com",
-  "client_id": "114188687766069703081",
+  "project_id": os.getenv("GOOGLE_PROJECT_ID"),
+  "private_key_id": "7b8f6ea0e5cd1a14ebba41530c20843b5aef73bf",  # 필요시 여기에 추가
+  "private_key": os.getenv("GOOGLE_PRIVATE_KEY"),
+  "client_email": os.getenv("GOOGLE_CLIENT_EMAIL"),
+  "client_id": "114188687766069703081",  # 필요시 여기에 추가
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
