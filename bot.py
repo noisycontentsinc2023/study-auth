@@ -42,14 +42,14 @@ intents.presences = False
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 creds_info = {
   "type": "service_account",
-  "project_id": os.getenv("GOOGLE_PROJECT_ID"),
-  "private_key_id": "7b8f6ea0e5cd1a14ebba41530c20843b5aef73bf",  # 필요시 여기에 추가
-  "private_key": os.getenv("GOOGLE_PRIVATE_KEY"),
-  "client_email": os.getenv("GOOGLE_CLIENT_EMAIL"),
-  "client_id": "114188687766069703081",  # 필요시 여기에 추가
+  "project_id": "server-439707",
+  "private_key_id": "8389957a92f5f2d2d3f5d8d115a9f4030effdea5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCkBLFFYum65fk7\nxnspFfNchCtltUNkp2nO1vKZB0AuPXRy/HjBfdtGdBGg/RWcQhKuJkscD7AF3szS\naMIiQYycUeqA0oMFQ0tdvmXpOjhpjcTii2NeH97aZ+rqm01Zc6YXRKwxRrMdLb2H\nc4EzCaGwfk8SCxfrO78fjo8Ag8lfUsUI/aMZAkCDjFcsEket+qT8AxWj17SdeMgi\nI4JPRUxgOwMqwnJSKRPzYvK6CXarxJxrIHM2cm/ynswnGlRyy6q0IILLPt0O3K8q\nQ6qcZvslyAWVrhIA3exCK+QmoyJol3zl8UuSR5MoTIRnTiMVSMk89cJaL9KVLyJO\nvuKUUS5VAgMBAAECggEAAtqLDApBx0zvhmz4YRle69Xn3GPoOYTZKC5gt61i3jsW\n/tYqMrGiIkpsMRkeKmMS6KFFbsZOGXgMJ8AHWqm5zNF3C0k+WtXWJpoks0deSmXb\nTla/Apj622Fx+qV7lcoXknGRLmVMwf30/XmSvqTVAZlc/lMflinqtB2amtdwJj6n\nCdPJiDv4P7mwUK8j39K+QggOKiT3HWe2CG8GH8gQ6jCJ5Uy7Cv0LPq7czwOKX7zU\nTLNTzr6K3jcEBEUeixrhjmRWwygGTlernE2qZle2k4KeGoWVf4fTVqjfwj4Gx8wx\noFq4oHLWDOhL6fo6X5uEv2qdH9hvk6kEQ1m752baEQKBgQDQRpH/FEsVzCIootZ8\nlZWnBjyaMponyrKm//XXBzCUAvPEWNkdebZIyhsW2FPK0t5N8TAL+wFT9vz7SaUy\n7azI535g6d4qWl9VToKmUfwhGe5YW6VNBBLXV22BH+zErNrXl7wul6jL+ULU4IbM\n30ByIBC9HvV26fBUPRgosZjRBQKBgQDJmf3GBvXPPXZomduFR7183Cquz5AABvS6\nx5MxFBBMUQ2Gz/mIGOuHXR5wMyERxPwTbEV91fCbZFZFjBj0V7rhvPDmx1N11gDe\nm2zkLwBlIzZRic5kTyw2bcFEhcdBbZzINNDRDkX71VLN8UceHrUiiRWePtzdwI2R\n35XxXaOpEQKBgAPMNZ9MFG5qUXkiNv0AkUEBaRt6rrrpBEbtReNM20LnpuA+qn7S\nGFPNc58ABM8e9zS+oByn0Adi6ov+dMev88WaCwDjYsys5y4cB1/XANztpx3vVd1I\npLtOec2v8lZHvJnPx3umAkrt2Z0eFvcnXvp1wThhlyI688nlb0pWqq2tAoGBAIXS\nWXlM/3hMlUAD+Yr0Px0VzKNzlmPeOi+N8O/gIJ14JCF8BmjIGfgl4OGbnvT7rFR8\nR3irPeb4aKgLwjjXz26vC741S/ppTvR1eYfSh1GbWSAw+LbvMysCGguRPd35k9v1\n6zMKZXwwc6HO6mVc/uHo21fK5LOycIcHQrIQdWXxAoGBAIcLmHnuoHwYoZjpsBE2\nAzRSHSTA9OOgM4IGpuWAFdlCbZbklB26qyf0P6I0nsFindMFQqG44y7ykfwZcwMz\nMQd4Q+sdln3oa8Rp4oW13WQ5o9WEhfACKvp7JWSS2cegrLedWkGGl/sgdjKikXjG\n+5XrdSU0fjgxOFRwYWHVC+jk\n-----END PRIVATE KEY-----\n",
+  "client_email": "server@server-439707.iam.gserviceaccount.com",
+  "client_id": "114188687766069703081",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
