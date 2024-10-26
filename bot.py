@@ -48,7 +48,10 @@ json_url = 'https://storage.googleapis.com/serverclient/vibrant-airship-439708-t
 
 # JSON 파일 다운로드
 response = requests.get(json_url)
-creds_info = response.json()
+if response.status_code == 200:
+    creds_info = response.json()
+else:
+    raise Exception(f"Failed to fetch the JSON file: {response.status_code}")
 
 # 스코프 설정
 scopes = [
