@@ -53,7 +53,7 @@ print("서버 시간:", server_time.strftime('%Y-%m-%d %H:%M:%S'))
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
 creds_info = {
   "type": "service_account",
   "project_id": "vibrant-airship-439708-t4",
