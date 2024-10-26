@@ -30,6 +30,7 @@ gspread
 gspread_asyncio
 google-auth
 google-auth-oauthlib
+google-auth-httplib2
 pytz
 sniffio==1.3.0
 urllib3==1.26.13
