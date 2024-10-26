@@ -9,6 +9,7 @@ import datetime
 import random
 import json
 import json.decoder
+import gspread
 import gspread.exceptions
 import re
 import pytz
@@ -19,6 +20,7 @@ import discord.ui as ui
 import time
 
 from google.oauth2.service_account import Credentials
+from oauth2client.service_account import ServiceAccountCredentials
 from google.oauth2 import service_account
 from datetime import date, timedelta
 from datetime import datetime
