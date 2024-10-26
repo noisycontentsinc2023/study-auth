@@ -19,6 +19,7 @@ import discord.ui as ui
 import time
 
 from google.oauth2.service_account import Credentials
+from google.oauth2 import service_account
 from datetime import date, timedelta
 from datetime import datetime
 from discord import Embed
