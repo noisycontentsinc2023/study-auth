@@ -43,9 +43,16 @@ scope = [
     'https://www.googleapis.com/auth/spreadsheets'
 ]
 
-# 환경 변수에서 JSON 키 정보 불러오기
-creds_info = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
-credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
+# 환경 변수에서 JSON 키 정보 불러오기 (디버그용 출력 추가)
+creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+if creds_json is None:
+    raise Exception("Environment variable 'GOOGLE_APPLICATION_CREDENTIALS_JSON' is not set or is None.")
+
+try:
+    creds_info = json.loads(creds_json)
+    credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
+except json.JSONDecodeError:
+    raise Exception("Invalid JSON format in 'GOOGLE_APPLICATION_CREDENTIALS_JSON' environment variable.")
 
 @bot.command()
 async def check_time(ctx):
