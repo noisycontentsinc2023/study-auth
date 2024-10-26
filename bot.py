@@ -18,6 +18,7 @@ import googletrans
 import discord.ui as ui
 import time
 
+from google.cloud import secretmanager
 from google.oauth2.service_account import Credentials
 from datetime import date, timedelta
 from datetime import datetime
@@ -37,27 +38,23 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-# Google Sheets API 설정
+# Secret Manager 클라이언트 생성
+secret_client = secretmanager.SecretManagerServiceClient()
+
+# 시크릿 버전 정보 (예: 'projects/PROJECT_ID/secrets/my-service-account-key/versions/latest')
+SECRET_NAME = "projects/154170352356/secrets/secretkey/versions/1"
+
+def get_service_account_info():
+    # Secret Manager에서 시크릿 가져오기
+    response = secret_client.access_secret_version(request={"name": SECRET_NAME})
+    secret_payload = response.payload.data.decode("UTF-8")
+    creds_info = json.loads(secret_payload)
+    return creds_info
+
+# Google Sheets API 인증 설정
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
-
-# 환경 변수 또는 안전한 방법으로 키 정보를 설정하세요
-creds_info = 
-{
-  "type": "service_account",
-  "project_id": "vibrant-airship-439708-t4",
-  "private_key_id": "2dec0b1ad9a10653c418f095b9d64d9c37487253",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCzvdF+G0DAx2pn\n7UG75pH9ihhkZ3PIbd48y6IQeLh/P/jxm6FCUHaRm4Kf23VMsBk1gHvG0/X96yHI\nLNg4PDxctcLyLYLcUG2SRuGQ9QOxSDDf08cFVTwh0gMof9rjKy6Br0LQNiTbNRH7\nqb5WraU3kfVJTsyjeADAejsm7vpzuGcln61FX18V2M7zHlth5bIDHH7EkSyp0h5J\nCipslAa8rzvLOsVuQ3waL07APou7441kqD8Yc6DGt7PyO0DecCJ6VM169R1XJAzt\nRF4Ib7ixC+ACaRQ5fC8aEmfJZEzuvQ4hzFrDBTfFte9BnWePAVaSki8kaV7cwQP4\n+Z1w271ZAgMBAAECggEAMJHrIc4gfdeFR+cje7CPI7mk5MDV10PlKX2HYjcU+AHj\n9fntphtTJv6kWik19c6iSURabjyJvR9ERjDkDrIsR4swTjwBICK1sTDpNEAZStcs\nqdcy8Rx6vtLe2ptOHVPmYdHn1pbC999L6DsSvZ53xl/xLemWv9emMFz3TgqG8Czg\nl+n/5E1prUsBPB19pcLges06UdVJiz8XDvUoLMKka2Mszjm6fBh0+TQddcf0Js2N\nkxMNCSJTD7FFkZlnwIoST/E7EMeN/0iUl5fzUC1fZ3RDsKpaqrr0CZim7eqSoTPT\nlLDu/fOFR4f/G63M51lE4du7rg51/cSCxbgClH73vwKBgQDof0AmTFep7HMX3zI5\nd2Orjb3DoK3Jh1DwR5OUI0zsSXNacDiUT53EWCfP/uuLvda+Ohh9Ot4dloc9Qc+K\n4ZIiwDc/EyT506/q2qPHmmUOWt8fyGjRpzB9PlbT/bgmyScbGH/XahSOT5nMpC05\nAEOqL2O2dwY1+V6epza34LKDTwKBgQDF6VC4adu2bHB77mvognE5dHiGbzqVr2wb\nPAqF3bAevFsUafDMgS8o7YgpTYlpWQQB8lecR0519Dc9T1DxANLE5mvGZD9+KL6A\nVa24yBM+WWODdrw4aHPTnlSGCG+qnPtSYnmKFABkuYE4e9DlM24dNf3t4OISPYdo\nlxmwyTOq1wKBgHDv116DORY+2I2hCwmlOBJOkP6lX6YEiEmfy01rdGNXLqSg3KsW\nnaGR3Q0JXKwN9HGFUP4MCXc/9sPH4yQofM9KpcuK5ixBKzQfLu23zx0RAU+0D07A\nMyqzjIP/vGOC1O8xkHA4hHG4sxIYMit9OGFEEeDBoo+3acIRod/iU3S7AoGAHwLB\nCDRmHf593Z1tQSB3V1ZdsErrdhrnqJjO2Uz0VMyUxO0YsyKm3hXiGP6yQlSVYSy0\n96Lgs3DR2wR7nVfQrtOgHZUFseH2f6ttLiADi+h7xFSth3UueQE9I0ddH/G7G5yc\niLs7mIzMp6oXAGL/pQoZwNVU9yC2//d1KhNMyj8CgYAQt1cHNxWm9GX9JMhRpYey\nP/IvmYhYKNzLbr00c2chUquAPFuwLGFOhbvLI7VXTEpQO9lWVa9zclBNKxznKPV2\np17uQGKcTCVWYPzcCFxTDVgSMMEN8PE8X+ZU8E9a9R4WRvq35Qk3jj55oYmrYnM8\nlq8cwYeLxN80i/6DYnt8Kw==\n-----END PRIVATE KEY-----\n",
-  "client_email": "server@vibrant-airship-439708-t4.iam.gserviceaccount.com",
-  "client_id": "105018887118886094462",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/server%40vibrant-airship-439708-t4.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
-
+creds_info = get_service_account_info()
 credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
-gc = gspread_asyncio.AsyncioGspreadClientManager(lambda: credentials)
 
 @bot.command()
 async def check_time(ctx):
