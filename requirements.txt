@@ -37,4 +37,4 @@ pytz
 sniffio==1.3.0
 urllib3==1.26.13
 yarg==0.1.9
-yarl==1.8.2
+yarl
