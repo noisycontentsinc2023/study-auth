@@ -44,11 +44,12 @@ intents.presences = False
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # GitHub Secrets에서 JSON 비밀 정보 읽기
-creds_json = os.getenv('GOOGLE_CREDENTIALS')
+creds_json = os.environ['GOOGLE_CREDENTIALS']
 
 # JSON 문자열을 딕셔너리로 변환
 creds_info = json.loads(creds_json)
 
+# 스코프 설정
 scopes = [
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive'
@@ -56,7 +57,6 @@ scopes = [
 
 # 서비스 계정 정보로 인증
 credentials = service_account.Credentials.from_service_account_info(creds_info, scopes=scopes)
-aio_creds = credentials
 #------------------------------------------------#
 flag_emoji_dict = {
 "🇺🇸": "en",
