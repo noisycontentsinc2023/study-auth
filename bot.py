@@ -40,6 +40,16 @@ intents.members = True
 intents.typing = False
 intents.presences = False
 
+# UTC 시간 가져오기
+utc_now = datetime.datetime.now(pytz.utc)
+
+# 서버의 시간대 설정 (예: 한국 표준시)
+server_tz = pytz.timezone('Asia/Seoul')
+
+# 서버 시간 계산
+server_time = utc_now.astimezone(server_tz)
+
+print("서버 시간:", server_time.strftime('%Y-%m-%d %H:%M:%S'))
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
