@@ -52,7 +52,7 @@ def get_service_account_info():
     return creds_info
 
 # Google Sheets API 인증 설정
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
+scope = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
 creds_info = get_service_account_info()
 credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
 
