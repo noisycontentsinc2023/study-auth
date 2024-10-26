@@ -138,7 +138,17 @@ async def on_reaction_add(reaction, user):
 #------------------------------------------------#
 def get_current_utc_time():
     return datetime.now(timezone.utc)
-  
+
+@bot.command()
+async def test_google_sheets(ctx):
+    try:
+        gc = gspread.authorize(credentials)
+        # 예: 특정 Google Sheet를 이름으로 열기
+        sheet = gc.open("서버기록").sheet1
+        await ctx.send("Google Sheets 인증이 성공적으로 완료되었습니다!")
+    except Exception as e:
+        await ctx.send(f"오류: {e}")
+      
 # Set up Google Sheets worksheet
 async def get_sheet2():
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
