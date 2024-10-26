@@ -35,27 +35,15 @@ from discord.ui import Select, Button, View
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
 
-translator = googletrans.Translator()
+# Discord Intents 설정
 intents = discord.Intents.default()
 intents.message_content = True
-intents.members = True
-intents.typing = False
-intents.presences = False
-
-# UTC 시간 가져오기
-utc_now = datetime.datetime.now(pytz.utc)
-
-# 서버의 시간대 설정 (예: 한국 표준시)
-server_tz = pytz.timezone('Asia/Seoul')
-
-# 서버 시간 계산
-server_time = utc_now.astimezone(server_tz)
-
-print("서버 시간:", server_time.strftime('%Y-%m-%d %H:%M:%S'))
-
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
+# Google Sheets API 설정
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
+
+# 환경 변수 또는 안전한 방법으로 키 정보를 설정하세요
 creds_info = 
 {
   "type": "service_account",
@@ -72,20 +60,23 @@ creds_info =
 }
 
 credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
-aio_creds = credentials
+gc = gspread_asyncio.AsyncioGspreadClientManager(lambda: credentials)
 
 @bot.command()
 async def check_time(ctx):
-    # UTC 시간 가져오기
-    utc_now = datetime.datetime.now(pytz.utc)
-    
-    # 서버의 시간대 설정 (예: 한국 표준시)
-    server_tz = pytz.timezone('Asia/Seoul')
-    
-    # 서버 시간 계산
-    server_time = utc_now.astimezone(server_tz)
-    
-    await ctx.send(f"서버 시간: {server_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    try:
+        # UTC 시간 가져오기
+        utc_now = datetime.now(pytz.utc)
+        
+        # 서버의 시간대 설정 (예: 한국 표준시)
+        server_tz = pytz.timezone('Asia/Seoul')
+        
+        # 서버 시간 계산
+        server_time = utc_now.astimezone(server_tz)
+        
+        await ctx.send(f"서버 시간: {server_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    except Exception as e:
+        await ctx.send(f"오류가 발생했습니다: {str(e)}")
   
 #------------------------------------------------#
 flag_emoji_dict = {
