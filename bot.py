@@ -57,8 +57,6 @@ def get_service_account_info():
 
 # Google Sheets API 인증 설정
 scope = [
-    'https://www.googleapis.com/auth/drive',
-    'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/cloud-platform',
     'https://www.googleapis.com/auth/secretmanager'
 ]
