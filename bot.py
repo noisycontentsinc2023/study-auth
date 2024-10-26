@@ -42,7 +42,7 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 secret_client = secretmanager.SecretManagerServiceClient()
 
 # 시크릿 버전 정보
-SECRET_NAME = "projects/154170352356/secrets/secretkey1/versions/latest"
+SECRET_NAME = "projects/1012517334595/secrets/discordserver/versions/1"
 
 def get_service_account_info():
     try:
@@ -58,7 +58,8 @@ def get_service_account_info():
 # Google Sheets API 인증 설정
 scope = [
     'https://www.googleapis.com/auth/cloud-platform',
-    'https://www.googleapis.com/auth/secretmanager'
+    'https://www.googleapis.com/auth/secretmanager',
+    'https://www.googleapis.com/auth/spreadsheets'
 ]
 
 creds_info = get_service_account_info()
