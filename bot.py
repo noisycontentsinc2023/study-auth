@@ -39,7 +39,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # Google Sheets API 인증 설정
-scope = ['https://www.googleapis.com/auth/spreadsheets']
+scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/secretmanager']
 
 # Secret Manager 클라이언트 생성
 secret_client = secretmanager.SecretManagerServiceClient()
