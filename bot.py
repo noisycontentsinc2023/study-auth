@@ -38,33 +38,13 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-# Secret Manager 클라이언트 생성
-secret_client = secretmanager.SecretManagerServiceClient()
-
-# 시크릿 버전 정보
-SECRET_NAME = "projects/1012517334595/secrets/discordserver/versions/1"
-
-def get_service_account_info():
-    try:
-        # Secret Manager에서 시크릿 가져오기
-        response = secret_client.access_secret_version(request={"name": SECRET_NAME})
-        secret_payload = response.payload.data.decode("UTF-8")
-        creds_info = json.loads(secret_payload)
-        return creds_info
-    except Exception as e:
-        print(f"Error accessing secret: {str(e)}")
-        return None
-
 # Google Sheets API 인증 설정
 scope = [
-    'https://www.googleapis.com/auth/cloud-platform',
-    'https://www.googleapis.com/auth/secretmanager',
     'https://www.googleapis.com/auth/spreadsheets'
 ]
 
-creds_info = get_service_account_info()
-if creds_info is None:
-    raise Exception("Failed to get service account information.")
+# 환경 변수에서 JSON 키 정보 불러오기
+creds_info = json.loads(os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON'))
 credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
 
 @bot.command()
