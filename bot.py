@@ -39,36 +39,49 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # Google Sheets API 인증 설정
-scope = [
-    'https://www.googleapis.com/auth/spreadsheets'
-]
+scope = ['https://www.googleapis.com/auth/spreadsheets']
 
-# 환경 변수에서 JSON 키 정보 불러오기 (디버그용 출력 추가)
-creds_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
-if creds_json is None:
-    raise Exception("Environment variable 'GOOGLE_APPLICATION_CREDENTIALS_JSON' is not set or is None.")
+# Secret Manager 클라이언트 생성
+secret_client = secretmanager.SecretManagerServiceClient()
 
-try:
-    creds_info = json.loads(creds_json)
-    credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
-except json.JSONDecodeError:
-    raise Exception("Invalid JSON format in 'GOOGLE_APPLICATION_CREDENTIALS_JSON' environment variable.")
+# 시크릿 버전 정보
+SECRET_NAME = "projects/1012517334595/secrets/discordserver/versions/1"
+
+def get_service_account_info():
+    try:
+        # Secret Manager에서 시크릿 가져오기
+        response = secret_client.access_secret_version(request={"name": SECRET_NAME})
+        secret_payload = response.payload.data.decode("UTF-8")
+        creds_info = json.loads(secret_payload)
+        return creds_info
+    except Exception as e:
+        print(f"Error accessing secret: {str(e)}")
+        return None
+
+# 서비스 계정 정보 가져오기
+creds_info = get_service_account_info()
+if creds_info is None:
+    raise Exception("Failed to get service account information.")
+
+# Google Sheets API 인증
+credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
 
 @bot.command()
 async def check_time(ctx):
     try:
         # UTC 시간 가져오기
         utc_now = datetime.now(pytz.utc)
-        
+
         # 서버의 시간대 설정 (예: 한국 표준시)
         server_tz = pytz.timezone('Asia/Seoul')
-        
+
         # 서버 시간 계산
         server_time = utc_now.astimezone(server_tz)
-        
+
         await ctx.send(f"서버 시간: {server_time.strftime('%Y-%m-%d %H:%M:%S')}")
     except Exception as e:
         await ctx.send(f"오류가 발생했습니다: {str(e)}")
+
 
 #------------------------------------------------#
 flag_emoji_dict = {
