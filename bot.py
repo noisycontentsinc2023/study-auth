@@ -43,24 +43,24 @@ intents.presences = False
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-# Google Cloud Storage의 JSON 파일 URL
-json_url = 'https://storage.googleapis.com/serverclient/vibrant-airship-439708-t4-22ea1b6c69ad.json'
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+creds_info = {
+  "type": "service_account",
+  "project_id": "vibrant-airship-439708-t4",
+  "private_key_id": "4c7239ea06f42cb6955baf316fe88bbc28aebe36",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDWSo03mXeyf0D8\nzAhx7Mx0/idIM+KtJNqEjluVcMR4FeFe32mqCaiJHYWk4zOvuC3y+N9j6GIsIz1b\n3JM2LmQj+aUS15SSqE8rw4eRK6XCZHQJKIdpBTAmJirFalBhh5QiXIxB1c4KZoxC\n2ij5kY5zQL5N6jINq3SB66WwUPHylm6DVFrNLcCvh9P+peU3Lm8QnMOfdGVRA2Sb\n7DMhn+DEw64EvgzXyxAeni5Azgf/tYBZOq0btNFzrAhE+FHoftJqveSrD2LHHlVZ\nC9xtKd7a8bjxAxMvCVeuLhcpQaetwdxrWF4jk35d/gywJUwU+tHcaCVZAVH3PZDJ\nxtZAxMetAgMBAAECggEALVBthVTYGXBMa0iv/ntPDuxRnTSPmgKBjOdXmYXTnfsu\ngbPnsbPCJmCOSrxayS0+1jLndkaFQAUhrAO8Q4hS18KqNA5PViXuO/hoefvLXQyF\n9wvRepVExcRrZfyhy8XyPsPoSuGt5Mgjn91nLcMoZtnJhEtiUz6u7+xHSL4NM7lV\nwvodiFEC6yN80p99L0QEMcr9D9YXW6ujJBSZ5XeRYbuM92uBFA9VresvSlftU0au\nTPTIdRh9gUDQt6ACdt4pJWVSFlTkRyPH2o6TrqExfOAVIBEjbHn564zug2+/qW1u\nDjSSdUAxEHQZZfKyv0p5nGs2zc04YFsOFYlSl7zVpwKBgQDxDoOc3gs8MmxLkk4y\nEcluj0UidRanFyovl+LrPEiRXAazxTqRuBfH2dNmq2VwS93H48qXqno4574Nttc/\nPvU/GtoO2vdgRurZ407MTTJ4RHBUscOcmj+YzgKZJ65OTVCEcTI4GIlx5An8u62V\nJse0zKH1yyfFPXSobM4t9zQuHwKBgQDjk0dYCqFV6GDs3WzKI7gVGKWAsbhRqKMK\nS1XXF8DA6EhBgYjY4323lC4JjFDtIjl3RrqQ7sJZCw0FrTuIcdTeZsJrPiAItPnI\npmCv72eb+NB41PGJmLAGUTbvSA1gSDuiqvlQIsOpurlQRAuG+ezwSVQFqIrAmElN\nI0PkpRZ4swKBgQCj4ZUysXZ771/WpNnKinMiWf7LZUUIReRlROJ9wJcpU6Iu15hw\n9vIb6YgiVcX56WoW+lOCduDvDQYVdsexdNDwnQXAcbcaWjxR84pftN/qCcVAnzX4\nopk3/l6f1u1WyJND510X6/6NUlZD3ygsrZe54CD/5KTeIGDOHGKzt0tfSwKBgDEW\nO3VKFbKqBP4SZLzVJ4elYU15CADVFxXJWiKjBPiXIb6/af0eVKecVrHIikwb7blE\nkElitpjuQUjQLN8pbnjqQVVQeShnoNkeygwo33hNGup1RAQh4xX5vpeuOvRhoDte\nFZirZvjdRcuCYdojXnAV4QG3cPZJ4sW4rZRL56TxAoGAFVs+/AYmsp7BDtHSHRvo\n+0sDtTtF+K46VjwxQqqAiGN+uFjYoflG3/lvXx+TtZ781Mga94aniM+sKVfX+UIO\nryKPh5jT94KgEQ/6JjWRlJQlftesnkr6Q+5hqsaUfe1onODOrkb1Yr5jzzu6ZsCg\nRpO5vnun+E7dCDdsbcTmtn8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "server@vibrant-airship-439708-t4.iam.gserviceaccount.com",
+  "client_id": "105018887118886094462",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/server%40vibrant-airship-439708-t4.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
 
-# JSON 파일 다운로드
-response = requests.get(json_url)
-if response.status_code == 200:
-    creds_info = response.json()
-else:
-    raise Exception(f"Failed to fetch the JSON file: {response.status_code}")
+credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
+aio_creds = credentials
 
-# 스코프 설정
-scopes = [
-    'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/drive'
-]
-
-# 서비스 계정 정보로 인증
-credentials = service_account.Credentials.from_service_account_info(creds_info, scopes=scopes)
 #------------------------------------------------#
 flag_emoji_dict = {
 "🇺🇸": "en",
