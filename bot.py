@@ -42,7 +42,7 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 secret_client = secretmanager.SecretManagerServiceClient()
 
 # 시크릿 버전 정보 (예: 'projects/PROJECT_ID/secrets/my-service-account-key/versions/latest')
-SECRET_NAME = "projects/154170352356/secrets/secretkey1"
+SECRET_NAME = "projects/154170352356/secrets/secretkey1/versions/1"
 
 def get_service_account_info():
     # Secret Manager에서 시크릿 가져오기
