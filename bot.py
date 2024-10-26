@@ -42,7 +42,10 @@ intents.presences = False
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+scopes = [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive'
+]
 creds_info = {
   "type": "service_account",
   "project_id": "vibrant-airship-439708-t4",
