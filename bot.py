@@ -42,7 +42,7 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 secret_client = secretmanager.SecretManagerServiceClient()
 
 # 시크릿 버전 정보 (예: 'projects/PROJECT_ID/secrets/my-service-account-key/versions/latest')
-SECRET_NAME = "projects/154170352356/secrets/secretkey1/versions/1"
+SECRET_NAME = "projects/154170352356/secrets/secretkey1/versions/latest"
 
 def get_service_account_info():
     # Secret Manager에서 시크릿 가져오기
@@ -52,7 +52,7 @@ def get_service_account_info():
     return creds_info
 
 # Google Sheets API 인증 설정
-scope = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/secretmanager']
+scope = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/secretmanager']
 creds_info = get_service_account_info()
 credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
 
