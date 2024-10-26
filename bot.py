@@ -42,7 +42,7 @@ intents.presences = False
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.file']
 creds_info = {
   "type": "service_account",
   "project_id": "vibrant-airship-439708-t4",
@@ -111,7 +111,9 @@ async def on_reaction_add(reaction, user):
        # await reaction.message.channel.send(content=f'{reaction.user.mention}',embed=embed)
         await reaction.message.channel.send(content=f'{user.mention}',embed=embed)
 #------------------------------------------------#
-
+def get_current_utc_time():
+    return datetime.now(timezone.utc)
+  
 # Set up Google Sheets worksheet
 async def get_sheet2():
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
