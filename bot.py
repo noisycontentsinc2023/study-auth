@@ -44,7 +44,7 @@ intents.presences = False
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # Google Cloud Storage의 JSON 파일 URL
-json_url = 'https://storage.cloud.google.com/serverclient/vibrant-airship-439708-t4-22ea1b6c69ad.json'
+json_url = 'https://storage.googleapis.com/serverclient/vibrant-airship-439708-t4-22ea1b6c69ad.json'
 
 # JSON 파일 다운로드
 response = requests.get(json_url)
