@@ -42,27 +42,20 @@ intents.presences = False
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
+# GitHub Secrets에서 JSON 비밀 정보 읽기
+creds_json = os.getenv('GOOGLE_CREDENTIALS')
+
+# JSON 문자열을 딕셔너리로 변환
+creds_info = json.loads(creds_json)
+
 scopes = [
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive'
 ]
-creds_info = {
-  "type": "service_account",
-  "project_id": "vibrant-airship-439708-t4",
-  "private_key_id": "d9dcdb397bb4e87360aad978734ade6e1540a4e4",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCcBgtJeeRerg+2\n61sIaeJq6x4JQJBUEju1PgCk4syc4NVpbbVmjmizzK4AcTEccG28sQZ6mwloY2DL\nUqXJa+MyTngVB9KJ7+AQAVeG7Uo116kqa+JsPI1+AzaTnvson3eDj+5FS2uKdRhq\nmWLlGkqUWpCIx+QxtHIq5qjO8dUYPo1gFW0UAJEPzPG5nRq7/7dBhUuvWurTfOAj\n0uOVaRlwMeoeyJkHsnAgOAsdQYDr0irplN/hqw/2TJX15KoSSV115SCSz/WDW729\nbtFTVs3GaukVEJXYmYF5BdolhXr0xoQ1EGKXDzVECH9M7bmdrnV1wsWj95dPG5jN\nw5RLdpyLAgMBAAECggEACD6NhCFrvtEFxY2kLsqhizLHUIfX2IlqHEaddBkD5NpA\njKSebD/kKnQLUbypcq5CLjFQfVQJ6DkwGS5R0lXgGH1q/Pl/14gUV+QqQtfxDu1J\nZBN1UHDWrSzwSlahQOFESHBnj8PPd+5+DsvyHNcJz9MFRiUB2tqFGd08WEsRDonS\nanabcB95vNFBUBStXfH4XNhfRQH7cP6GG/vlLZk+L8xMqDhXg3n7TptQGYBSDw/Y\nmGE0fzZaLlkZ09Lg1jTaoGWNzFSzc+HHTpqmDzhXIjZW8NBB3LzPMuAukAYMV8uq\nS2EDKeaRdCVdmHGGBccftr20LRQUzp3UD+02YS56eQKBgQDbN1U1WTyfh5kwAR+z\nK8lET+m4EO9WsdGu5BIGgfvu1QY0vAiQB0hRWlgbWAeyVnMAL2jlBYk1qPgBhiIR\nRAeqI+4OFTMJhFZY9+1HWQIjGlr8qN7Yojmefcl6OLIPjZv7em4fVymjWKcEtOUk\nKG+UyrIvUjHvultXJs9/z6AHLQKBgQC2NDUZcMYGD7S+vSXYU2wFebjXmeRpZ615\n8/sHsZfpGyv4eHvliAdyfFkezM8XvYUKoJvWKZ24inHqMcJmdPqY/A08MUlBaN0X\nRUAkC79QOMd3Y5q8U2COgldmC65bOaDOb7nN8Cb3gzwXn5Ck4sppEZEl0ppq1mw6\nbPn4qLiFlwKBgDeXtLguxTz/uk1+O3fIpuX4DiFrygaGWdKsbBXSaP2McGJ3PQSp\nlCFtc+KbVHhZjBiD7WoHGWDOVPat+X2/buIq8ngH0EWdlfhCB56MaApW6LQib0Ep\nAsu6wpmIPz/KfcAssDiqdhjCprh+141v47wsGzv88EUHUZqscPrMwJyRAoGBAJ8r\nlIeZASUia1+FlZ4ZonBWGagfhG6gZ+f1wALEnlTBq/PwLSwjXX4iKyjA+tlecu8J\nx5mb2XDxYPqaZZ1j69fhuR4wYDKIDTza/mF+8a5/K6GcnfyPSfa03u0Cn1qKSXSO\nHd9OQHxRZRmuB4pDpVeMRSSpisRydTHFKcqUej4ZAoGBAJ1F+R2WK4C7sIL6H4Mi\nJOOFc5ZWXgM2BN6bvZw1YfJCwi5jzkLtiKPZnHt2vk1m9OjJRge2rCtEp3cFotbe\nGx79HtK7wPZjEQfzeMgunW0WfNsrrnePS0cJ664krYWSGxscBDvhcucM5cejBlZ2\nfRJvCmNd9KTczznnRaxWavu/\n-----END PRIVATE KEY-----\n",
-  "client_email": "server@vibrant-airship-439708-t4.iam.gserviceaccount.com",
-  "client_id": "105018887118886094462",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/server%40vibrant-airship-439708-t4.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
 
-credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
+# 서비스 계정 정보로 인증
+credentials = service_account.Credentials.from_service_account_info(creds_info, scopes=scopes)
 aio_creds = credentials
-
 #------------------------------------------------#
 flag_emoji_dict = {
 "🇺🇸": "en",
