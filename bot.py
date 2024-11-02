@@ -18,7 +18,6 @@ import googletrans
 import discord.ui as ui
 import time
 
-from google.cloud import secretmanager
 from google.oauth2.service_account import Credentials
 from datetime import date, timedelta
 from datetime import datetime
@@ -32,57 +31,34 @@ from discord.ui import Select, Button, View
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
-SECRET = os.secret['SECRET']
+SECRET = os.environ['SECRET']
 
-# Discord Intents 설정
+translator = googletrans.Translator()
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
+intents.typing = False
+intents.presences = False
+
+
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
-# Google Sheets API 인증 설정
-scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/secretmanager']
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+creds_info = {
+  "type": "service_account",
+  "project_id": "server-439817",
+  "private_key_id": "45202b8f054ef38af115cf72e0c9d3bed3d8a008",
+  "private_key": os.environ['SECRET'],
+  "client_id": "100976887028503717064",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/server%40server-439817.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
 
-# Secret Manager 클라이언트 생성
-secret_client = secretmanager.SecretManagerServiceClient()
-
-# 시크릿 버전 정보
-SECRET_NAME = "projects/1012517334595/secrets/discordserver/versions/1"
-
-def get_service_account_info():
-    try:
-        # Secret Manager에서 시크릿 가져오기
-        response = secret_client.access_secret_version(request={"name": SECRET_NAME})
-        secret_payload = response.payload.data.decode("UTF-8")
-        creds_info = json.loads(secret_payload)
-        return creds_info
-    except Exception as e:
-        print(f"Error accessing secret: {str(e)}")
-        return None
-
-# 서비스 계정 정보 가져오기
-creds_info = get_service_account_info()
-if creds_info is None:
-    raise Exception("Failed to get service account information.")
-
-# Google Sheets API 인증
 credentials = Credentials.from_service_account_info(creds_info, scopes=scope)
-
-@bot.command()
-async def check_time(ctx):
-    try:
-        # UTC 시간 가져오기
-        utc_now = datetime.now(pytz.utc)
-
-        # 서버의 시간대 설정 (예: 한국 표준시)
-        server_tz = pytz.timezone('Asia/Seoul')
-
-        # 서버 시간 계산
-        server_time = utc_now.astimezone(server_tz)
-
-        await ctx.send(f"서버 시간: {server_time.strftime('%Y-%m-%d %H:%M:%S')}")
-    except Exception as e:
-        await ctx.send(f"오류가 발생했습니다: {str(e)}")
-
+aio_creds = credentials
 
 #------------------------------------------------#
 flag_emoji_dict = {
@@ -136,7 +112,7 @@ async def on_reaction_add(reaction, user):
        # await reaction.message.channel.send(content=f'{reaction.user.mention}',embed=embed)
         await reaction.message.channel.send(content=f'{user.mention}',embed=embed)
 #------------------------------------------------#
-     
+
 # Set up Google Sheets worksheet
 async def get_sheet2():
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
