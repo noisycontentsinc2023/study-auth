@@ -40,6 +40,8 @@ intents.members = True
 intents.typing = False
 intents.presences = False
 
+private_key = os.environ['SECRET'].replace("\\n", "\n")
+
 
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
@@ -48,7 +50,7 @@ creds_info = {
   "type": "service_account",
   "project_id": "server-439817",
   "private_key_id": "45202b8f054ef38af115cf72e0c9d3bed3d8a008",
-  "private_key": os.environ['SECRET'],
+  "private_key": private_key,
   "client_email": "server@server-439817.iam.gserviceaccount.com",
   "client_id": "100976887028503717064",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
