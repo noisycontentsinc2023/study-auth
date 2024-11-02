@@ -32,6 +32,7 @@ from discord.ui import Select, Button, View
 
 TOKEN = os.environ['TOKEN']
 PREFIX = os.environ['PREFIX']
+SECRET = os.secret['SECRET']
 
 # Discord Intents 설정
 intents = discord.Intents.default()
