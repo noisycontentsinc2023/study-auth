@@ -480,10 +480,11 @@ async def find_user(username, sheet):
     cell = None
     try:
         cells = await sheet.findall(username)
+        print(f"find_user: Searching for {username}. Found: {cells}")  # 디버깅 로그
         if cells:
             cell = cells[0]
     except gspread.exceptions.APIError as e:
-        print(f'find_user error: {e}')
+        print(f"find_user error: {e}")
     return cell
             
 def is_allowed_channel(channel_id):
