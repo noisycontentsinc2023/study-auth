@@ -515,7 +515,7 @@ async def bixie_user(ctx):
 
 @bot.command(name='필사인증')
 async def bixie_auth(ctx):
-    required_role = "1249933410240036925" 
+    required_role = "1309078849408995328" 
     role = discord.utils.get(ctx.guild.roles, id=int(required_role))
     
     if role is None or role not in ctx.author.roles:
