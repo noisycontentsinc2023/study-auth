@@ -516,14 +516,28 @@ async def bixie_user(ctx):
 
 @bot.command(name='필사인증')
 async def bixie_auth(ctx):
-    required_role = "1309078849408995328" 
-    role = discord.utils.get(ctx.guild.roles, id=int(required_role))
-    
-    if role is None or role not in ctx.author.roles:
-        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
+    required_role_id = 1309078849408995328  # 역할 ID (숫자)
+    role = discord.utils.get(ctx.guild.roles, id=required_role_id)
+
+    # 역할이 존재하지 않을 경우
+    if role is None:
+        embed = discord.Embed(
+            title='오류',
+            description=f"서버에 '2024 필사클럽light' 역할이 존재하지 않습니다. 관리자에게 문의하세요."
+        )
         await ctx.send(embed=embed)
         return
-      
+
+    # 사용자에게 해당 역할이 없는 경우
+    if role not in ctx.author.roles:
+        embed = discord.Embed(
+            title='오류',
+            description=f"{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
+        )
+        await ctx.send(embed=embed)
+        return
+
+    # 역할이 있는 경우 계속 진행
     sheet11, rows = await get_sheet11()  # get_sheet11 호출 결과값 받기
     username = str(ctx.message.author)
 
@@ -537,7 +551,10 @@ async def bixie_auth(ctx):
             break
 
     if user_row is None:
-        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
+        embed = discord.Embed(
+            title='오류',
+            description=f"{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
+        )
         await ctx.send(embed=embed)
         return
 
