@@ -511,7 +511,22 @@ async def bixie_user(ctx):
     new_user_row = [username] + ["0"] * (len(rows[0]))  # 새로운 사용자 정보 생성
     await sheet11.insert_row(new_user_row, 2)  # 2행에 새로운 사용자 정보 추가
 
-    embed = discord.Embed(title='등록 완료', description=f'{ctx.author.mention}님 2024 필사클럽light에 성공적으로 등록되었습니다')
+    # 역할 부여
+    role_id = 1309078849408995328  # 부여할 역할의 ID
+    role = ctx.guild.get_role(role_id)  # 역할 객체 가져오기
+
+    if role is not None:
+        await ctx.author.add_roles(role)  # 역할 부여
+        embed = discord.Embed(
+            title='등록 완료',
+            description=f'{ctx.author.mention}님 2024 필사클럽light에 성공적으로 등록되었습니다\n{role.mention} 역할이 부여되었습니다!'
+        )
+    else:
+        embed = discord.Embed(
+            title='등록 완료',
+            description=f'{ctx.author.mention}님 2024 필사클럽light에 성공적으로 등록되었습니다\n그러나 역할을 찾을 수 없습니다.'
+        )
+
     await ctx.send(embed=embed)
 
 @bot.command(name='필사인증')
