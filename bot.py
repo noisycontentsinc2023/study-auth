@@ -497,30 +497,36 @@ today3 = now.strftime('%m%d')
 
 @bot.command(name='필사등록')
 async def bixie_user(ctx):
-    sheet11, rows = await get_sheet11()  # get_sheet11 호출 결과값 받기
+    sheet11, rows = await get_sheet11()  # Google Sheets 데이터 가져오기
     username = str(ctx.message.author)
 
-    user_cell = await find_user(username, sheet11)
+    user_row = next((i for i, row in enumerate(rows) if row[0] == username), None)
 
-    if user_cell is not None:
+    if user_row is not None:
         embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 이미 등록된 사용자입니다')
         await ctx.send(embed=embed)
         return
 
-    # 새로운 사용자 정보 기록
-    new_user_row = [username] + ["0"] * (len(rows[0]))  # 새로운 사용자 정보 생성
-    await sheet11.insert_row(new_user_row, 2)  # 2행에 새로운 사용자 정보 추가
+    # 새로운 사용자 추가
+    new_user_row = [username] + ["0"] * (len(rows[0]) - 1)
+    await sheet11.insert_row(new_user_row, 2)
 
     # 역할 부여
-    role_id = 1309078849408995328  # 부여할 역할의 ID
-    role = ctx.guild.get_role(role_id)  # 역할 객체 가져오기
+    role_id = 1309078849408995328
+    role = ctx.guild.get_role(role_id)
 
     if role is not None:
-        await ctx.author.add_roles(role)  # 역할 부여
-        embed = discord.Embed(
-            title='등록 완료',
-            description=f'{ctx.author.mention}님 2024 필사클럽light에 성공적으로 등록되었습니다\n{role.mention} 역할이 부여되었습니다!'
-        )
+        try:
+            await ctx.author.add_roles(role)
+            embed = discord.Embed(
+                title='등록 완료',
+                description=f'{ctx.author.mention}님 2024 필사클럽light에 성공적으로 등록되었습니다\n{role.mention} 역할이 부여되었습니다!'
+            )
+        except discord.errors.Forbidden:
+            embed = discord.Embed(
+                title='오류',
+                description=f'{ctx.author.mention}님, 봇에 역할 관리 권한이 없습니다. 관리자에게 문의하세요.'
+            )
     else:
         embed = discord.Embed(
             title='등록 완료',
