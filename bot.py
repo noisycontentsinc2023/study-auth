@@ -696,6 +696,198 @@ async def bixie_count(ctx):
     # Send the embed message with the user's authentication count
     embed = discord.Embed(description=f"{ctx.author.mention}님은 현재까지 {count} 회 인증하셨어요!", color=0x00FF00)
     await ctx.send(embed=embed) 
+
+
+#------------------------------------------------#
+
+@bot.command(name='가위')
+async def rock_paper_scissors(ctx):
+    user_choice = '가위'
+    await play_game(user_choice, ctx, '✌️')
+
+@bot.command(name='바위')
+async def rock_paper_scissors(ctx):
+    user_choice = '바위'
+    await play_game(user_choice, ctx, '✊')
+
+@bot.command(name='보')
+async def rock_paper_scissors(ctx):
+    user_choice = '보'
+    await play_game(user_choice, ctx, '🖐️')
+
+async def play_game(user_choice, ctx, user_emoji):
+    rps = ['가위', '바위', '보']
+    bot_choice = random.choice(rps)
+
+    # 가위, 바위, 보에 대응하는 이모지
+    rps_emoji = {'가위': '✌️', '바위': '✊', '보': '🖐️'}
+
+    result = None
+    if user_choice == bot_choice:
+        result = '비겼습니다!'
+        color = discord.Color.dark_gray()
+        emoji = '🤝'
+    elif (user_choice == '가위' and bot_choice == '보') or \
+         (user_choice == '바위' and bot_choice == '가위') or \
+         (user_choice == '보' and bot_choice == '바위'):
+        result = '테이망령이 졌습니다!😭'
+        color = discord.Color.green()
+        emoji = '🎉'
+    else:
+        result = '테이망령이 이겼습니다!🥳'
+        color = discord.Color.red()
+        emoji = '😭'
+
+    embed = discord.Embed(title=f'{user_emoji} 대 {rps_emoji[bot_choice]}', description=result, color=color)
+    embed.set_author(name='게임 결과')
+
+    await ctx.send(embed=embed)
+    
+#------------------------------------------------#
+
+@bot.command(name='MBTI')
+async def MBTI(ctx):
+    embed = discord.Embed(title="소울메이트 언어를 찾아보자!", description="당신의 외국어 mbti는..?", color=0xffd700)
+    embed.set_footer(text="아래 버튼을 클릭하여 외국어 mbti를 알아봐요")
+    button = discord.ui.Button(style=discord.ButtonStyle.primary, label="나의 외국어 mbti 확인하기", url="https://doda.app/quiz/89gxdaXnTI")
+    view = discord.ui.View()
+    view.add_item(button)
+    await ctx.send(embed=embed, view=view)
+    
+#------------------------------------------------#
+@bot.command(name="역할")
+async def show_roles(ctx):
+    roles = ctx.author.roles[1:]  # Exclude the everyone role
+    embed = discord.Embed(title=f"{ctx.author.name}님의 역할입니다", color=0x00ff00)
+    
+    # Add each role and its icon to the embed's description
+    for role in roles:
+        embed.description = f"{embed.description}\n{role.name}"
+        if role.icon:
+            embed.set_thumbnail(url=role.icon.url)
+            
+    await ctx.send(embed=embed)
+
+#------------------------------------------------검색------------------------------------------------------#
+
+@bot.command(name='검색')
+async def search(ctx, *args):
+  query = ' '.join(args)
+  search_url = f'https://openapi.naver.com/v1/search/webkr.json?query={query}'
+
+  headers = {
+    'X-Naver-Client-Id': 'iuWr9aAAyKxNnRsRSQIt' ,
+    'X-Naver-Client-Secret': 'bkfPugeyIa'
+  }
+  response = requests.get(search_url, headers=headers)
+
+  if response.status_code == 200:
+    data = response.json()
+
+    if len(data['items']) > 0:
+      # Extract the top 3 search results
+      results = data['items'][:3]
+
+      # Format the results as an embedded message
+      embed = discord.Embed(title=f"Search Results for \"{query}\"", color=0x0099ff)
+
+      for result in results:
+        embed.add_field(name=result['title'], value=result['link'], inline=False)
+
+      await ctx.send(embed=embed)
+    else:
+      await ctx.send(f"검색결과가 없습니다 \"{query}\".")
+  else:
+    await ctx.send('에러가 발생했어요! 명령어를 깜빡 하신건 아닐까요?')
+    
+@bot.command(name='이미지')
+async def search_image(ctx, *args):
+    query = ' '.join(args)
+    search_url = f'https://openapi.naver.com/v1/search/image?query={query}'
+
+    headers = {
+    'X-Naver-Client-Id': 'iuWr9aAAyKxNnRsRSQIt' ,
+    'X-Naver-Client-Secret': 'bkfPugeyIa'
+    }
+
+    response = requests.get(search_url, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+
+        if len(data['items']) > 0:
+            # Extract the top 2 search results
+            results = data['items'][:2]
+
+            # Create a separate embedded message for each search result
+            for result in results:
+                embed = discord.Embed(color=0x0099ff)
+                embed.set_image(url=result['thumbnail'])
+                await ctx.send(embed=embed)
+        else:
+            await ctx.send(f"No search results for \"{query}\".")
+    else:
+        await ctx.send('에러가 요발생했어요')
+
+#------------------------------------------------로또------------------------------------------------------#
+
+@bot.command(name='로또')
+async def lotto(ctx):
+    Text = ""
+    number = [1, 2, 3, 4, 5, 6] # 배열크기 선언해줌
+    count = 0
+    for i in range(0, 6):
+        num = random.randrange(1, 46)
+        number[i] = num
+        if count >= 1:
+            for i2 in range(0, i):
+                if number[i] == number[i2]:  # 만약 현재랜덤값이 이전숫자들과 값이 같다면
+                    numberText = number[i]
+                    print("작동 이전값 : " + str(numberText))
+                    number[i] = random.randrange(1, 46)
+                    numberText = number[i]
+                    print("작동 현재값 : " + str(numberText))
+                    if number[i] == number[i2]:  # 만약 다시 생성한 랜덤값이 이전숫자들과 또 같다면
+                        numberText = number[i]
+                        print("작동 이전값 : " + str(numberText))
+                        number[i] = random.randrange(1, 46)
+                        numberText = number[i]
+                        print("작동 현재값 : " + str(numberText))
+                        if number[i] == number[i2]:  # 만약 다시 생성한 랜덤값이 이전숫자들과 또 같다면
+                            numberText = number[i]
+                            print("작동 이전값 : " + str(numberText))
+                            number[i] = random.randrange(1, 46)
+                            numberText = number[i]
+                            print("작동 현재값 : " + str(numberText))
+
+        count = count + 1
+        Text = Text + "  " + str(number[i])
+
+    print(Text.strip())
+    embed = discord.Embed(
+        title="망령의 추천 번호는!",
+        description=Text.strip(),
+        colour=discord.Color.red()
+    )
+    await ctx.send(embed=embed)
         
+#------------------------------------------------검색------------------------------------------------------# 
+
+@bot.command(name='주사위')
+async def dice(ctx):
+    randomNum = random.randrange(1, 7) # 1~6까지 랜덤수
+    print(randomNum)
+    if randomNum == 1:
+        await ctx.send(embed=discord.Embed(description=':game_die: '+ ':one:'))
+    if randomNum == 2:
+        await ctx.send(embed=discord.Embed(description=':game_die: ' + ':two:'))
+    if randomNum ==3:
+        await ctx.send(embed=discord.Embed(description=':game_die: ' + ':three:'))
+    if randomNum ==4:
+        await ctx.send(embed=discord.Embed(description=':game_die: ' + ':four:'))
+    if randomNum ==5:
+        await ctx.send(embed=discord.Embed(description=':game_die: ' + ':five:'))
+    if randomNum ==6:
+        await ctx.send(embed=discord.Embed(description=':game_die: ' + ':six: '))
 #Run the bot
 bot.run(TOKEN)
