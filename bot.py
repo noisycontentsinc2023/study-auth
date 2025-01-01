@@ -472,7 +472,7 @@ async def get_sheet11():
     client_manager = gspread_asyncio.AsyncioGspreadClientManager(lambda: aio_creds)
     client = await client_manager.authorize()
     spreadsheet = await client.open('서버기록')
-    sheet11 = await spreadsheet.worksheet('2024필사클럽light')
+    sheet11 = await spreadsheet.worksheet('2025필사클럽4')
     rows = await sheet11.get_all_values()
     return sheet11, rows 
 
@@ -512,7 +512,7 @@ async def bixie_user(ctx):
     await sheet11.insert_row(new_user_row, 2)
 
     # 역할 부여
-    role_id = 1309078849408995328
+    role_id = 1323318651872346162
     role = ctx.guild.get_role(role_id)
 
     if role is not None:
@@ -520,7 +520,7 @@ async def bixie_user(ctx):
             await ctx.author.add_roles(role)
             embed = discord.Embed(
                 title='등록 완료',
-                description=f'{ctx.author.mention}님 2024 필사클럽light에 성공적으로 등록되었습니다\n{role.mention} 역할이 부여되었습니다!'
+                description=f'{ctx.author.mention}님 2025 필사클럽4기에 성공적으로 등록되었습니다\n{role.mention} 역할이 부여되었습니다!'
             )
         except discord.errors.Forbidden:
             embed = discord.Embed(
@@ -530,7 +530,7 @@ async def bixie_user(ctx):
     else:
         embed = discord.Embed(
             title='등록 완료',
-            description=f'{ctx.author.mention}님 2024 필사클럽light에 성공적으로 등록되었습니다\n그러나 역할을 찾을 수 없습니다.'
+            description=f'{ctx.author.mention}님 2025 필사클럽4기에 성공적으로 등록되었습니다\n그러나 역할을 찾을 수 없습니다.'
         )
 
     await ctx.send(embed=embed)
@@ -544,7 +544,7 @@ async def bixie_auth(ctx):
     if role is None:
         embed = discord.Embed(
             title='오류',
-            description=f"서버에 '2024 필사클럽light' 역할이 존재하지 않습니다. 관리자에게 문의하세요."
+            description=f"서버에 '필사클럽4기' 역할이 존재하지 않습니다. 관리자에게 문의하세요."
         )
         await ctx.send(embed=embed)
         return
@@ -553,7 +553,7 @@ async def bixie_auth(ctx):
     if role not in ctx.author.roles:
         embed = discord.Embed(
             title='오류',
-            description=f"{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
+            description=f"{ctx.author.mention}님은 2025 필사클럽4기에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
         )
         await ctx.send(embed=embed)
         return
@@ -574,7 +574,7 @@ async def bixie_auth(ctx):
     if user_row is None:
         embed = discord.Embed(
             title='오류',
-            description=f"{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
+            description=f"{ctx.author.mention}님은 2025 필사클럽4기에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
         )
         await ctx.send(embed=embed)
         return
@@ -582,7 +582,7 @@ async def bixie_auth(ctx):
     user_cell = await find_user(username, sheet11)
 
     if user_cell is None:
-        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
+        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2025 필사클럽4기에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
         await ctx.send(embed=embed)
         return
 
@@ -593,7 +593,7 @@ async def bixie_auth(ctx):
             break
 
     if today3_col is None:
-        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님 현재는 2024 필사클럽light 기간이 아닙니다')
+        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님 현재는 2025 필사클럽4기 기간이 아닙니다')
         await ctx.send(embed=embed)
         return
 
@@ -624,12 +624,12 @@ class AuthButton3(discord.ui.Button):
         try:
             user_cell = await find_user(self.username, self.sheet11)
             if user_cell is None:
-                embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
+                embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2025 필사클럽4기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
                 await interaction.response.edit_message(embed=embed, view=None)
                 return
             user_row = user_cell.row
         except gspread.exceptions.CellNotFound:
-            embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
+            embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 2025 필사클럽4기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
@@ -686,7 +686,7 @@ async def bixie_count(ctx):
             break
 
     if user_row is None:
-        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님은 2024 필사클럽light에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
+        embed = discord.Embed(title='Error', description=f'{ctx.author.mention}님은 2025 필사클럽4기에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
         await ctx.send(embed=embed)
         return
 
