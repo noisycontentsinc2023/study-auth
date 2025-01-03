@@ -329,7 +329,7 @@ async def accumulated_auth(ctx):
     hidden = await sheet2.cell(user_index, 3)
     hidden_value = int(hidden.value)
     
-    embed = discord.Embed(title="누적 인증 현황", description=f"{ctx.author.mention}님, 이번 주({monday.strftime('%m%d')}~{sunday.strftime('%m%d')}) 누적 인증은 {total}회 입니다.\n한 주에 5회 이상 인증하면 랭커로 등록됩니다!\n랭커 누적 횟수는 {overall_ranking_value}회 입니다.")
+    embed = discord.Embed(title="누적 인증 현황", description=f"{ctx.author.mention}님, 이번 주({monday.strftime('%m%d')}~{sunday.strftime('%m%d')}) 누적 인증은 {total}회 입니다.\n한 주에 5회 이상 인증하면 랭커로 등록됩니다!\n랭커 누적 횟수는 {overall_ranking_value}회 입니다.\n현재까지 총 {hidden_value} 회 다른 학습자의 인증을 도와주셨어요!")
  
     if overall_ranking_value >= 1 and not discord.utils.get(ctx.author.roles, id=1016152041258758217):
         role = ctx.guild.get_role(1016152041258758217)
@@ -348,6 +348,11 @@ async def accumulated_auth(ctx):
     
     if overall_ranking_value >= 60 and not discord.utils.get(ctx.author.roles, id=1098176357403471935):
         role = ctx.guild.get_role(1098176357403471935)
+        await ctx.author.add_roles(role)
+        embed.add_field(name="축하합니다!", value=f"{role.mention} 롤을 획득하셨습니다!")
+
+    if hidden_value >= 100 and not discord.utils.get(ctx.author.roles, id=1105398539951030272):
+        role = ctx.guild.get_role(1105398539951030272)
         await ctx.author.add_roles(role)
         embed.add_field(name="축하합니다!", value=f"{role.mention} 롤을 획득하셨습니다!")
 
