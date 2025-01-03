@@ -350,7 +350,12 @@ async def accumulated_auth(ctx):
         role = ctx.guild.get_role(1098176357403471935)
         await ctx.author.add_roles(role)
         embed.add_field(name="축하합니다!", value=f"{role.mention} 롤을 획득하셨습니다!")
-
+      
+    if overall_ranking_value >= 111 and not discord.utils.get(ctx.author.roles, id=1324788848076787813):
+        role = ctx.guild.get_role(1324788848076787813)
+        await ctx.author.add_roles(role)
+        embed.add_field(name="망령이 나타났다👻", value=f"{role.mention} 롤을 획득하셨습니다!")
+      
     if hidden_value >= 100 and not discord.utils.get(ctx.author.roles, id=1105398539951030272):
         role = ctx.guild.get_role(1105398539951030272)
         await ctx.author.add_roles(role)
