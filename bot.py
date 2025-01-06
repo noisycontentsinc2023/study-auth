@@ -602,7 +602,7 @@ async def bixie_auth(ctx):
 
     today3_col = None
     for i, col in enumerate(await sheet11.row_values(1)):
-        if today3 in col:
+        if today3.strip() == col.strip():  # 공백 제거 후 비교
             today3_col = i + 1
             break
 
