@@ -489,12 +489,14 @@ async def get_sheet11():
 async def find_user(username, sheet):
     cell = None
     try:
-        cells = await sheet.findall(username)
-        print(f"find_user: Searching for {username}. Found: {cells}")  # 디버깅 로그
-        if cells:
-            cell = cells[0]
+        # 모든 값을 가져오고 첫 번째 열에서 사용자 찾기
+        rows = await sheet.get_all_values()  # 시트 데이터 가져오기
+        for row_index, row in enumerate(rows):
+            if len(row) > 0 and row[0].strip().lower() == username.strip().lower():
+                cell = gspread.utils.cell(row_index + 1, 1)  # 셀 객체 생성
+                break
     except gspread.exceptions.APIError as e:
-        print(f"find_user error: {e}")
+        print(f"find_user error: {e}")  # API 오류 디버깅 로그
     return cell
             
 def is_allowed_channel(channel_id):
@@ -547,19 +549,21 @@ async def bixie_user(ctx):
 
 @bot.command(name='필사인증')
 async def bixie_auth(ctx):
-    required_role_id = 1309078849408995328  # 역할 ID (숫자)
+    required_role_id = 1309078849408995328  # 필사클럽4기 역할 ID
     role = discord.utils.get(ctx.guild.roles, id=required_role_id)
 
-    # 역할이 존재하지 않을 경우
+    # 역할 확인 디버깅 로그 추가
+    print(f"필사클럽4기 역할: {role}")
+    print(f"사용자 역할: {[r.id for r in ctx.author.roles]}")  # 사용자 역할 ID 확인
+
     if role is None:
         embed = discord.Embed(
             title='오류',
-            description=f"서버에 '필사클럽4기' 역할이 존재하지 않습니다. 관리자에게 문의하세요."
+            description="필사클럽4기 역할이 존재하지 않습니다. 관리자에게 문의하세요."
         )
         await ctx.send(embed=embed)
         return
 
-    # 사용자에게 해당 역할이 없는 경우
     if role not in ctx.author.roles:
         embed = discord.Embed(
             title='오류',
