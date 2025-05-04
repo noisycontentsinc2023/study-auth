@@ -505,7 +505,7 @@ kst = pytz.timezone('Asia/Seoul') # 한국 시간대로 설정
 now = datetime.now(kst).replace(tzinfo=None)
 today3 = now.strftime('%m%d') 
 
-@bot.command(name='')
+@bot.command(name='필사등록')
 async def bixie_user(ctx):
     sheet11, rows = await get_sheet11()  # Google Sheets 데이터 가져오기
     username = str(ctx.message.author)
