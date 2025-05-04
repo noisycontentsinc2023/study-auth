@@ -505,7 +505,7 @@ kst = pytz.timezone('Asia/Seoul') # 한국 시간대로 설정
 now = datetime.now(kst).replace(tzinfo=None)
 today3 = now.strftime('%m%d') 
 
-@bot.command(name='필사등록')
+@bot.command(name='')
 async def bixie_user(ctx):
     sheet11, rows = await get_sheet11()  # Google Sheets 데이터 가져오기
     username = str(ctx.message.author)
@@ -563,7 +563,7 @@ async def bixie_auth(ctx):
     if role not in ctx.author.roles:
         embed = discord.Embed(
             title='오류',
-            description=f"{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
+            description=f"{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다."
         )
         await ctx.send(embed=embed)
         return
@@ -584,7 +584,7 @@ async def bixie_auth(ctx):
     if user_row is None:
         embed = discord.Embed(
             title='오류',
-            description=f"{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다.\n!필사등록 명령어를 통해 먼저 등록해주세요!"
+            description=f"{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다."
         )
         await ctx.send(embed=embed)
         return
@@ -592,7 +592,7 @@ async def bixie_auth(ctx):
     user_cell = await find_user(username, sheet11)
 
     if user_cell is None:
-        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다 \n !등록 명령어를 통해 먼저 등록해주세요!')
+        embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다.')
         await ctx.send(embed=embed)
         return
 
@@ -634,12 +634,12 @@ class AuthButton3(discord.ui.Button):
         try:
             user_cell = await find_user(self.username, self.sheet11)
             if user_cell is None:
-                embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
+                embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다.')
                 await interaction.response.edit_message(embed=embed, view=None)
                 return
             user_row = user_cell.row
         except gspread.exceptions.CellNotFound:
-            embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다 \n !필사등록 명령어를 통해 먼저 등록해주세요!')
+            embed = discord.Embed(title='오류', description=f'{ctx.author.mention}님은 필사클럽(2505)에 등록된 멤버가 아닙니다.')
             await interaction.response.edit_message(embed=embed, view=None)
             return
 
